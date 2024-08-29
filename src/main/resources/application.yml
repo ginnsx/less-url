@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: less-url
+  sql:
+    init:
+      schema-locations: classpath:db/schema.sql
+      data-locations: classpath:db/data.sql
+      encoding: utf-8
+  datasource:
+    url: jdbc:h2:mem:less-url;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.github.xioshe.less.url.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+less:
+  url:
+    host: http://localhost:8080/

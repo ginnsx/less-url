@@ -1,0 +1,5 @@
+CREATE SCHEMA IF NOT EXISTS less_url;
+
+ALTER SCHEMA less_url
+    DEFAULT CHARACTER SET urf8mb4
+    DEFAULT COLLATE utf8mb4_general_ci;
