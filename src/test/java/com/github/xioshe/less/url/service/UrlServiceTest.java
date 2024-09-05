@@ -1,7 +1,9 @@
 package com.github.xioshe.less.url.service;
 
+import com.github.xioshe.less.url.api.CreateUrlCommand;
 import com.github.xioshe.less.url.repository.UrlRepository;
 import com.github.xioshe.less.url.shorter.UrlShorter;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +19,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@Slf4j
 public class UrlServiceTest {
 
     private UrlRepository urlRepository;
@@ -33,6 +36,33 @@ public class UrlServiceTest {
     }
 
     @Test
+    void Shorten_custom_alias() {
+        var cmd = new CreateUrlCommand();
+        cmd.setUserId(1L);
+        cmd.setOriginalUrl("https://example.com");
+        cmd.setCustomAlias("custom");
+
+        when(urlRepository.existShortUrl("custom")).thenReturn(false);
+
+        var result = urlService.shorten(cmd);
+        assertEquals("custom", result);
+        verify(urlRepository).save("https://example.com", "custom", 1L);
+    }
+
+    @Test
+    void Shorten_conflicted_custom_alias() {
+        var cmd = new CreateUrlCommand();
+        cmd.setUserId(1L);
+        cmd.setOriginalUrl("https://example.com");
+        cmd.setCustomAlias("custom");
+
+        when(urlRepository.existShortUrl("custom")).thenReturn(true);
+
+        var e = assertThrows(RuntimeException.class, () -> urlService.shorten(cmd));
+        assertEquals("Alias already exists", e.getMessage());
+    }
+
+    //    @Test
     void Shorten_invalid_url() {
         String originalUrl = "invalid-url";
 

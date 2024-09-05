@@ -4,6 +4,7 @@ package com.github.xioshe.less.url.api;
 import com.github.xioshe.less.url.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,8 +23,8 @@ public class UrlController {
     private String baseUrl;
 
     @PostMapping
-    public String shorten(@RequestBody CreateUrlCommand command) {
-        return baseUrl + urlService.shorten(command.getOriginalUrl(), 1L);
+    public String shorten(@RequestBody @Validated CreateUrlCommand command) {
+        return baseUrl + urlService.shorten(command);
     }
 
     @DeleteMapping("/{shortUrl}")
