@@ -21,7 +21,7 @@ drop table if exists lu_url;
 create table if not exists lu_url
 (
     id              BIGINT PRIMARY KEY AUTO_INCREMENT,
-    short_url       varchar(64)   not null comment '短链接',
+    short_url       varchar(8)   not null comment '短链接',
     original_url    varchar(1024) not null comment '原始链接',
     user_id         bigint        not null comment '用户ID',
     status          tinyint                default 1 comment '状态',
@@ -32,14 +32,14 @@ create table if not exists lu_url
     key url_user_id (user_id)
 ) ENGINE = InnoDB;
 
-drop table if exists lu_analysis;
-create table if not exists lu_analysis
+drop table if exists lu_access_records;
+create table if not exists lu_access_records
 (
     id          BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id     bigint      not null comment '用户ID',
-    short_url   varchar(64) not null comment '短链接',
-    frequency   bigint               default 0 comment '访问次数',
-    create_time datetime    not null default CURRENT_TIMESTAMP comment '创建时间',
-    update_time datetime    not null default CURRENT_TIMESTAMP comment '更新时间',
-    unique key aly_short_url (short_url)
+    short_url varchar(8)   not null comment '短链接',
+    user_agent   varchar(255) not null comment '浏览器信息',
+    ip           varchar(64)  not null comment 'IP地址',
+    referer      varchar(255) comment '来源页面',
+    access_time  datetime     not null default CURRENT_TIMESTAMP comment '创建时间',
+    unique key aly_short_url (short_url, access_time)
 ) ENGINE = InnoDB;
