@@ -20,13 +20,14 @@ create table if not exists lu_user
 drop table if exists lu_url;
 create table if not exists lu_url
 (
-    id           BIGINT PRIMARY KEY AUTO_INCREMENT,
-    short_url    varchar(64)   not null comment '短链接',
-    original_url varchar(1024) not null comment '原始链接',
-    user_id      bigint        not null comment '用户ID',
-    status       tinyint                default 1 comment '状态',
-    create_time  datetime      not null default CURRENT_TIMESTAMP comment '创建时间',
-    update_time  datetime      not null default CURRENT_TIMESTAMP comment '更新时间',
+    id              BIGINT PRIMARY KEY AUTO_INCREMENT,
+    short_url       varchar(64)   not null comment '短链接',
+    original_url    varchar(1024) not null comment '原始链接',
+    user_id         bigint        not null comment '用户ID',
+    status          tinyint                default 1 comment '状态',
+    expiration_time datetime               comment '过期时间',
+    create_time     datetime      not null default CURRENT_TIMESTAMP comment '创建时间',
+    update_time     datetime      not null default CURRENT_TIMESTAMP comment '更新时间',
     unique key short_url (short_url),
     key url_user_id (user_id)
 ) ENGINE = InnoDB;

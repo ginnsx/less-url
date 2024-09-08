@@ -22,12 +22,13 @@ public class UriRepositoryImpl implements UrlRepository {
     }
 
     @Override
-    public void save(String decodedUrl, String shortUrl, Long userId) {
+    public void save(String originalUrl, String shortUrl, Date expirationTime, Long userId) {
         var record = new Url();
-        record.setOriginalUrl(decodedUrl);
+        record.setOriginalUrl(originalUrl);
         record.setShortUrl(shortUrl);
         record.setUserId(userId);
         record.setStatus(1);
+        record.setExpirationTime(expirationTime);
         record.setCreateTime(new Date());
         record.setUpdateTime(new Date());
         urlMapper.insert(record);
@@ -42,5 +43,10 @@ public class UriRepositoryImpl implements UrlRepository {
     public String getOriginalUrl(String shortUrl) {
         return Optional.ofNullable(urlMapper.selectByShortUrl(shortUrl))
                 .map(Url::getOriginalUrl).orElse(null);
+    }
+
+    @Override
+    public Url getByShortUrl(String shortUrl) {
+        return urlMapper.selectByShortUrl(shortUrl);
     }
 }

@@ -1,6 +1,7 @@
 package com.github.xioshe.less.url.service;
 
 import com.github.xioshe.less.url.api.CreateUrlCommand;
+import com.github.xioshe.less.url.entity.Url;
 import com.github.xioshe.less.url.repository.UrlRepository;
 import com.github.xioshe.less.url.shorter.UrlShorter;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.util.StringUtils;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -24,13 +26,13 @@ public class UrlService {
             if (urlRepository.existShortUrl(customAlias)) {
                 throw new IllegalArgumentException("Alias already exists");
             }
-            urlRepository.save(decodedUrl, customAlias, command.getUserId());
+            urlRepository.save(decodedUrl, customAlias, command.getExpirationTime(), command.getUserId());
             return customAlias;
         }
-        return shorten(decodedUrl, command.getUserId());
+        return shorten(decodedUrl, command.getUserId(), command.getExpirationTime());
     }
 
-    public String shorten(String originalUrl, Long userId) {
+    public String shorten(String originalUrl, Long userId, Date expirationTime) {
         String existedShort = urlRepository.getShortUrl(originalUrl, userId);
         if (existedShort != null) {
             return existedShort;
@@ -42,7 +44,7 @@ public class UrlService {
         for (int i = 0; i < 3; i++) {
             shortUrl = urlShorter.shorten(shortUrl);
             if (!urlRepository.existShortUrl(shortUrl)) {
-                urlRepository.save(originalUrl, shortUrl, userId);
+                urlRepository.save(originalUrl, shortUrl, expirationTime, userId);
                 return shortUrl;
             }
             shortUrl += userId;
@@ -51,8 +53,15 @@ public class UrlService {
     }
 
     public String getOriginalUrl(String shortUrl) {
-        String originalUrl = urlRepository.getOriginalUrl(shortUrl);
-        if (originalUrl == null) {
+        Url url = urlRepository.getByShortUrl(shortUrl);
+        if (url == null) {
+            throw new UrlNotFoundException(shortUrl);
+        }
+        String originalUrl = url.getOriginalUrl();
+        if (!StringUtils.hasText(originalUrl)) {
+            throw new UrlNotFoundException(shortUrl);
+        }
+        if (url.getExpirationTime() != null && url.getExpirationTime().before(new Date())) {
             throw new UrlNotFoundException(shortUrl);
         }
         return originalUrl;

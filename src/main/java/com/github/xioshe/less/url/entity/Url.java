@@ -29,6 +29,11 @@ public class Url {
     private Integer status;
 
     /**
+     * 过期时间
+     */
+    private Date expirationTime;
+
+    /**
     * 创建时间
     */
     private Date createTime;

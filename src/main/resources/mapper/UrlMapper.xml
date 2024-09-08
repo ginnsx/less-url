@@ -8,6 +8,7 @@
         <result column="original_url" jdbcType="VARCHAR" property="originalUrl"/>
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="expiration_time" jdbcType="TIMESTAMP" property="expirationTime"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
@@ -17,6 +18,7 @@
         original_url,
         user_id,
         `status`,
+        expiration_time,
         create_time,
         update_time
     </sql>
@@ -34,9 +36,10 @@
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.github.xioshe.less.url.entity.Url"
             useGeneratedKeys="true">
         insert into lu_url (short_url, original_url, user_id,
-                            `status`, create_time, update_time)
+                            `status`, expiration_time, create_time, update_time)
         values (#{shortUrl,jdbcType=VARCHAR}, #{originalUrl,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT},
-                #{status,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+                #{status,jdbcType=TINYINT}, #{expirationTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP},
+                #{updateTime,jdbcType=TIMESTAMP})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.github.xioshe.less.url.entity.Url"
             useGeneratedKeys="true">
@@ -54,6 +57,9 @@
             <if test="status != null">
                 `status`,
             </if>
+        <if test="expirationTime != null">
+            expiration_time,
+        </if>
             <if test="createTime != null">
                 create_time,
             </if>
@@ -73,6 +79,9 @@
             </if>
             <if test="status != null">
                 #{status,jdbcType=TINYINT},
+            </if>
+            <if test="expirationTime != null">
+                expiration_time = #{expirationTime,jdbcType=TIMESTAMP},
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
@@ -97,6 +106,9 @@
             <if test="status != null">
                 `status` = #{status,jdbcType=TINYINT},
             </if>
+        <if test="expirationTime != null">
+            expiration_time = #{expirationTime,jdbcType=TIMESTAMP},
+        </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
             </if>
@@ -112,6 +124,7 @@
             original_url = #{originalUrl,jdbcType=VARCHAR},
             user_id      = #{userId,jdbcType=BIGINT},
             `status`     = #{status,jdbcType=TINYINT},
+            expiration_time = #{expirationTime,jdbcType=TIMESTAMP},
             create_time  = #{createTime,jdbcType=TIMESTAMP},
             update_time  = #{updateTime,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=BIGINT}

@@ -4,6 +4,8 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 
+import java.util.Date;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CreateUrlCommandValidationTest {
@@ -56,6 +58,20 @@ class CreateUrlCommandValidationTest {
         var command = new CreateUrlCommand();
         command.setOriginalUrl("https://www.google.com");
         command.setUserId(0L);
+        assertThat(validator.validate(command)).hasSize(1);
+    }
+
+    @Test
+    void ExpirationTime() {
+        var command = new CreateUrlCommand();
+        command.setUserId(1L);
+        command.setOriginalUrl("https://www.google.com");
+
+        var now = new Date();
+        command.setExpirationTime(new Date(now.getTime() + 1000));
+        assertThat(validator.validate(command)).isEmpty();
+
+        command.setExpirationTime(now);
         assertThat(validator.validate(command)).hasSize(1);
     }
 

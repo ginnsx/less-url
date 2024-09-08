@@ -9,9 +9,11 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -46,7 +48,7 @@ public class UrlServiceTest {
 
         var result = urlService.shorten(cmd);
         assertEquals("custom", result);
-        verify(urlRepository).save("https://example.com", "custom", 1L);
+        verify(urlRepository).save("https://example.com", "custom", null, 1L);
     }
 
     @Test
@@ -66,7 +68,7 @@ public class UrlServiceTest {
     void Shorten_invalid_url() {
         String originalUrl = "invalid-url";
 
-        var e = assertThrows(IllegalArgumentException.class, () -> urlService.shorten(originalUrl, 1L));
+        var e = assertThrows(IllegalArgumentException.class, () -> urlService.shorten(originalUrl, 1L, new Date()));
         assertEquals("Invalid URL", e.getMessage());
     }
 
@@ -75,13 +77,14 @@ public class UrlServiceTest {
         String originalUrl = "http://existing.com";
         String decodedUrl = URLDecoder.decode(originalUrl, StandardCharsets.UTF_8);
         String shortUrl = "http://existing-short.com";
+        var date = new Date();
 
         when(urlRepository.getShortUrl(decodedUrl, 1L)).thenReturn(shortUrl);
 
-        String result = urlService.shorten(originalUrl, 1L);
+        String result = urlService.shorten(originalUrl, 1L, date);
 
         assertEquals(shortUrl, result);
-        verify(urlRepository, never()).save(anyString(), anyString(), anyLong());
+        verify(urlRepository, never()).save(anyString(), anyString(), any(), anyLong());
     }
 
     @Test
@@ -89,15 +92,16 @@ public class UrlServiceTest {
         String originalUrl = "http://example.com";
         String decodedUrl = URLDecoder.decode(originalUrl, StandardCharsets.UTF_8);
         String shortUrl = "http://short.com";
+        var date = new Date();
 
         when(urlRepository.getShortUrl(decodedUrl, 1L)).thenReturn(null);
         when(urlShorter.shorten(decodedUrl)).thenReturn(shortUrl);
         when(urlRepository.existShortUrl(shortUrl)).thenReturn(false);
 
-        String result = urlService.shorten(originalUrl, 1L);
+        String result = urlService.shorten(originalUrl, 1L, date);
 
         assertEquals(shortUrl, result);
-        verify(urlRepository).save(decodedUrl, shortUrl, 1L);
+        verify(urlRepository).save(decodedUrl, shortUrl, date, 1L);
     }
 
     @Test
@@ -110,7 +114,7 @@ public class UrlServiceTest {
         when(urlShorter.shorten(anyString())).thenReturn(shortUrl);
         when(urlRepository.existShortUrl(shortUrl)).thenReturn(true);
 
-        var e = assertThrows(RuntimeException.class, () -> urlService.shorten(originalUrl, 1L));
+        var e = assertThrows(RuntimeException.class, () -> urlService.shorten(originalUrl, 1L, new Date()));
         assertEquals("Failed to shorten url", e.getMessage());
     }
 
@@ -119,14 +123,15 @@ public class UrlServiceTest {
         String originalUrl = "http://conflict.com";
         String decodedUrl = URLDecoder.decode(originalUrl, StandardCharsets.UTF_8);
         String shortUrl = "http://conflict-short.com";
+        var date = new Date();
 
         when(urlRepository.getShortUrl(decodedUrl, 1L)).thenReturn(null);
         when(urlShorter.shorten(anyString())).thenReturn(shortUrl);
         when(urlRepository.existShortUrl(shortUrl)).thenReturn(true).thenReturn(false);
 
-        String result = urlService.shorten(originalUrl, 1L);
+        String result = urlService.shorten(originalUrl, 1L, date);
 
         assertEquals(shortUrl, result);
-        verify(urlRepository).save(decodedUrl, shortUrl, 1L);
+        verify(urlRepository).save(decodedUrl, shortUrl, date, 1L);
     }
 }
