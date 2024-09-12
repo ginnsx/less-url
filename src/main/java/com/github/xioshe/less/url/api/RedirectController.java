@@ -31,7 +31,7 @@ public class RedirectController {
         log.info(shortUrl);
         String url = urlService.getOriginalUrl(shortUrl);
         try {
-            accessRecordService.save(url, request);
+            accessRecordService.save(shortUrl, request);
         } catch (Exception e) {
             log.error("record access fail", e);
         }
