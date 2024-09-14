@@ -41,5 +41,5 @@ create table if not exists lu_access_records
     ip           varchar(64)  not null comment 'IP地址',
     referer      varchar(255) comment '来源页面',
     access_time  datetime     not null default CURRENT_TIMESTAMP comment '创建时间',
-    unique key aly_short_url (short_url, access_time)
+    key aly_short_url (short_url, access_time)
 ) ENGINE = InnoDB;
