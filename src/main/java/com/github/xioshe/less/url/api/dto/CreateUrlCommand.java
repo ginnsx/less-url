@@ -1,4 +1,4 @@
-package com.github.xioshe.less.url.api;
+package com.github.xioshe.less.url.api.dto;
 
 
 import jakarta.validation.constraints.Future;

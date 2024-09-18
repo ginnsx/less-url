@@ -1,6 +1,7 @@
 package com.github.xioshe.less.url.api;
 
 
+import com.github.xioshe.less.url.api.dto.CreateUrlCommand;
 import com.github.xioshe.less.url.service.AccessRecordService;
 import com.github.xioshe.less.url.service.UrlService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("url")
+@RequestMapping("urls")
 public class UrlController {
 
     private final UrlService urlService;

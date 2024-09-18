@@ -1,5 +1,6 @@
 package com.github.xioshe.less.url.api;
 
+import com.github.xioshe.less.url.api.dto.CreateUrlCommand;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;

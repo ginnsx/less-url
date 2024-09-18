@@ -1,0 +1,71 @@
+###
+DELETE http://localhost:8080/urls/4Jpo6G
+
+###
+POST http://localhost:8080/urls
+Content-Type: application/json
+Authorization: Bearer {{lu_token}}
+
+{
+  "originalUrl": "https://en.wikipedia.org/wiki/Cuckoo_filter",
+  "customAlias": "custom",
+  "expirationTime": "",
+  "userId": 1
+}
+
+
+
+###
+GET http://localhost:8080/custom
+
+###
+POST http://localhost:8080/urls
+Content-Type: application/json
+Authorization: Bearer {{lu_token}}
+
+{
+  "originalUrl": "",
+  "customAlias": "",
+  "expirationTime": "",
+  "userId": 0
+}
+
+###
+GET http://localhost:8080/users/me
+#Authorization: Bearer {{lu_token}}
+
+<> 2024-09-16T215940.200.json
+<> 2024-09-16T210845.200.json
+<> 2024-09-16T210432.200.json
+
+###
+GET http://localhost:8080/users/1
+Authorization: Bearer {{lu_token}}
+
+###
+POST http://localhost:8080/auth/token
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "password"
+}
+
+> {% client.global.set("lu_token", response.body.token); %}
+
+<> 2024-09-16T215937.200.json
+<> 2024-09-16T215825.200.json
+<> 2024-09-16T210814.200.json
+<> 2024-09-16T210313.200.json
+
+###
+POST http://localhost:8080/auth/signup
+Content-Type: application/json
+
+{
+"username": "admin",
+"password": "password",
+"email": "me@lu.com"
+}
+
+<> 2024-09-16T210751.200.json

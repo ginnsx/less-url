@@ -1,7 +1,8 @@
 package com.github.xioshe.less.url.service;
 
-import com.github.xioshe.less.url.api.CreateUrlCommand;
+import com.github.xioshe.less.url.api.dto.CreateUrlCommand;
 import com.github.xioshe.less.url.entity.Url;
+import com.github.xioshe.less.url.exceptions.UrlNotFoundException;
 import com.github.xioshe.less.url.repository.UrlRepository;
 import com.github.xioshe.less.url.shorter.UrlShorter;
 import lombok.RequiredArgsConstructor;
