@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -66,7 +64,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   JwtTokenFilter jwtTokenFilter) throws Exception {
+                                                   JwtTokenFilter jwtTokenFilter,
+                                                   DelegatedAuthenticationEntryPoint entryPoint) throws Exception {
         return http
                 .cors(Customizer.withDefaults()) // 配合注册 CorsFilter Bean 才会生效
                 .csrf(AbstractHttpConfigurer::disable)
@@ -78,16 +77,7 @@ public class SecurityConfig {
                     auth.anyRequest().authenticated();
                 })
                 .exceptionHandling(exceptionHanding ->
-                        exceptionHanding.authenticationEntryPoint(
-                                (request, response, accessDeniedException) -> {
-                                    response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
-                                    response.sendError(HttpStatus.UNAUTHORIZED.value(),
-                                            HttpStatus.UNAUTHORIZED.getReasonPhrase());
-                                }
-                        ))
-                .rememberMe(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
+                        exceptionHanding.authenticationEntryPoint(entryPoint))
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

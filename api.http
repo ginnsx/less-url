@@ -32,7 +32,7 @@ Authorization: Bearer {{lu_token}}
 
 ###
 GET http://localhost:8080/users/me
-#Authorization: Bearer {{lu_token}}
+Authorization: Bearer {{lu_token}}
 
 <> 2024-09-16T215940.200.json
 <> 2024-09-16T210845.200.json
