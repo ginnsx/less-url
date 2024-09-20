@@ -6,6 +6,7 @@ import com.github.xioshe.less.url.exceptions.UrlNotFoundException;
 import com.github.xioshe.less.url.repository.UrlRepository;
 import com.github.xioshe.less.url.shorter.UrlShorter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -53,6 +54,7 @@ public class UrlService {
         throw new RuntimeException("Failed to shorten url");
     }
 
+    @Cacheable(cacheNames = "urls", key = "#shortUrl")
     public String getOriginalUrl(String shortUrl) {
         Url url = urlRepository.getByShortUrl(shortUrl);
         if (url == null) {
