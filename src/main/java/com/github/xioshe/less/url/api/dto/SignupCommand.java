@@ -1,6 +1,7 @@
 package com.github.xioshe.less.url.api.dto;
 
 import com.github.xioshe.less.url.entity.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,6 +9,7 @@ import lombok.Data;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Data
+@Schema(description = "注册命令")
 public class SignupCommand {
 
     private String username;

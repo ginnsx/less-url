@@ -23,15 +23,27 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ProblemDetail handleAuthenticationException(AuthenticationException exception,
                                                        HttpServletResponse response) {
-        log.error("occur AuthenticationException: ", exception);
+        log.debug("occur AuthenticationException: ", exception);
+        log.info("AuthenticationException: {}", exception.getMessage());
         response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
-        ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
+        ProblemDetail errorDetail =
+                ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
         errorDetail.setProperty("description", "Full authentication is required to access this resource");
         return errorDetail;
     }
 
+    @ExceptionHandler(UrlNotFoundException.class)
+    public ProblemDetail handleUrlNotFoundException(UrlNotFoundException exception) {
+        log.debug("occur AuthenticationException: ", exception);
+        log.info("UrlNotFoundException: {}", exception.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problemDetail.setProperty("description", "The short url is not found");
+        return problemDetail;
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleSecurityException(Exception exception) {
+
         ProblemDetail errorDetail = null;
 
         log.error("occur exception: ", exception);

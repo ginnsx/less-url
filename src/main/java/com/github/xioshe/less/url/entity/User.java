@@ -1,5 +1,6 @@
 package com.github.xioshe.less.url.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,6 +13,8 @@ import java.util.List;
 
 import static com.github.xioshe.less.url.config.SecurityConfig.ROLE_USER;
 
+
+@Schema(description = "用户")
 @Data
 public class User implements UserDetails {
     private Long id;
@@ -21,6 +24,7 @@ public class User implements UserDetails {
      */
     private Byte level;
 
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String username;
 
     /**
@@ -36,6 +40,7 @@ public class User implements UserDetails {
     /**
      * 密码
      */
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
 
     /**
@@ -61,11 +66,13 @@ public class User implements UserDetails {
     /**
      * 创建时间
      */
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Date createTime;
 
     /**
      * 更新时间
      */
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Date updateTime;
 
     @Override

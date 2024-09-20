@@ -1,8 +1,13 @@
 package com.github.xioshe.less.url.api;
 
-import com.github.xioshe.less.url.util.constants.CustomHeaders;
 import com.github.xioshe.less.url.service.AccessRecordService;
 import com.github.xioshe.less.url.service.UrlService;
+import com.github.xioshe.less.url.util.constants.CustomHeaders;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,17 +23,22 @@ import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 
+@Tag(name = "短链访问入口")
 @Slf4j
 @RestController
-@RequestMapping("/")
+@RequestMapping("/s")
 @RequiredArgsConstructor
 public class RedirectController {
 
     private final UrlService urlService;
     private final AccessRecordService accessRecordService;
 
+    @Operation(summary = "短链重定向", description = "访问短链接，返回重定向响应")
+    @ApiResponse(responseCode = "302", description = "重定向到原始链接")
+    @ApiResponse(responseCode = "404", description = "短链接不存在")
+    @SecurityRequirements
     @GetMapping("{shortUrl}")
-    public ResponseEntity<String> redirect(@PathVariable String shortUrl, HttpServletRequest request) {
+    public ResponseEntity<String> redirect(@Parameter(description = "短链接") @PathVariable String shortUrl, HttpServletRequest request) {
         String url = urlService.getOriginalUrl(shortUrl);
         try {
             accessRecordService.save(shortUrl, request);
