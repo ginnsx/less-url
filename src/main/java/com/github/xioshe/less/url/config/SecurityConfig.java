@@ -1,13 +1,18 @@
 package com.github.xioshe.less.url.config;
 
-import com.github.xioshe.less.url.entity.User;
 import com.github.xioshe.less.url.repository.mapper.UserMapper;
+import com.github.xioshe.less.url.security.CustomCachingUserDetailsService;
+import com.github.xioshe.less.url.security.DelegatedAuthenticationEntryPoint;
+import com.github.xioshe.less.url.security.JwtTokenDecoder;
+import com.github.xioshe.less.url.security.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,7 +20,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -46,14 +50,17 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        // todo cache me
-        return username -> {
-            User user = userMapper.findByUsername(username);
-            if (user == null) {
-                throw new UsernameNotFoundException("User '" + username + "' not found");
-            }
-            return user;
-        };
+        return new CustomCachingUserDetailsService(userMapper);
+    }
+
+    /**
+     * 禁用 eraseCredentialsAfterAuthentication
+     *
+     * @param builder AuthenticationManagerBuilder
+     */
+    @Autowired
+    public void configure(AuthenticationManagerBuilder builder) {
+        builder.eraseCredentials(false);
     }
 
     @Bean

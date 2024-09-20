@@ -3,7 +3,7 @@ package com.github.xioshe.less.url.api;
 import com.github.xioshe.less.url.api.dto.LoginCommand;
 import com.github.xioshe.less.url.api.dto.LoginResponse;
 import com.github.xioshe.less.url.api.dto.SignupCommand;
-import com.github.xioshe.less.url.config.JwtTokenDecoder;
+import com.github.xioshe.less.url.security.JwtTokenDecoder;
 import com.github.xioshe.less.url.entity.User;
 import com.github.xioshe.less.url.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,8 +42,8 @@ public class AuthenticationController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponse.class)))
     @PostMapping("/token")
     public LoginResponse login(@RequestBody LoginCommand command) {
-        User authentication = authenticationService.authenticate(command);
-        String token = jwtTokenDecoder.generateToken(authentication);
+        User user = authenticationService.authenticate(command);
+        String token = jwtTokenDecoder.generateToken(user.asSecurityUser());
         return new LoginResponse(token, jwtTokenDecoder.getExpirationTime());
     }
 }

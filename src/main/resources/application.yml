@@ -19,6 +19,9 @@ spring:
             client-id: 184706932d5a1e2b3f8c
             client-secret: 15790286e3c4d9a2f6b393080887a13652
             scope: email, public_profile
+  data:
+    redis:
+      host: 192.168.31.19
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.github.xioshe.less.url.entity

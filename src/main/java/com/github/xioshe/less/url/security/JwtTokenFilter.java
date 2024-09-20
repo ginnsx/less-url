@@ -1,4 +1,4 @@
-package com.github.xioshe.less.url.config;
+package com.github.xioshe.less.url.security;
 
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;

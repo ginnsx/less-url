@@ -3,6 +3,7 @@ package com.github.xioshe.less.url.api;
 
 import com.github.xioshe.less.url.entity.User;
 import com.github.xioshe.less.url.repository.mapper.UserMapper;
+import com.github.xioshe.less.url.security.SecurityUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,9 +29,9 @@ public class UserController {
     @Operation(summary = "获取当前用户信息，需要提供 token")
     @ApiResponse(responseCode = "200", description = "获取用户信息成功")
     @GetMapping("/me")
-    public User getCurrentUser() {
+    public SecurityUser getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (User) authentication.getPrincipal();
+        return (SecurityUser) authentication.getPrincipal();
     }
 
 

@@ -1,6 +1,6 @@
 package com.github.xioshe.less.url.api;
 
-import com.github.xioshe.less.url.config.JwtTokenDecoder;
+import com.github.xioshe.less.url.security.JwtTokenDecoder;
 import com.github.xioshe.less.url.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ class ExpiredJwtIT {
         var user = new User();
         user.setUsername("test");
         user.setPassword("password");
-        var token = jwtTokenDecoder.generateToken(user);
+        var token = jwtTokenDecoder.generateToken(user.asSecurityUser());
 
         mockMvc.perform(get("/test/user")
                         .header("Authorization", "Bearer " + token))
@@ -77,7 +77,7 @@ class AuthenticationIT {
         var user = new User();
         user.setUsername("test");
         user.setPassword("password");
-        var token = jwtTokenDecoder.generateToken(user);
+        var token = jwtTokenDecoder.generateToken(user.asSecurityUser());
 
         mockMvc.perform(get("/test/user")
                         .header("Authorization", "Bearer " + token))

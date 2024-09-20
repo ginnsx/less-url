@@ -1,22 +1,16 @@
 package com.github.xioshe.less.url.entity;
 
+import com.github.xioshe.less.url.security.SecurityUser;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
-
-import static com.github.xioshe.less.url.config.SecurityConfig.ROLE_USER;
 
 
 @Schema(description = "用户")
 @Data
-public class User implements UserDetails {
+public class User {
     private Long id;
 
     /**
@@ -75,22 +69,13 @@ public class User implements UserDetails {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Date updateTime;
 
-    @Override
-    public String getPassword() {
-        return this.password;
+    public SecurityUser asSecurityUser() {
+        return SecurityUser.builder()
+                .email(this.email)
+                .username(this.username)
+                .password(this.password)
+                .nickname(this.username)
+                .build();
     }
 
-    @Override
-    public String getUsername() {
-        return this.username;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(ROLE_USER));
-    }
-
-    // Spring Security 要求
-    // isAccountNonExpired(), isAccountNonLocked(),
-    // isCredentialsNonExpired(),  isEnabled() 保持默认返回 true，否则相关用户无法登录
 }
