@@ -80,7 +80,7 @@ public class SecurityConfig {
                         manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/auth/**", "/s/**").permitAll();
-                    auth.requestMatchers("/doc.html", "/", "/swagger-ui/**", "/v3/**").permitAll();
+                    auth.requestMatchers("/doc.html", "/", "/swagger-ui/**", "/v3/api-docs/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .exceptionHandling(exceptionHanding ->

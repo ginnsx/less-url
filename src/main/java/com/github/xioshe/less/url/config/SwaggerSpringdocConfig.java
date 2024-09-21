@@ -60,6 +60,7 @@ public class SwaggerSpringdocConfig {
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .info(new Info()
                         .title("less-url API")
+                        .description("less-url API 文档，部分接口需要 JWT Token，请通过 /auth/token 接口获取。")
                         .version(buildProperties.getVersion()));
     }
 }
