@@ -15,7 +15,7 @@ public class CustomGrantedAuthority implements GrantedAuthority {
 
     public CustomGrantedAuthority(String role) {
         Assert.hasText(role, "A granted authority textual representation is required");
-        this.role = role;
+        this.role = role.startsWith(SecurityUser.ROLE_PREFIX) ? role : SecurityUser.ROLE_PREFIX + role;
     }
 
     @JsonIgnore

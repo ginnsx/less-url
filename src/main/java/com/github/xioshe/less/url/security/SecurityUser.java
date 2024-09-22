@@ -11,8 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Set;
 
-import static com.github.xioshe.less.url.config.SecurityConfig.ROLE_USER;
-
 
 @Schema(description = "用户详情")
 @Data
@@ -20,6 +18,8 @@ import static com.github.xioshe.less.url.config.SecurityConfig.ROLE_USER;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SecurityUser implements UserDetails {
+
+    public static final String ROLE_PREFIX = "ROLE_";
 
     private String email;
 
@@ -30,8 +30,7 @@ public class SecurityUser implements UserDetails {
     private String username;
 
     @Singular
-    private Set<GrantedAuthority> authorities =
-            Set.of(new CustomGrantedAuthority(ROLE_USER));
+    private Set<GrantedAuthority> authorities;
 
     @Builder.Default
     private Boolean enabled = true;

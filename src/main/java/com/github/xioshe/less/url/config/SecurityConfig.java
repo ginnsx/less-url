@@ -1,15 +1,17 @@
 package com.github.xioshe.less.url.config;
 
+import com.github.xioshe.less.url.repository.mapper.RoleMapper;
 import com.github.xioshe.less.url.repository.mapper.UserMapper;
 import com.github.xioshe.less.url.security.CustomCachingUserDetailsService;
 import com.github.xioshe.less.url.security.DelegatedAuthenticationEntryPoint;
-import com.github.xioshe.less.url.security.JwtTokenDecoder;
 import com.github.xioshe.less.url.security.JwtTokenFilter;
+import com.github.xioshe.less.url.security.JwtTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -35,22 +37,22 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    public static final String ROLE_USER = "USER";
-    public static final String ROLE_ADMIN = "ADMIN";
-
     private final UserMapper userMapper;
+    private final RoleMapper roleMapper;
+    private final StringRedisTemplate stringRedisTemplate;
 
     /**
      * 启用 BCrypt 哈希算法处理密码，避免明文存储密码
      */
     @Bean
+
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return new CustomCachingUserDetailsService(userMapper);
+        return new CustomCachingUserDetailsService(userMapper, roleMapper);
     }
 
     /**
@@ -108,7 +110,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtTokenDecoder jwtTokenDecoder() {
-        return new JwtTokenDecoder();
+    public JwtTokenService jwtTokenDecoder() {
+        return new JwtTokenService(stringRedisTemplate);
     }
 }

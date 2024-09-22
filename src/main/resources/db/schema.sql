@@ -17,6 +17,27 @@ create table if not exists lu_user
     unique key u_email (email)
 ) ENGINE = InnoDB;
 
+drop table if exists lu_user_role;
+create table if not exists lu_user_role
+(
+    id        BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id   bigint not null comment '用户ID',
+    role_id   bigint not null comment '角色ID',
+    create_at datetime    not null default CURRENT_TIMESTAMP comment '创建时间',
+    update_at datetime    not null default CURRENT_TIMESTAMP comment '更新时间',
+    unique key u_user_role (user_id, role_id)
+) ENGINE = InnoDB;
+
+drop table if exists lu_role;
+create table if not exists lu_role
+(
+    id        BIGINT PRIMARY KEY AUTO_INCREMENT,
+    role_name varchar(20) not null comment '角色名',
+    create_at datetime    not null default CURRENT_TIMESTAMP comment '创建时间',
+    update_at datetime    not null default CURRENT_TIMESTAMP comment '更新时间',
+    unique key u_role_name (role_name)
+) ENGINE = InnoDB;
+
 drop table if exists lu_url;
 create table if not exists lu_url
 (

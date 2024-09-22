@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleAuthenticationException(AuthenticationException exception,
                                                        HttpServletResponse response) {
         log.debug("occur AuthenticationException: ", exception);
-        log.info("AuthenticationException: {}", exception.getMessage());
+        log.warn("AuthenticationException: {}", exception.getMessage());
         response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
         ProblemDetail errorDetail =
                 ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UrlNotFoundException.class)
     public ProblemDetail handleUrlNotFoundException(UrlNotFoundException exception) {
         log.debug("occur AuthenticationException: ", exception);
-        log.info("UrlNotFoundException: {}", exception.getMessage());
+        log.warn("UrlNotFoundException: {}", exception.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
         problemDetail.setProperty("description", "The short url is not found");
         return problemDetail;

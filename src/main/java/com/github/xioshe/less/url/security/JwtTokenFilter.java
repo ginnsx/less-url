@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,7 +26,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private final JwtTokenDecoder jwtTokenDecoder;
+    private final JwtTokenService jwtTokenService;
     private final UserDetailsService userDetailsService;
     private final HandlerExceptionResolver exceptionResolver;
 
@@ -45,12 +44,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         try {
             // "Bearer ".length() == 7
             String token = authorization.substring(7);
-            String username = jwtTokenDecoder.extractUsername(token);
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = jwtTokenService.extractUsername(token);
 
-            if (username != null && authentication == null) {
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails user = userDetailsService.loadUserByUsername(username);
-                if (jwtTokenDecoder.isTokenValid(token, user)) {
+                if (jwtTokenService.isTokenValid(token, user)) {
                     // 创建一个新的认证令牌，并将其设置为当前的安全上下文
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(

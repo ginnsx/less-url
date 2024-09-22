@@ -3,18 +3,21 @@ package com.github.xioshe.less.url.api;
 import com.github.xioshe.less.url.api.dto.LoginCommand;
 import com.github.xioshe.less.url.api.dto.LoginResponse;
 import com.github.xioshe.less.url.api.dto.SignupCommand;
-import com.github.xioshe.less.url.security.JwtTokenDecoder;
 import com.github.xioshe.less.url.entity.User;
+import com.github.xioshe.less.url.security.JwtTokenService;
 import com.github.xioshe.less.url.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-    private final JwtTokenDecoder jwtTokenDecoder;
+    private final JwtTokenService jwtTokenService;
 
     @Operation(summary = "注册新用户", description = "创建一个新的用户并返回创建的用户信息")
     @ApiResponse(responseCode = "200", description = "注册成功",
@@ -43,7 +46,26 @@ public class AuthenticationController {
     @PostMapping("/token")
     public LoginResponse login(@RequestBody LoginCommand command) {
         User user = authenticationService.authenticate(command);
-        String token = jwtTokenDecoder.generateToken(user.asSecurityUser());
-        return new LoginResponse(token, jwtTokenDecoder.getExpirationTime());
+        String token = jwtTokenService.generateToken(user.asSecurityUser());
+        return new LoginResponse(token, jwtTokenService.getExpirationTime());
+    }
+
+//    @Operation(summary = "刷新token", description = "刷新token")
+//    @ApiResponse(responseCode = "200", description = "刷新成功",
+//            content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponse.class)))
+//    @PostMapping("/refresh")
+//    public LoginResponse refreshToken(@RequestBody LoginCommand command) {
+//        User user = authenticationService.authenticate(command);
+//        String token = jwtTokenService.generateToken(user.asSecurityUser());
+//        returnnew LoginResponse()
+//    }
+
+    @Operation(summary = "登出", description = "登出")
+    @ApiResponse(responseCode = "200", description = "登出成功")
+    @PostMapping("/logout")
+    public void logout(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
+        // "Bearer ".length() == 7
+        String token = authHeader.substring(7);
+        authenticationService.logout(token);
     }
 }

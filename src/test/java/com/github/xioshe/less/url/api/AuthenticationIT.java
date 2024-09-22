@@ -1,12 +1,17 @@
 package com.github.xioshe.less.url.api;
 
-import com.github.xioshe.less.url.security.JwtTokenDecoder;
 import com.github.xioshe.less.url.entity.User;
+import com.github.xioshe.less.url.security.CustomGrantedAuthority;
+import com.github.xioshe.less.url.security.JwtTokenService;
+import com.github.xioshe.less.url.security.SecurityUser;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -26,14 +31,14 @@ class ExpiredJwtIT {
     private MockMvc mockMvc;
 
     @Autowired
-    private JwtTokenDecoder jwtTokenDecoder;
+    private JwtTokenService jwtTokenService;
 
     @Test
     void expired_jwt() throws Exception {
         var user = new User();
         user.setUsername("test");
         user.setPassword("password");
-        var token = jwtTokenDecoder.generateToken(user.asSecurityUser());
+        var token = jwtTokenService.generateToken(user.asSecurityUser());
 
         mockMvc.perform(get("/test/user")
                         .header("Authorization", "Bearer " + token))
@@ -52,7 +57,35 @@ class AuthenticationIT {
     private MockMvc mockMvc;
 
     @Autowired
-    private JwtTokenDecoder jwtTokenDecoder;
+    private JwtTokenService jwtTokenService;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    @BeforeEach
+    void setup() {
+        stringRedisTemplate.delete("lu:users:test");
+        stringRedisTemplate.delete("lu:users:admin");
+        stringRedisTemplate.delete("lu:blacklist:test");
+        stringRedisTemplate.delete("lu:blacklist:admin");
+    }
+
+
+    @Test
+    @WithUserDetails("test")
+    void access_successfully() throws Exception {
+        mockMvc.perform(get("/test/user"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("hello, user"));
+    }
+
+    @Test
+    @WithUserDetails("admin")
+    void admin_access_successfully() throws Exception {
+        mockMvc.perform(get("/test/admin"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("hello, admin"));
+    }
 
     @Test
     void invalid_jwt() throws Exception {
@@ -73,13 +106,32 @@ class AuthenticationIT {
     }
 
     @Test
+    void blacklist_jwt() throws Exception {
+        var user = SecurityUser.builder()
+                .username("test")
+                .password("password")
+                .authority(new CustomGrantedAuthority("USER"))
+                .build();
+        var token = jwtTokenService.generateToken(user);
+
+        jwtTokenService.blacklistToken(token);
+
+        mockMvc.perform(get("/test/user")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.description")
+                        .value("Full authentication is required to access this resource"));
+    }
+
+    @Test
     void not_authorized() throws Exception {
         var user = new User();
         user.setUsername("test");
         user.setPassword("password");
-        var token = jwtTokenDecoder.generateToken(user.asSecurityUser());
+        var token = jwtTokenService.generateToken(user.asSecurityUser());
 
-        mockMvc.perform(get("/test/user")
+        mockMvc.perform(get("/test/admin")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))

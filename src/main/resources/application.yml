@@ -11,14 +11,6 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
-  security:
-    oauth2:
-      client:
-        registration:
-          github:
-            client-id: 184706932d5a1e2b3f8c
-            client-secret: 15790286e3c4d9a2f6b393080887a13652
-            scope: email, public_profile
   data:
     redis:
       host: 192.168.31.19
