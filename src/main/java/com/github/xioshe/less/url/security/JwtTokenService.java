@@ -3,12 +3,9 @@ package com.github.xioshe.less.url.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,15 +22,10 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JwtTokenService implements InitializingBean {
+public class JwtTokenService {
 
     private static final String BLACKLIST_PREFIX = "lu:blacklist:";
     private static final String REFRESH_BLACKLIST_PREFIX = "lu:blacklist:refresh:";
-    /**
-     * 至少 32 字符
-     */
-    @Value("${security.jwt.secret-key}")
-    private String secret;
 
     @Getter
     @Value("${security.jwt.access-expiration-seconds:3600}")
@@ -43,20 +35,14 @@ public class JwtTokenService implements InitializingBean {
     @Value("${security.jwt.refresh-expiration-seconds:86400}")
     private long refreshTokenExpiration;
 
-    private SecretKey secretKey;
-
     /**
      * 用于维护 token 黑名单，实现 jwt 失效的功能
      */
     private final StringRedisTemplate redisTemplate;
 
+    private final RotatingSecretKeyManager keyManager;
+
 //    private final MeterRegistry meterRegistry;
-
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        secretKey = generateSecurityKey();
-    }
 
 
     public String generateAccessToken(UserDetails userDetails) {
@@ -81,7 +67,7 @@ public class JwtTokenService implements InitializingBean {
                 .expiration(new Date(System.currentTimeMillis() + expirationMills))
                 .add(extraClaims)
                 .and()
-                .signWith(secretKey, Jwts.SIG.HS256)
+                .signWith(keyManager.getCurrentKey(), Jwts.SIG.HS256)
                 .compact();
     }
 
@@ -95,9 +81,11 @@ public class JwtTokenService implements InitializingBean {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         Claims claims = extractClaims(token);
-        return claims.getSubject().equals(userDetails.getUsername())
+        boolean isValid = claims.getSubject().equals(userDetails.getUsername())
                && !claims.getExpiration().before(new Date())
                && !isTokenBlacklisted(token);
+//        jwtMetricsTime(System.currentTimeMillis() - startTime);
+        return isValid;
     }
 
     public boolean isRefreshTokenValid(String refreshToken, UserDetails userDetails) {
@@ -141,16 +129,33 @@ public class JwtTokenService implements InitializingBean {
     }
 
     private Claims extractClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-    }
-
-    private SecretKey generateSecurityKey() {
-        return StringUtils.hasText(secret)
-                ? Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
-                : Jwts.SIG.HS256.key().build();
+        JwtException exception = null;
+        // 密钥会自动切换，token 对应的密钥可能被换掉了
+        for (SecretKey secretKey : keyManager.secretKeys()) {
+            try {
+                return Jwts.parser()
+                        .verifyWith(secretKey)
+                        .build()
+                        .parseSignedClaims(token)
+                        .getPayload();
+            } catch (JwtException e) {
+                exception = e;
+            }
+        }
+        assert exception != null;
+        throw exception;
     }
 }
+
+//@Component
+//public class JwtMetrics MeterRegistry registry;
+//public JwtMetrics(MeterRegistry registry) {
+//    this.registry = registry;
+//}
+//public void incrementRotationCount() {
+//    registry.counter("jwt.key.rotation").increment();
+//}
+//public void recordTokendationTime(long timeInMs) {
+//    registry.timer("jwt.token.validation.time").record(timeInMs, TimeUnit.MILLISECONDS);
+//}
+//}
