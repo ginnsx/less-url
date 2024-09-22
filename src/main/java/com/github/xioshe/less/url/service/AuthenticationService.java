@@ -1,15 +1,19 @@
 package com.github.xioshe.less.url.service;
 
 
-import com.github.xioshe.less.url.api.dto.LoginCommand;
+import com.github.xioshe.less.url.api.dto.AuthCommand;
+import com.github.xioshe.less.url.api.dto.AuthResponse;
 import com.github.xioshe.less.url.api.dto.SignupCommand;
 import com.github.xioshe.less.url.entity.User;
 import com.github.xioshe.less.url.repository.mapper.UserMapper;
 import com.github.xioshe.less.url.security.JwtTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +25,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final JwtTokenService tokenService;
+    private final UserDetailsService userDetailsService;
 
     public User signup(SignupCommand command) {
         User user = command.asUser(passwordEncoder);
@@ -28,22 +33,39 @@ public class AuthenticationService {
         return userMapper.selectByPrimaryKey(id);
     }
 
-    public User authenticate(LoginCommand command) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        command.getUsername(),
-                        command.getPassword()
-                )
-        );
+    public AuthResponse login(AuthCommand command) {
+        UserDetails user = authenticate(command.getUsername(), command.getPassword());
+        return generateAuth(user);
+    }
 
-        User user = userMapper.findByUsername(command.getUsername());
-        if (user == null) {
-            throw new UsernameNotFoundException("用户不存在");
+    public UserDetails authenticate(String username, String password) {
+        Authentication authenticate = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password));
+
+        return (UserDetails) authenticate.getPrincipal();
+    }
+
+    public AuthResponse generateAuth(UserDetails securityUser) {
+        String accessToken = tokenService.generateAccessToken(securityUser);
+        String refreshToken = tokenService.generateRefreshToken(securityUser);
+        return AuthResponse.builder()
+                .accessToken(accessToken)
+                .expiresIn(tokenService.getAccessTokenExpiration())
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    public AuthResponse refreshToken(String refreshToken) {
+        String username = tokenService.extractUsername(refreshToken);
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+        boolean isValid = tokenService.isRefreshTokenValid(refreshToken, user);
+        if (!isValid) {
+            throw new BadCredentialsException("refresh token is invalid");
         }
-        return user;
+        return generateAuth(user);
     }
 
     public void logout(String token) {
-        tokenService.blacklistToken(token);
+        tokenService.blacklistAccessToken(token);
     }
 }

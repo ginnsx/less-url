@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +24,7 @@ import java.io.IOException;
  * </br>
  * 并不主动校验 token 是否有效。
  */
+@Slf4j
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
@@ -59,12 +61,15 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     // 为认证令牌绑定 Request 信息
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                } else {
+                    log.warn("Invalid JWT token of user: {}", username);
                 }
             }
             filterChain.doFilter(request, response);
             // 在 SecurityContextHolderFilter 中自动清除，不需要手动清除
             // SecurityContextHolder.getContext().setAuthentication(null);
         } catch (Exception e) {
+            log.warn("Error occurred while processing JWT token", e);
             exceptionResolver.resolveException(request, response, null, e);
         }
     }

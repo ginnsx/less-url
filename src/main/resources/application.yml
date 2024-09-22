@@ -30,7 +30,8 @@ less:
 security:
   jwt:
     secret-key: 0ae90a665d936d3364043a53a7ee65a004172c2b9b211b467059ab2f3bc70663
-    expiration-seconds: 86400
+    access-expiration-seconds: 3600
+    refresh-expiration-seconds: 86400
 
 decorator:
   datasource:

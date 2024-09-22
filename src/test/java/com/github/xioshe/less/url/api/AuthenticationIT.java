@@ -38,7 +38,7 @@ class ExpiredJwtIT {
         var user = new User();
         user.setUsername("test");
         user.setPassword("password");
-        var token = jwtTokenService.generateToken(user.asSecurityUser());
+        var token = jwtTokenService.generateAccessToken(user.asSecurityUser());
 
         mockMvc.perform(get("/test/user")
                         .header("Authorization", "Bearer " + token))
@@ -112,9 +112,9 @@ class AuthenticationIT {
                 .password("password")
                 .authority(new CustomGrantedAuthority("USER"))
                 .build();
-        var token = jwtTokenService.generateToken(user);
+        var token = jwtTokenService.generateAccessToken(user);
 
-        jwtTokenService.blacklistToken(token);
+        jwtTokenService.blacklistAccessToken(token);
 
         mockMvc.perform(get("/test/user")
                         .header("Authorization", "Bearer " + token))
@@ -129,7 +129,7 @@ class AuthenticationIT {
         var user = new User();
         user.setUsername("test");
         user.setPassword("password");
-        var token = jwtTokenService.generateToken(user.asSecurityUser());
+        var token = jwtTokenService.generateAccessToken(user.asSecurityUser());
 
         mockMvc.perform(get("/test/admin")
                         .header("Authorization", "Bearer " + token))

@@ -1,8 +1,5 @@
 package com.github.xioshe.less.url.config;
 
-import com.github.xioshe.less.url.repository.mapper.RoleMapper;
-import com.github.xioshe.less.url.repository.mapper.UserMapper;
-import com.github.xioshe.less.url.security.CustomCachingUserDetailsService;
 import com.github.xioshe.less.url.security.DelegatedAuthenticationEntryPoint;
 import com.github.xioshe.less.url.security.JwtTokenFilter;
 import com.github.xioshe.less.url.security.JwtTokenService;
@@ -11,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -37,22 +33,15 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserMapper userMapper;
-    private final RoleMapper roleMapper;
-    private final StringRedisTemplate stringRedisTemplate;
+    private final JwtTokenService jwtTokenService;
+    private final UserDetailsService userDetailsService;
 
     /**
      * 启用 BCrypt 哈希算法处理密码，避免明文存储密码
      */
     @Bean
-
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new CustomCachingUserDetailsService(userMapper, roleMapper);
     }
 
     /**
@@ -94,7 +83,7 @@ public class SecurityConfig {
     @Bean
     public JwtTokenFilter jwtTokenFilter(@Qualifier("handlerExceptionResolver")
                                          HandlerExceptionResolver exceptionResolver) {
-        return new JwtTokenFilter(jwtTokenDecoder(), userDetailsService(), exceptionResolver);
+        return new JwtTokenFilter(jwtTokenService, userDetailsService, exceptionResolver);
     }
 
     @Bean
@@ -107,10 +96,5 @@ public class SecurityConfig {
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
-    }
-
-    @Bean
-    public JwtTokenService jwtTokenDecoder() {
-        return new JwtTokenService(stringRedisTemplate);
     }
 }

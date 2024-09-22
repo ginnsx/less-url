@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @Schema(description = "登录请求")
 @RequiredArgsConstructor
-public class LoginCommand {
+public class AuthCommand {
     // todo valid
     private final String username;
     private final String password;

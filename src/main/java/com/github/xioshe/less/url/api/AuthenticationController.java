@@ -1,7 +1,8 @@
 package com.github.xioshe.less.url.api;
 
-import com.github.xioshe.less.url.api.dto.LoginCommand;
-import com.github.xioshe.less.url.api.dto.LoginResponse;
+import com.github.xioshe.less.url.api.dto.AuthCommand;
+import com.github.xioshe.less.url.api.dto.AuthResponse;
+import com.github.xioshe.less.url.api.dto.RefreshTokenCommand;
 import com.github.xioshe.less.url.api.dto.SignupCommand;
 import com.github.xioshe.less.url.entity.User;
 import com.github.xioshe.less.url.security.JwtTokenService;
@@ -42,23 +43,20 @@ public class AuthenticationController {
 
     @Operation(summary = "登录", description = "登录")
     @ApiResponse(responseCode = "200", description = "登录成功",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponse.class)))
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthResponse.class)))
     @PostMapping("/token")
-    public LoginResponse login(@RequestBody LoginCommand command) {
-        User user = authenticationService.authenticate(command);
-        String token = jwtTokenService.generateToken(user.asSecurityUser());
-        return new LoginResponse(token, jwtTokenService.getExpirationTime());
+    public AuthResponse login(@RequestBody AuthCommand command) {
+        return authenticationService.login(command);
     }
 
-//    @Operation(summary = "刷新token", description = "刷新token")
-//    @ApiResponse(responseCode = "200", description = "刷新成功",
-//            content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponse.class)))
-//    @PostMapping("/refresh")
-//    public LoginResponse refreshToken(@RequestBody LoginCommand command) {
-//        User user = authenticationService.authenticate(command);
-//        String token = jwtTokenService.generateToken(user.asSecurityUser());
-//        returnnew LoginResponse()
-//    }
+
+    @Operation(summary = "刷新token", description = "刷新token")
+    @ApiResponse(responseCode = "200", description = "刷新成功",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthResponse.class)))
+    @PostMapping("/refresh")
+    public AuthResponse refreshToken(@RequestBody RefreshTokenCommand command) {
+        return authenticationService.refreshToken(command.getRefreshToken());
+    }
 
     @Operation(summary = "登出", description = "登出")
     @ApiResponse(responseCode = "200", description = "登出成功")
