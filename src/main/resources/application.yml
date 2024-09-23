@@ -1,3 +1,11 @@
+server:
+  shutdown: graceful
+  tomcat:
+    uri-encoding: UTF-8
+  compression:
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+    enabled: true
+
 spring:
   application:
     name: less-url
@@ -11,6 +19,7 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+    default-property-inclusion: non_null
   data:
     redis:
       host: 192.168.31.19
@@ -54,4 +63,27 @@ springdoc:
     - group: 'default'
       paths-to-match: '/**'
   # 显示 actuator 接口
-  show-actuator: true
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      enabled: true
+    info:
+      enabled: true
+    loggers:
+      enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+#        include: health,info,loggers,metrics,prometheus
+        include: "*" # 重新导入 pom 后就能正常显示 prometheus endpoint
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+version: @project.version@

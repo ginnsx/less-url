@@ -3,6 +3,7 @@ package com.github.xioshe.less.url.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ public class JwtTokenService {
 
     private final RotatingSecretKeyManager keyManager;
 
-//    private final MeterRegistry meterRegistry;
+    private final MeterRegistry meterRegistry;
 
 
     public String generateAccessToken(UserDetails userDetails) {
@@ -118,7 +119,7 @@ public class JwtTokenService {
         if (ttl > 0) {
             log.info("Refresh token blacklisted for user: {}", username);
             redisTemplate.opsForValue().set(REFRESH_BLACKLIST_PREFIX + username, token, ttl, TimeUnit.MILLISECONDS);
-//            meterRegistry.counter("jwt.blacklist.count").increment();
+            meterRegistry.counter("jwt.blacklist.count").increment();
         }
     }
 

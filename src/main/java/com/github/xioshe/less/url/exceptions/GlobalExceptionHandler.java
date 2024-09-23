@@ -2,6 +2,7 @@ package com.github.xioshe.less.url.exceptions;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -22,9 +23,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ProblemDetail handleAuthenticationException(AuthenticationException exception,
+                                                       HttpServletRequest request,
                                                        HttpServletResponse response) {
         log.debug("occur AuthenticationException: ", exception);
-        log.warn("AuthenticationException: {}", exception.getMessage());
+        log.warn("AuthenticationException in path {}: {}", request.getRequestURI(), exception.getMessage());
         response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
         ProblemDetail errorDetail =
                 ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());

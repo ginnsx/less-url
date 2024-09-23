@@ -6,7 +6,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.info.BuildProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,7 +20,8 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class SwaggerSpringdocConfig {
 
-    private final BuildProperties buildProperties;
+    @Value("${version}")
+    private String version;
 
 //    @Bean
 //    @Profile("!prod")
@@ -61,6 +62,6 @@ public class SwaggerSpringdocConfig {
                 .info(new Info()
                         .title("less-url API")
                         .description("less-url API 文档，部分接口需要 JWT Token，请通过 /auth/token 接口获取。")
-                        .version(buildProperties.getVersion()));
+                        .version(version));
     }
 }

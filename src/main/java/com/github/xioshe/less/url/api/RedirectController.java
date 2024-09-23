@@ -3,6 +3,7 @@ package com.github.xioshe.less.url.api;
 import com.github.xioshe.less.url.service.AccessRecordService;
 import com.github.xioshe.less.url.service.UrlService;
 import com.github.xioshe.less.url.util.constants.CustomHeaders;
+import io.micrometer.observation.annotation.Observed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -37,6 +38,7 @@ public class RedirectController {
     @ApiResponse(responseCode = "302", description = "重定向到原始链接")
     @ApiResponse(responseCode = "404", description = "短链接不存在")
     @SecurityRequirements
+    @Observed(name = "visit_shorten")
     @GetMapping("{shortUrl}")
     public ResponseEntity<String> redirect(@Parameter(description = "短链接") @PathVariable String shortUrl, HttpServletRequest request) {
         String url = urlService.getOriginalUrl(shortUrl);
