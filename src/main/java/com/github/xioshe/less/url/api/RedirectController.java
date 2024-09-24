@@ -38,7 +38,7 @@ public class RedirectController {
     @ApiResponse(responseCode = "302", description = "重定向到原始链接")
     @ApiResponse(responseCode = "404", description = "短链接不存在")
     @SecurityRequirements
-    @Observed(name = "visit_shorten")
+    @Observed(name = "shorten.visit")
     @GetMapping("{shortUrl}")
     public ResponseEntity<String> redirect(@Parameter(description = "短链接") @PathVariable String shortUrl, HttpServletRequest request) {
         String url = urlService.getOriginalUrl(shortUrl);

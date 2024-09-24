@@ -82,11 +82,9 @@ public class JwtTokenService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         Claims claims = extractClaims(token);
-        boolean isValid = claims.getSubject().equals(userDetails.getUsername())
+        return claims.getSubject().equals(userDetails.getUsername())
                && !claims.getExpiration().before(new Date())
                && !isTokenBlacklisted(token);
-//        jwtMetricsTime(System.currentTimeMillis() - startTime);
-        return isValid;
     }
 
     public boolean isRefreshTokenValid(String refreshToken, UserDetails userDetails) {
@@ -109,7 +107,6 @@ public class JwtTokenService {
         if (ttl > 0) {
             log.info("Access token blacklisted for user: {}", username);
             redisTemplate.opsForValue().set(BLACKLIST_PREFIX + username, token, ttl, TimeUnit.MILLISECONDS);
-//            meterRegistry.counter("jwt.blacklist.count").increment();
         }
     }
 
@@ -119,7 +116,6 @@ public class JwtTokenService {
         if (ttl > 0) {
             log.info("Refresh token blacklisted for user: {}", username);
             redisTemplate.opsForValue().set(REFRESH_BLACKLIST_PREFIX + username, token, ttl, TimeUnit.MILLISECONDS);
-            meterRegistry.counter("jwt.blacklist.count").increment();
         }
     }
 
@@ -147,16 +143,3 @@ public class JwtTokenService {
         throw exception;
     }
 }
-
-//@Component
-//public class JwtMetrics MeterRegistry registry;
-//public JwtMetrics(MeterRegistry registry) {
-//    this.registry = registry;
-//}
-//public void incrementRotationCount() {
-//    registry.counter("jwt.key.rotation").increment();
-//}
-//public void recordTokendationTime(long timeInMs) {
-//    registry.timer("jwt.token.validation.time").record(timeInMs, TimeUnit.MILLISECONDS);
-//}
-//}
