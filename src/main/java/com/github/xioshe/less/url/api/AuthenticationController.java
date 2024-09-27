@@ -5,33 +5,28 @@ import com.github.xioshe.less.url.api.dto.AuthResponse;
 import com.github.xioshe.less.url.api.dto.RefreshTokenCommand;
 import com.github.xioshe.less.url.api.dto.SignupCommand;
 import com.github.xioshe.less.url.entity.User;
-import com.github.xioshe.less.url.security.JwtTokenService;
 import com.github.xioshe.less.url.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
 @Tag(name = "认证")
-@SecurityRequirements
+@SecurityRequirements // Swagger 不需要添加认证信息
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-    private final JwtTokenService jwtTokenService;
 
     @Operation(summary = "注册新用户", description = "创建一个新的用户并返回创建的用户信息")
     @ApiResponse(responseCode = "200", description = "注册成功",
@@ -56,14 +51,5 @@ public class AuthenticationController {
     @PostMapping("/refresh")
     public AuthResponse refreshToken(@RequestBody RefreshTokenCommand command) {
         return authenticationService.refreshToken(command.getRefreshToken());
-    }
-
-    @Operation(summary = "登出", description = "登出")
-    @ApiResponse(responseCode = "200", description = "登出成功")
-    @PostMapping("/logout")
-    public void logout(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
-        // "Bearer ".length() == 7
-        String token = authHeader.substring(7);
-        authenticationService.logout(token);
     }
 }
