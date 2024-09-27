@@ -51,16 +51,14 @@ public class JwtTokenService {
     }
 
     public String generateAccessToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, accessTokenExpiration * 1000);
+        return buildToken(userDetails, accessTokenExpiration * 1000, extraClaims);
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails, refreshTokenExpiration * 1000);
+        return buildToken(userDetails, refreshTokenExpiration * 1000, new HashMap<>());
     }
 
-    private String buildToken(Map<String, Object> extraClaims,
-                              UserDetails userDetails,
-                              long expirationMills) {
+    private String buildToken(UserDetails userDetails, long expirationMills, Map<String, Object> extraClaims) {
         return Jwts.builder()
                 .claims()
                 .subject(userDetails.getUsername())
@@ -82,8 +80,9 @@ public class JwtTokenService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         Claims claims = extractClaims(token);
-        return claims.getSubject().equals(userDetails.getUsername())
-               && !claims.getExpiration().before(new Date())
+        Date now = new Date();
+        return !claims.getIssuedAt().after(now)
+               && !claims.getExpiration().before(now)
                && !isTokenBlacklisted(token);
     }
 

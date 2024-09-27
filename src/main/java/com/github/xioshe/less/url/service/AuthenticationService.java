@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -65,7 +66,12 @@ public class AuthenticationService {
         return generateAuth(user);
     }
 
-    public void logout(String token) {
-        tokenService.blacklistAccessToken(token);
+    public void logout(String token, String refreshToken) {
+        if (StringUtils.hasText(token)) {
+            tokenService.blacklistAccessToken(token);
+        }
+        if (StringUtils.hasText(refreshToken)) {
+            tokenService.blacklistRefreshToken(token);
+        }
     }
 }
