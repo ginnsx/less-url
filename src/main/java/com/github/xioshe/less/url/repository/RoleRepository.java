@@ -1,4 +1,4 @@
-package com.github.xioshe.less.url.repository.mapper;
+package com.github.xioshe.less.url.repository;
 
 import com.github.xioshe.less.url.entity.Role;
 import org.apache.ibatis.annotations.Mapper;
@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 @Mapper
-public interface RoleMapper {
+public interface RoleRepository {
     int deleteByPrimaryKey(Long id);
 
     int insert(Role record);
@@ -19,5 +19,5 @@ public interface RoleMapper {
 
     int updateByPrimaryKey(Role record);
 
-    List<Role> listRolesByUserId(Long userId);
+    List<Role> listEnabledRolesByUserId(Long userId);
 }

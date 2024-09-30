@@ -2,7 +2,7 @@ package com.github.xioshe.less.url.api;
 
 
 import com.github.xioshe.less.url.entity.User;
-import com.github.xioshe.less.url.repository.mapper.UserMapper;
+import com.github.xioshe.less.url.repository.UserRepository;
 import com.github.xioshe.less.url.security.SecurityUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserMapper userMapper;
+    private final UserRepository userRepository;
 
 
     @Operation(summary = "获取当前用户信息，需要提供 token")
@@ -39,6 +39,6 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "获取用户信息成功")
     @GetMapping("/{id}")
     public User getUserById(@Parameter(description = "用户 id") @PathVariable Long id) {
-        return userMapper.selectByPrimaryKey(id);
+        return userRepository.selectByPrimaryKey(id);
     }
 }

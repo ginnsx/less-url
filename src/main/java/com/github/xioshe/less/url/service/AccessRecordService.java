@@ -16,7 +16,7 @@ public class AccessRecordService {
     private final AccessRecordRepository accessRecordRepository;
 
     public void save(AccessRecord accessRecord) {
-        accessRecordRepository.save(accessRecord);
+        accessRecordRepository.insert(accessRecord);
     }
 
     public int countByShortUrl(String shortUrl) {
@@ -30,6 +30,6 @@ public class AccessRecordService {
         accessRecord.setIp(request.getRemoteAddr());
         accessRecord.setReferer(request.getHeader("referer"));
         accessRecord.setAccessTime(new java.util.Date());
-        accessRecordRepository.save(accessRecord);
+        accessRecordRepository.insert(accessRecord);
     }
 }

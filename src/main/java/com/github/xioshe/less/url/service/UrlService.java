@@ -25,17 +25,18 @@ public class UrlService {
         String decodedUrl = URLDecoder.decode(command.getOriginalUrl(), StandardCharsets.UTF_8);
         String customAlias = command.getCustomAlias();
         if (StringUtils.hasText(customAlias)) {
-            if (urlRepository.existShortUrl(customAlias)) {
+            if (urlRepository.existsByShortUrl(customAlias)) {
                 throw new IllegalArgumentException("Alias already exists");
             }
-            urlRepository.save(decodedUrl, customAlias, command.getExpirationTime(), command.getUserId());
+            save(decodedUrl, customAlias, command.getExpirationTime(), command.getUserId());
             return customAlias;
         }
         return shorten(decodedUrl, command.getUserId(), command.getExpirationTime());
     }
 
     public String shorten(String originalUrl, Long userId, Date expirationTime) {
-        String existedShort = urlRepository.getShortUrl(originalUrl, userId);
+        // 依靠 userId 索引能保证 ms 级别查询效率
+        String existedShort = urlRepository.selectByOriginalUrlAndUserId(originalUrl, userId);
         if (existedShort != null) {
             return existedShort;
         }
@@ -45,8 +46,8 @@ public class UrlService {
         // 最多尝试 3 次，尽最大努力解决冲突
         for (int i = 0; i < 3; i++) {
             shortUrl = urlShorter.shorten(shortUrl);
-            if (!urlRepository.existShortUrl(shortUrl)) {
-                urlRepository.save(originalUrl, shortUrl, expirationTime, userId);
+            if (!urlRepository.existsByShortUrl(shortUrl)) {
+                save(originalUrl, shortUrl, expirationTime, userId);
                 return shortUrl;
             }
             shortUrl += userId;
@@ -54,9 +55,21 @@ public class UrlService {
         throw new RuntimeException("Failed to shorten url");
     }
 
+    public void save(String originalUrl, String shortUrl, Date expirationTime, Long userId) {
+        var record = new Url();
+        record.setOriginalUrl(originalUrl);
+        record.setShortUrl(shortUrl);
+        record.setUserId(userId);
+        record.setStatus(1);
+        record.setExpirationTime(expirationTime);
+        record.setCreateTime(new Date());
+        record.setUpdateTime(new Date());
+        urlRepository.insert(record);
+    }
+
     @Cacheable(cacheNames = "urls", key = "#shortUrl")
     public String getOriginalUrl(String shortUrl) {
-        Url url = urlRepository.getByShortUrl(shortUrl);
+        Url url = urlRepository.selectByShortUrl(shortUrl);
         if (url == null) {
             throw new UrlNotFoundException(shortUrl);
         }

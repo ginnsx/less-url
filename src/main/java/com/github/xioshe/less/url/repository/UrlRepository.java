@@ -1,18 +1,28 @@
 package com.github.xioshe.less.url.repository;
 
 import com.github.xioshe.less.url.entity.Url;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 
+@Mapper
 public interface UrlRepository {
+    int deleteByPrimaryKey(Long id);
 
-    String getShortUrl(String originalUrl, Long userId);
+    int insert(Url record);
 
-    void save(String decodedUrl, String shortUrl, Date expirationTime, Long userId);
+    int insertSelective(Url record);
 
-    boolean existShortUrl(String shortUrl);
+    Url selectByPrimaryKey(Long id);
 
-    String getOriginalUrl(String shortUrl);
+    int updateByPrimaryKeySelective(Url record);
 
-    Url getByShortUrl(String shortUrl);
+    int updateByPrimaryKey(Url record);
+
+    boolean existsByShortUrl(String shortUrl);
+
+    String selectByOriginalUrlAndUserId(@Param("originalUrl") String originalUrl,
+                                        @Param("userId") Long userId);
+
+    Url selectByShortUrl(String shortUrl);
 }

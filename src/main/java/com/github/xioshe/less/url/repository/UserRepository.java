@@ -1,10 +1,10 @@
-package com.github.xioshe.less.url.repository.mapper;
+package com.github.xioshe.less.url.repository;
 
 import com.github.xioshe.less.url.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface UserMapper {
+public interface UserRepository {
     int deleteByPrimaryKey(Long id);
 
     long insert(User record);

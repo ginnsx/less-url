@@ -5,7 +5,7 @@ import com.github.xioshe.less.url.api.dto.AuthCommand;
 import com.github.xioshe.less.url.api.dto.AuthResponse;
 import com.github.xioshe.less.url.api.dto.SignupCommand;
 import com.github.xioshe.less.url.entity.User;
-import com.github.xioshe.less.url.repository.mapper.UserMapper;
+import com.github.xioshe.less.url.repository.UserRepository;
 import com.github.xioshe.less.url.security.JwtTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,14 +24,14 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper;
+    private final UserRepository userRepository;
     private final JwtTokenService tokenService;
     private final UserDetailsService userDetailsService;
 
     public User signup(SignupCommand command) {
         User user = command.asUser(passwordEncoder);
-        Long id = userMapper.insertSelective(user);
-        return userMapper.selectByPrimaryKey(id);
+        Long id = userRepository.insertSelective(user);
+        return userRepository.selectByPrimaryKey(id);
     }
 
     public AuthResponse login(AuthCommand command) {
