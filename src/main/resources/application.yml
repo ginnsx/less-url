@@ -41,9 +41,11 @@ security:
     access-expiration-seconds: 3600
     refresh-expiration-seconds: 86400
     key:
+      secret: cThIIoDvwdueQB468K5xDc5633seEFoq
       rotation:
         cron: 0 0 0 * * ? # 每天0点
 
+# 打印 SQL 详情，不要在生产环境使用
 decorator:
   datasource:
     enabled: true
@@ -62,8 +64,8 @@ springdoc:
   group-configs:
     - group: 'default'
       paths-to-match: '/**'
-  # 显示 actuator 接口
 
+# 可观测性配置
 management:
   endpoint:
     health:

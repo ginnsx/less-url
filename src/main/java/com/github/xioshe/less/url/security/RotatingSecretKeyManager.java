@@ -2,12 +2,16 @@ package com.github.xioshe.less.url.security;
 
 
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
@@ -22,10 +26,21 @@ public class RotatingSecretKeyManager implements InitializingBean {
     private static final int MAX_KEYS = 2;
     private final Deque<SecretKey> keys = new ConcurrentLinkedDeque<>();
 
+    @Value("${security.jwt.key.secret}")
+    private String secret;
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        // 有必要预热
-        rotateKeys();
+        // 支持配置文件中的密钥，可以避免开发时重启后 Token 失效
+        if (StringUtils.hasText(secret)) {
+            if (secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+                log.warn("The secret key is too short, it should be at least 32 characters long.");
+                throw new IllegalArgumentException("The secret key is too short, it should be at least 32 characters long.");
+            }
+            keys.offerFirst(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)));
+        } else {
+            rotateKeys();
+        }
     }
 
     @Scheduled(cron = "${security.jwt.key.rotation.cron:0 0 0 * * ?}")
