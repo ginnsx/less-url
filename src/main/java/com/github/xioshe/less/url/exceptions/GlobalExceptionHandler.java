@@ -34,10 +34,20 @@ public class GlobalExceptionHandler {
         return errorDetail;
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail handleAccessDeniedException(AccessDeniedException exception,
+                                                     HttpServletRequest request) {
+        log.debug("occur AccessDeniedException: ", exception);
+        log.warn("AccessDeniedException in path {} : {}", request.getRequestURI(), exception.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());
+        problemDetail.setProperty("description", "You are not authorized to access this resource");
+        return problemDetail;
+    }
+
     @ExceptionHandler(UrlNotFoundException.class)
-    public ProblemDetail handleUrlNotFoundException(UrlNotFoundException exception) {
+    public ProblemDetail handleUrlNotFoundException(UrlNotFoundException exception, HttpServletRequest request) {
         log.debug("occur AuthenticationException: ", exception);
-        log.warn("UrlNotFoundException: {}", exception.getMessage());
+        log.warn("UrlNotFoundException: {} because of {}", request.getRequestURI(), exception.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
         problemDetail.setProperty("description", "The short url is not found");
         return problemDetail;
@@ -60,11 +70,6 @@ public class GlobalExceptionHandler {
         if (exception instanceof AccountStatusException) {
             errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());
             errorDetail.setProperty("description", "The account is locked");
-        }
-
-        if (exception instanceof AccessDeniedException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());
-            errorDetail.setProperty("description", "You are not authorized to access this resource");
         }
 
         if (exception instanceof SignatureException || exception instanceof JwtException) {

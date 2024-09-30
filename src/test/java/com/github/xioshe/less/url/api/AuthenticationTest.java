@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(properties = "security.jwt.expiration-seconds=0")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ExpiredJwtIT {
+class ExpiredJwtTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -51,7 +51,7 @@ class ExpiredJwtIT {
 
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class AuthenticationIT {
+class AuthenticationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -141,7 +141,7 @@ class AuthenticationIT {
 
     @Test
     void Login_bad_credentials() throws Exception {
-        mockMvc.perform(post("/auth/token")
+        mockMvc.perform(post("/api/auth/token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"username":"test","password":"bad pwd"}"""))
@@ -154,12 +154,12 @@ class AuthenticationIT {
 
     @Test
     public void Login_successfully() throws Exception {
-        mockMvc.perform(post("/auth/token")
+        mockMvc.perform(post("/api/auth/token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"username":"test","password":"password"}"""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.token").exists());
+                .andExpect(jsonPath("$.accessToken").exists());
     }
 }

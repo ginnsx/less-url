@@ -1,5 +1,6 @@
 package com.github.xioshe.less.url.config;
 
+import com.github.xioshe.less.url.security.DelegatedAccessDeniedHandler;
 import com.github.xioshe.less.url.security.DelegatedAuthenticationEntryPoint;
 import com.github.xioshe.less.url.security.JwtTokenFilter;
 import com.github.xioshe.less.url.security.JwtTokenService;
@@ -63,7 +64,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    JwtTokenFilter jwtTokenFilter,
-                                                   DelegatedAuthenticationEntryPoint entryPoint) throws Exception {
+                                                   DelegatedAuthenticationEntryPoint entryPoint,
+                                                   DelegatedAccessDeniedHandler accessDeniedHandler) throws Exception {
         return http
                 .cors(Customizer.withDefaults()) // 配合注册 CorsFilter Bean 才会生效
                 .csrf(AbstractHttpConfigurer::disable)
@@ -76,7 +78,8 @@ public class SecurityConfig {
                     auth.anyRequest().authenticated();
                 })
                 .exceptionHandling(exceptionHanding ->
-                        exceptionHanding.authenticationEntryPoint(entryPoint))
+                        exceptionHanding.authenticationEntryPoint(entryPoint)
+                                .accessDeniedHandler(accessDeniedHandler))
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
