@@ -1,8 +1,8 @@
 package com.github.xioshe.less.url.security;
 
 import com.github.xioshe.less.url.entity.User;
-import com.github.xioshe.less.url.repository.RoleRepository;
 import com.github.xioshe.less.url.repository.UserRepository;
+import com.github.xioshe.less.url.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class CustomCachingUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
 
     @Override
     @Cacheable(value = "users", key = "#username")
@@ -28,7 +28,7 @@ public class CustomCachingUserDetailsService implements UserDetailsService {
             log.info("User {} not found", username);
             throw new UsernameNotFoundException("User '" + username + "' not found");
         }
-        user.setRoles(roleRepository.listEnabledRolesByUserId(user.getId()));
+        user.setRoles(roleService.listEnabledRolesByUserId(user.getId()));
         return user.asSecurityUser();
     }
 }

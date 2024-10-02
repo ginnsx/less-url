@@ -1,8 +1,8 @@
 begin;
 
 insert into lu_role(id, code, name, description, enabled)
-values (1, 'ROLE_USER', '普通用户', '普通用户', true),
-       (2, 'ROLE_ADMIN', '管理员', '管理员', true);
+values (1, 'USER', '普通用户', '普通用户', true),
+       (2, 'ADMIN', '管理员', '管理员', true);
 
 insert into lu_user (id, level, username, password, email, api_key, subscription_term_id, subscription_start_time)
 values (1, 2, 'test', '$2a$10$/og3a88F2MTD1vNJ/3h3OewCUjwjZDPfKSOgT1E62HBXdiHIBgn8S',

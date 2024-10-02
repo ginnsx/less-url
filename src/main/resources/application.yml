@@ -38,21 +38,18 @@ less:
     host: http://localhost:8080/
 security:
   jwt:
-    access-expiration-seconds: 3600
-    refresh-expiration-seconds: 86400
+    access-expiration-seconds: 43200 # 12h
+    refresh-expiration-seconds: 86400 # 24h
     key:
       secret: cThIIoDvwdueQB468K5xDc5633seEFoq
       rotation:
-        cron: 0 0 0 * * ? # 每天0点
+        cron: 0 0 0 * * ?
 
 # 打印 SQL 详情，不要在生产环境使用
 decorator:
   datasource:
     enabled: true
 
-#logging:
-#  level:
-#    org.springframework.security: trace
 # springdoc-openapi项目配置
 springdoc:
   swagger-ui:
@@ -61,9 +58,12 @@ springdoc:
     display-request-duration: true
     path: doc.html
     use-root-path: true
+    enabled: true # 在生产环境要禁用
   group-configs:
     - group: 'default'
       paths-to-match: '/**'
+  api-docs:
+    enabled: true # 在生产环境要禁用
 
 # 可观测性配置
 management:
@@ -88,4 +88,4 @@ management:
     tags:
       application: ${spring.application.name}
 
-version: @project.version@
+version: @project.version@ # 获取 maven 中配置的项目版本信息

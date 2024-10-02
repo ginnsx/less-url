@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.method.PrePostTemplateDefaults;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -28,8 +29,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-@EnableWebSecurity() // 启用 WebSecurityConfiguration
-@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+@EnableWebSecurity // 启用 WebSecurityConfiguration
+@EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -72,10 +73,10 @@ public class SecurityConfig {
                 .sessionManagement(manager ->
                         manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/auth/**", "/s/**").permitAll();
-                    auth.requestMatchers("/doc.html", "/", "/swagger-ui/**", "/v3/api-docs/**").permitAll();
-                    auth.requestMatchers("/actuator/**").permitAll();
-                    auth.anyRequest().authenticated();
+                    auth.requestMatchers("/api/auth/**", "/s/**").permitAll()
+                            .requestMatchers("/doc.html", "/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                            .requestMatchers("/actuator/**").permitAll()
+                            .anyRequest().authenticated();
                 })
                 .exceptionHandling(exceptionHanding ->
                         exceptionHanding.authenticationEntryPoint(entryPoint)
@@ -100,5 +101,13 @@ public class SecurityConfig {
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
+    }
+
+    /**
+     * 扩展 Method Security 的 SpEL 表达式，用来支持元注解
+     */
+    @Bean
+    static PrePostTemplateDefaults prePostTemplateDefaults() {
+        return new PrePostTemplateDefaults();
     }
 }

@@ -2,6 +2,7 @@ package com.github.xioshe.less.url.exceptions;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.PrematureJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +81,11 @@ public class GlobalExceptionHandler {
         if (exception instanceof ExpiredJwtException) {
             errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
             errorDetail.setProperty("description", "The JWT token has expired");
+        }
+
+        if (exception instanceof PrematureJwtException) {
+            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
+            errorDetail.setProperty("description", "The JWT token has not become valid yet");
         }
 
         if (errorDetail == null) {

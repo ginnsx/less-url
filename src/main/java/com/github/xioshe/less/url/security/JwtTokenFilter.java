@@ -50,20 +50,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails user = userDetailsService.loadUserByUsername(username);
-                if (jwtTokenService.isTokenValid(token, user)) {
-                    // 创建一个新的认证令牌，并将其设置为当前的安全上下文
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(
-                                    user,
-                                    null,
-                                    user.getAuthorities()
-                            );
-                    // 为认证令牌绑定 Request 信息
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                } else {
-                    log.warn("Invalid JWT token of user: {}", username);
-                }
+                jwtTokenService.validateToken(token);
+                // 创建一个新的认证令牌，并将其设置为当前的安全上下文
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                user,
+                                null,
+                                user.getAuthorities()
+                        );
+                // 为认证令牌绑定 Request 信息
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
             filterChain.doFilter(request, response);
             // 在 SecurityContextHolderFilter 中自动清除，不需要手动清除

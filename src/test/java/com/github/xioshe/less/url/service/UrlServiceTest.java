@@ -49,7 +49,7 @@ public class UrlServiceTest {
 
         var result = urlService.shorten(cmd);
         assertEquals("custom", result);
-        verify(urlRepository).insert(argThat(url ->
+        verify(urlRepository).insertSelective(argThat(url ->
                 url.getOriginalUrl().equals("https://example.com")
                 && url.getUserId() == 1L
                 && url.getShortUrl().equals("custom")
@@ -69,19 +69,11 @@ public class UrlServiceTest {
         assertEquals("Alias already exists", e.getMessage());
     }
 
-    //    @Test
-    void Shorten_invalid_url() {
-        String originalUrl = "invalid-url";
-
-        var e = assertThrows(IllegalArgumentException.class, () -> urlService.shorten(originalUrl, 1L, new Date()));
-        assertEquals("Invalid URL", e.getMessage());
-    }
-
     @Test
     void Shorten_existing_url() {
-        String originalUrl = "http://existing.com";
+        String originalUrl = "https:///existing.com";
         String decodedUrl = URLDecoder.decode(originalUrl, StandardCharsets.UTF_8);
-        String shortUrl = "http://existing-short.com";
+        String shortUrl = "https://existing-short.com";
         var date = new Date();
 
         when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(shortUrl);
@@ -89,14 +81,14 @@ public class UrlServiceTest {
         String result = urlService.shorten(originalUrl, 1L, date);
 
         assertEquals(shortUrl, result);
-        verify(urlRepository, never()).insert(any(Url.class));
+        verify(urlRepository, never()).insertSelective(any(Url.class));
     }
 
     @Test
     void Shorten_url() {
-        String originalUrl = "http://example.com";
+        String originalUrl = "https://example.com";
         String decodedUrl = URLDecoder.decode(originalUrl, StandardCharsets.UTF_8);
-        String shortUrl = "http://short.com";
+        String shortUrl = "https://short.com";
         var date = new Date();
 
         when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(null);
@@ -106,7 +98,7 @@ public class UrlServiceTest {
         String result = urlService.shorten(originalUrl, 1L, date);
 
         assertEquals(shortUrl, result);
-        verify(urlRepository).insert(argThat(url ->
+        verify(urlRepository).insertSelective(argThat(url ->
                 url.getOriginalUrl().equals(decodedUrl)
                 && url.getUserId() == 1L
                 && url.getShortUrl().equals(shortUrl)
@@ -115,9 +107,9 @@ public class UrlServiceTest {
 
     @Test
     void Shorten_exceeding_then_fail() {
-        String originalUrl = "http://fail.com";
+        String originalUrl = "https://fail.com";
         String decodedUrl = URLDecoder.decode(originalUrl, StandardCharsets.UTF_8);
-        String shortUrl = "http://fail-short.com";
+        String shortUrl = "https://fail-short.com";
 
         when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(null);
         when(urlShorter.shorten(anyString())).thenReturn(shortUrl);
@@ -130,9 +122,9 @@ public class UrlServiceTest {
 
     @Test
     void Shorten_conflict_once() {
-        String originalUrl = "http://conflict.com";
+        String originalUrl = "https://conflict.com";
         String decodedUrl = URLDecoder.decode(originalUrl, StandardCharsets.UTF_8);
-        String shortUrl = "http://conflict-short.com";
+        String shortUrl = "https://conflict-short.com";
         var date = new Date();
 
         when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(null);
@@ -142,7 +134,7 @@ public class UrlServiceTest {
         String result = urlService.shorten(originalUrl, 1L, date);
 
         assertEquals(shortUrl, result);
-        verify(urlRepository).insert(argThat(url ->
+        verify(urlRepository).insertSelective(argThat(url ->
                 url.getOriginalUrl().equals(decodedUrl)
                 && url.getUserId() == 1L
                 && url.getShortUrl().equals(shortUrl)

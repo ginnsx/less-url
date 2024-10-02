@@ -1,9 +1,10 @@
 package com.github.xioshe.less.url.api;
 
 import com.github.xioshe.less.url.entity.User;
-import com.github.xioshe.less.url.security.CustomGrantedAuthority;
 import com.github.xioshe.less.url.security.JwtTokenService;
+import com.github.xioshe.less.url.security.RotatingSecretKeyManager;
 import com.github.xioshe.less.url.security.SecurityUser;
+import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Date;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -23,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @AutoConfigureMockMvc
-@TestPropertySource(properties = "security.jwt.expiration-seconds=0")
+@TestPropertySource(properties = "security.jwt.access-expiration-seconds=0")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ExpiredJwtTest {
 
@@ -32,6 +35,9 @@ class ExpiredJwtTest {
 
     @Autowired
     private JwtTokenService jwtTokenService;
+
+    @Autowired
+    private RotatingSecretKeyManager keyManager;
 
     @Test
     void expired_jwt() throws Exception {
@@ -45,6 +51,25 @@ class ExpiredJwtTest {
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("$.description").value("The JWT token has expired"));
+    }
+
+    @Test
+    void invalid_jwt() throws Exception {
+        var token = Jwts.builder()
+                .claims()
+                .subject("test")
+                .issuedAt(new Date(System.currentTimeMillis() + 10_000))
+                .notBefore(new Date(System.currentTimeMillis() + 10_000))
+                .expiration(new Date(System.currentTimeMillis() + 10_000))
+                .and()
+                .signWith(keyManager.getCurrentKey(), Jwts.SIG.HS256)
+                .compact();
+
+        mockMvc.perform(get("/test/user")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.description").value("The JWT token has not become valid yet"));
     }
 }
 
@@ -110,7 +135,6 @@ class AuthenticationTest {
         var user = SecurityUser.builder()
                 .username("test")
                 .password("password")
-                .authority(new CustomGrantedAuthority("USER"))
                 .build();
         var token = jwtTokenService.generateAccessToken(user);
 
@@ -120,8 +144,8 @@ class AuthenticationTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.description")
-                        .value("Full authentication is required to access this resource"));
+                .andExpect(jsonPath("$.detail")
+                        .value("Token is blacklisted"));
     }
 
     @Test
@@ -133,6 +157,21 @@ class AuthenticationTest {
 
         mockMvc.perform(get("/test/admin")
                         .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.description")
+                        .value("You are not authorized to access this resource"));
+    }
+
+    @Test
+    void required_permission() throws Exception {
+        var user = SecurityUser.builder()
+                .username("test")
+                .password("password")
+                .build();
+        var token = jwtTokenService.generateAccessToken(user);
+
+        mockMvc.perform(get("/test/edit").header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("$.description")

@@ -63,6 +63,7 @@ public class JwtTokenService {
                 .claims()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
+                .notBefore(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expirationMills))
                 .add(extraClaims)
                 .and()
@@ -82,8 +83,15 @@ public class JwtTokenService {
         Claims claims = extractClaims(token);
         Date now = new Date();
         return !claims.getIssuedAt().after(now)
-               && !claims.getExpiration().before(now)
                && !isTokenBlacklisted(token);
+    }
+
+    public void validateToken(String token) {
+        // parse 的时候就会检测 token 是否过期
+        extractClaims(token);
+        if (isTokenBlacklisted(token)) {
+            throw new JwtException("Token is blacklisted");
+        }
     }
 
     public boolean isRefreshTokenValid(String refreshToken, UserDetails userDetails) {

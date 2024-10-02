@@ -62,9 +62,7 @@ public class UrlService {
         record.setUserId(userId);
         record.setStatus(1);
         record.setExpirationTime(expirationTime);
-        record.setCreateTime(new Date());
-        record.setUpdateTime(new Date());
-        urlRepository.insert(record);
+        urlRepository.insertSelective(record);
     }
 
     @Cacheable(cacheNames = "urls", key = "#shortUrl")

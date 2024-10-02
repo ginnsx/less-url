@@ -6,16 +6,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.springframework.util.CollectionUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Schema(description = "用户")
@@ -97,23 +95,33 @@ public class User implements Serializable {
     private Date updateTime;
 
     @Schema(description = "角色")
-    private List<Role> roles;
+    private Set<Role> roles = new HashSet<>();
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     public SecurityUser asSecurityUser() {
-        Set<CustomGrantedAuthority> authorities = CollectionUtils.isEmpty(roles)
-                ? new HashSet<>()
-                : roles.stream()
-                .map(role -> new CustomGrantedAuthority(role.getRoleName()))
-                .collect(Collectors.toSet());
         return SecurityUser.builder()
                 .email(this.email)
                 .username(this.username)
                 .password(this.password)
                 .nickname(this.username)
-                .authorities(authorities)
+                .authorities(getAuthorities())
                 .build();
+    }
+
+    private Set<CustomGrantedAuthority> getAuthorities() {
+        Set<CustomGrantedAuthority> authorities = new HashSet<>();
+        for (Role role : getRoles()) {
+            authorities.add(new CustomGrantedAuthority(SecurityUser.ROLE_PREFIX + role.getCode()));
+            for (Permission permission : role.getPermissions()) {
+                authorities.add(new CustomGrantedAuthority(permission.getCode()));
+            }
+        }
+        return authorities;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = new HashSet<>(roles);
     }
 }

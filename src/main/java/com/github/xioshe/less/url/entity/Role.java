@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
@@ -61,4 +62,8 @@ public class Role implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+    public void setPermissions(Collection<Permission> permissions) {
+        this.permissions = Set.copyOf(permissions);
+    }
 }
