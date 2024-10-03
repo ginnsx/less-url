@@ -36,7 +36,6 @@ public class PermissionRegistrar implements ApplicationListener<ContextRefreshed
                 registerPermission(annotation);
             }
         }
-        // 方法注解比类注解优先
         RequirePermission requirePermission = clazz.getDeclaredAnnotation(RequirePermission.class);
         if (requirePermission != null) {
             registerPermission(requirePermission);

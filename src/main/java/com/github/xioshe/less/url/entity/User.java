@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Schema(description = "用户")
@@ -111,14 +112,14 @@ public class User implements Serializable {
     }
 
     private Set<CustomGrantedAuthority> getAuthorities() {
-        Set<CustomGrantedAuthority> authorities = new HashSet<>();
+        Set<String> authorities = new HashSet<>();
         for (Role role : getRoles()) {
-            authorities.add(new CustomGrantedAuthority(SecurityUser.ROLE_PREFIX + role.getCode()));
+            authorities.add(SecurityUser.ROLE_PREFIX + role.getCode());
             for (Permission permission : role.getPermissions()) {
-                authorities.add(new CustomGrantedAuthority(permission.getCode()));
+                authorities.add(permission.getCode());
             }
         }
-        return authorities;
+        return authorities.stream().map(CustomGrantedAuthority::new).collect(Collectors.toSet());
     }
 
     public void setRoles(Collection<Role> roles) {

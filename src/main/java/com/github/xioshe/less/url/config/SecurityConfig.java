@@ -29,7 +29,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-@EnableWebSecurity // 启用 WebSecurityConfiguration
+@EnableWebSecurity // 用于支持覆盖 UserDetailsService PasswordEncoder SecurityFilterChain
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 @RequiredArgsConstructor
