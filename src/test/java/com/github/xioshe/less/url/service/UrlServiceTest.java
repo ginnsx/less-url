@@ -4,13 +4,13 @@ import com.github.xioshe.less.url.api.dto.CreateUrlCommand;
 import com.github.xioshe.less.url.entity.Url;
 import com.github.xioshe.less.url.repository.UrlRepository;
 import com.github.xioshe.less.url.shorter.UrlShorter;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,7 +22,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Slf4j
 public class UrlServiceTest {
 
     private UrlRepository urlRepository;
@@ -49,7 +48,7 @@ public class UrlServiceTest {
 
         var result = urlService.shorten(cmd);
         assertEquals("custom", result);
-        verify(urlRepository).insertSelective(argThat(url ->
+        verify(urlRepository).save(argThat(url ->
                 url.getOriginalUrl().equals("https://example.com")
                 && url.getUserId() == 1L
                 && url.getShortUrl().equals("custom")
@@ -76,12 +75,12 @@ public class UrlServiceTest {
         String shortUrl = "https://existing-short.com";
         var date = new Date();
 
-        when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(shortUrl);
+        when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.of(shortUrl));
 
         String result = urlService.shorten(originalUrl, 1L, date);
 
         assertEquals(shortUrl, result);
-        verify(urlRepository, never()).insertSelective(any(Url.class));
+        verify(urlRepository, never()).save(any(Url.class));
     }
 
     @Test
@@ -91,14 +90,14 @@ public class UrlServiceTest {
         String shortUrl = "https://short.com";
         var date = new Date();
 
-        when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(null);
+        when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.empty());
         when(urlShorter.shorten(decodedUrl)).thenReturn(shortUrl);
         when(urlRepository.existsByShortUrl(shortUrl)).thenReturn(false);
 
         String result = urlService.shorten(originalUrl, 1L, date);
 
         assertEquals(shortUrl, result);
-        verify(urlRepository).insertSelective(argThat(url ->
+        verify(urlRepository).save(argThat(url ->
                 url.getOriginalUrl().equals(decodedUrl)
                 && url.getUserId() == 1L
                 && url.getShortUrl().equals(shortUrl)
@@ -111,7 +110,7 @@ public class UrlServiceTest {
         String decodedUrl = URLDecoder.decode(originalUrl, StandardCharsets.UTF_8);
         String shortUrl = "https://fail-short.com";
 
-        when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(null);
+        when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.empty());
         when(urlShorter.shorten(anyString())).thenReturn(shortUrl);
         when(urlRepository.existsByShortUrl(shortUrl)).thenReturn(true);
 
@@ -127,14 +126,14 @@ public class UrlServiceTest {
         String shortUrl = "https://conflict-short.com";
         var date = new Date();
 
-        when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(null);
+        when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.empty());
         when(urlShorter.shorten(anyString())).thenReturn(shortUrl);
         when(urlRepository.existsByShortUrl(shortUrl)).thenReturn(true).thenReturn(false);
 
         String result = urlService.shorten(originalUrl, 1L, date);
 
         assertEquals(shortUrl, result);
-        verify(urlRepository).insertSelective(argThat(url ->
+        verify(urlRepository).save(argThat(url ->
                 url.getOriginalUrl().equals(decodedUrl)
                 && url.getUserId() == 1L
                 && url.getShortUrl().equals(shortUrl)

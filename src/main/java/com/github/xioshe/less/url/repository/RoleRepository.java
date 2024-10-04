@@ -1,23 +1,10 @@
 package com.github.xioshe.less.url.repository;
 
 import com.github.xioshe.less.url.entity.Role;
-import org.apache.ibatis.annotations.Mapper;
+import com.github.xioshe.less.url.repository.mapper.RoleMapper;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
+@Repository
+public class RoleRepository extends BaseRepository<RoleMapper, Role> {
 
-@Mapper
-public interface RoleRepository {
-    int deleteByPrimaryKey(Long id);
-
-    int insert(Role record);
-
-    int insertSelective(Role record);
-
-    Role selectByPrimaryKey(Long id);
-
-    int updateByPrimaryKeySelective(Role record);
-
-    int updateByPrimaryKey(Role record);
-
-    List<Role> listEnabledRolesByUserId(Long userId);
 }

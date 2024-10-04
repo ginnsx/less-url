@@ -1,21 +1,14 @@
 package com.github.xioshe.less.url.repository;
 
 import com.github.xioshe.less.url.entity.User;
-import org.apache.ibatis.annotations.Mapper;
+import com.github.xioshe.less.url.repository.mapper.UserMapper;
+import org.springframework.stereotype.Repository;
 
-@Mapper
-public interface UserRepository {
-    int deleteByPrimaryKey(Long id);
+import java.util.Optional;
 
-    long insert(User record);
-
-    long insertSelective(User record);
-
-    User selectByPrimaryKey(Long id);
-
-    int updateByPrimaryKeySelective(User record);
-
-    int updateByPrimaryKey(User record);
-
-    User findByUsername(String username);
+@Repository
+public class UserRepository extends BaseRepository<UserMapper, User> {
+    public Optional<User> findByUsername(String username) {
+        return lambdaQuery().eq(User::getUsername, username).oneOpt();
+    }
 }

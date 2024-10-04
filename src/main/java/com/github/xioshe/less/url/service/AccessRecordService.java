@@ -15,17 +15,13 @@ public class AccessRecordService {
 
     private final AccessRecordRepository accessRecordRepository;
 
-    public int countByShortUrl(String shortUrl) {
-        return accessRecordRepository.countByShortUrl(shortUrl);
-    }
-
-    public void save(String url, HttpServletRequest request) {
+    public void record(String url, HttpServletRequest request) {
         AccessRecord accessRecord = new AccessRecord();
         accessRecord.setShortUrl(url);
         accessRecord.setUserAgent(request.getHeader("User-Agent"));
         accessRecord.setIp(request.getRemoteAddr());
         accessRecord.setReferer(request.getHeader("referer"));
         accessRecord.setAccessTime(new java.util.Date());
-        accessRecordRepository.insertSelective(accessRecord);
+        accessRecordRepository.save(accessRecord);
     }
 }

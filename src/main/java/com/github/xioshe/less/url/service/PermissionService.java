@@ -2,9 +2,9 @@ package com.github.xioshe.less.url.service;
 
 import com.github.xioshe.less.url.entity.Permission;
 import com.github.xioshe.less.url.repository.PermissionRepository;
+import com.github.xioshe.less.url.repository.mapper.PermissionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,23 +12,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PermissionService {
 
+    private final PermissionMapper permissionMapper;
     private final PermissionRepository permissionRepository;
 
     public List<Permission> listPermissionsByRoleId(Long roleId) {
-        return permissionRepository.listEnabledPermissionsByRoleId(roleId);
+        return permissionMapper.listEnabledPermissionsByRoleId(roleId);
     }
 
-    @Transactional
     public Permission createPermissionIfNotExists(String code, String name, String description) {
-        Permission permission = permissionRepository.findByCode(name);
-        if (permission == null) {
-            permission = new Permission();
+        return permissionRepository.findByCode(name).orElseGet(() -> {
+            Permission permission = new Permission();
             permission.setCode(code);
             permission.setName(name);
             permission.setDescription(description);
             permission.setEnabled(true);
-            permissionRepository.insertSelective(permission);
-        }
-        return permission;
+            permissionMapper.insert(permission);
+            return permission;
+        });
     }
 }

@@ -30,8 +30,8 @@ public class AuthenticationService {
 
     public User signup(SignupCommand command) {
         User user = command.asUser(passwordEncoder);
-        Long id = userRepository.insertSelective(user);
-        return userRepository.selectByPrimaryKey(id);
+        userRepository.save(user);
+        return user;
     }
 
     public AuthResponse login(AuthCommand command) {

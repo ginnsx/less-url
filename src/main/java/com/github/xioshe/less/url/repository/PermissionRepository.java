@@ -1,25 +1,15 @@
 package com.github.xioshe.less.url.repository;
 
 import com.github.xioshe.less.url.entity.Permission;
-import org.apache.ibatis.annotations.Mapper;
+import com.github.xioshe.less.url.repository.mapper.PermissionMapper;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Optional;
 
-@Mapper
-public interface PermissionRepository {
-    int deleteByPrimaryKey(Long id);
+@Repository
+public class PermissionRepository extends BaseRepository<PermissionMapper, Permission> {
 
-    int insert(Permission record);
-
-    int insertSelective(Permission record);
-
-    Permission selectByPrimaryKey(Long id);
-
-    int updateByPrimaryKeySelective(Permission record);
-
-    int updateByPrimaryKey(Permission record);
-
-    Permission findByCode(String code);
-
-    List<Permission> listEnabledPermissionsByRoleId(Long roleId);
+    public Optional<Permission> findByCode(String code) {
+        return lambdaQuery().eq(Permission::getCode, code).oneOpt();
+    }
 }

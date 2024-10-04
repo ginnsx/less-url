@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.xioshe.less.url.repository.mapper.AccessRecordMapper">
+  <resultMap id="BaseResultMap" type="com.github.xioshe.less.url.entity.AccessRecord">
+    <!--@mbg.generated-->
+    <!--@Table lu_access_records-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="short_url" jdbcType="VARCHAR" property="shortUrl" />
+    <result column="user_agent" jdbcType="VARCHAR" property="userAgent" />
+    <result column="ip" jdbcType="VARCHAR" property="ip" />
+    <result column="referer" jdbcType="VARCHAR" property="referer" />
+    <result column="access_time" jdbcType="TIMESTAMP" property="accessTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, short_url, user_agent, ip, referer, access_time
+  </sql>
+</mapper>

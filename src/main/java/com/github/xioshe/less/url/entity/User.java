@@ -1,5 +1,6 @@
 package com.github.xioshe.less.url.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.github.xioshe.less.url.security.CustomGrantedAuthority;
 import com.github.xioshe.less.url.security.SecurityUser;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -95,6 +96,7 @@ public class User implements Serializable {
     @Schema(description = "更新时间")
     private Date updateTime;
 
+    @TableField(exist = false)
     @Schema(description = "角色")
     private Set<Role> roles = new HashSet<>();
 

@@ -2,6 +2,7 @@ package com.github.xioshe.less.url.api;
 
 
 import com.github.xioshe.less.url.api.dto.CreateUrlCommand;
+import com.github.xioshe.less.url.repository.AccessRecordRepository;
 import com.github.xioshe.less.url.service.AccessRecordService;
 import com.github.xioshe.less.url.service.UrlService;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -29,8 +30,9 @@ public class UrlController {
 
     private final UrlService urlService;
     private final AccessRecordService accessRecordService;
+    private final AccessRecordRepository accessRecordRepository;
 
-    @Value("${less.url.host:http://localhost:8080/}")
+    @Value("${less.url.prefix:http://localhost:8080/}")
     private String baseUrl;
 
 
@@ -51,8 +53,8 @@ public class UrlController {
     @Operation(summary = "获取短链接访问记录", description = "获取短链接访问记录")
     @ApiResponse(responseCode = "200", description = "短链接访问记录获取成功")
     @GetMapping("/{shortUrl}/access-records")
-    public int accessRecords(@Parameter(description = "短链接") @PathVariable String shortUrl) {
-        return accessRecordService.countByShortUrl(shortUrl);
+    public long accessRecords(@Parameter(description = "短链接") @PathVariable String shortUrl) {
+        return accessRecordRepository.countByShortUrl(shortUrl);
     }
 
 }

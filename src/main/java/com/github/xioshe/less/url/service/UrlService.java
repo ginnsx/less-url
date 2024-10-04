@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,9 +37,9 @@ public class UrlService {
 
     public String shorten(String originalUrl, Long userId, Date expirationTime) {
         // 依靠 userId 索引能保证 ms 级别查询效率
-        String existedShort = urlRepository.selectByOriginalUrlAndUserId(originalUrl, userId);
-        if (existedShort != null) {
-            return existedShort;
+        Optional<String> existedShort = urlRepository.selectByOriginalUrlAndUserId(originalUrl, userId);
+        if (existedShort.isPresent()) {
+            return existedShort.get();
         }
 
         // 构建，检查并解决冲突
@@ -62,7 +63,7 @@ public class UrlService {
         record.setUserId(userId);
         record.setStatus(1);
         record.setExpirationTime(expirationTime);
-        urlRepository.insertSelective(record);
+        urlRepository.save(record);
     }
 
     @Cacheable(cacheNames = "urls", key = "#shortUrl")

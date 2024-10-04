@@ -7,14 +7,14 @@ Content-Type: application/json
   "password": "password"
 }
 
-> {% client.global.set("lu_token", response.body.access_token); %}
+> {% client.global.set("lu_token", response.body.accessToken); %}
 
 ### Signup
 POST http://localhost:8080/api/auth/signup
 Content-Type: application/json
 
 {
-  "username": "admin",
+  "username": "admin111",
   "password": "password",
   "email": "me@lu.com"
 }
@@ -25,6 +25,10 @@ Authorization: Bearer {{lu_token}}
 
 ### Get User
 GET http://localhost:8080/api/users/1
+Authorization: Bearer {{lu_token}}
+
+### Get User's URLs
+GET http://localhost:8080/api/users/1/urls
 Authorization: Bearer {{lu_token}}
 
 
@@ -44,3 +48,7 @@ Authorization: Bearer {{lu_token}}
 ### Visit Short URL
 // @no-redirect
 GET http://localhost:8080/s/custom
+
+### Get Access Records
+GET http://localhost:8080/api/urls/custom/access-records
+Authorization: Bearer {{lu_token}}

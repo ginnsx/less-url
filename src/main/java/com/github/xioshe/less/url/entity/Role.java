@@ -1,8 +1,8 @@
 package com.github.xioshe.less.url.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -15,8 +15,6 @@ import java.util.Set;
 @Schema
 @Data
 public class Role implements Serializable {
-    @Schema(description="")
-    @NotNull(message = "不能为null")
     private Long id;
 
     @Schema(description="角色编码")
@@ -43,22 +41,23 @@ public class Role implements Serializable {
     private Boolean enabled;
 
     /**
-     * 权限列表
+     * 创建时间
      */
-    @Schema(description = "权限列表")
-    private Set<Permission> permissions;
-
-    /**
-    * 创建时间
-    */
     @Schema(description="创建时间")
     private Date createTime;
 
     /**
-    * 更新时间
-    */
+     * 更新时间
+     */
     @Schema(description="更新时间")
     private Date updateTime;
+
+    /**
+     * 权限列表
+     */
+    @TableField(exist = false)
+    @Schema(description = "权限列表")
+    private Set<Permission> permissions;
 
     @Serial
     private static final long serialVersionUID = 1L;

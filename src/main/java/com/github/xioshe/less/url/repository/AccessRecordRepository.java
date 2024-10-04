@@ -1,22 +1,13 @@
 package com.github.xioshe.less.url.repository;
 
 import com.github.xioshe.less.url.entity.AccessRecord;
-import org.apache.ibatis.annotations.Mapper;
+import com.github.xioshe.less.url.repository.mapper.AccessRecordMapper;
+import org.springframework.stereotype.Repository;
 
+@Repository
+public class AccessRecordRepository extends BaseRepository<AccessRecordMapper, AccessRecord> {
 
-@Mapper
-public interface AccessRecordRepository {
-    int deleteByPrimaryKey(Long id);
-
-    int insert(AccessRecord record);
-
-    int insertSelective(AccessRecord record);
-
-    AccessRecord selectByPrimaryKey(Long id);
-
-    int updateByPrimaryKeySelective(AccessRecord record);
-
-    int updateByPrimaryKey(AccessRecord record);
-
-    int countByShortUrl(String shortUrl);
+    public long countByShortUrl(String shortUrl) {
+        return lambdaQuery().eq(AccessRecord::getShortUrl, shortUrl).count();
+    }
 }

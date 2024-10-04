@@ -26,16 +26,23 @@ spring:
   cache:
     redis:
       enable-statistics: true
-mybatis:
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.github.xioshe.less.url.entity
+mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
-    cache-enabled: false
-    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    lazy-loading-enabled: false
+    aggressive-lazy-loading: false
+    local-cache-scope: statement # 关闭一级缓存
+    cache-enabled: false # 关闭二级缓存
+  global-config:
+    db-config:
+      id-type: auto
+      table-prefix: lu_
+    banner: false
+  mapper-locations: classpath:mapper/**.xml
+  type-aliases-package: com.github.xioshe.less.url.entity
 less:
   url:
-    host: http://localhost:8080/
+    prefix: http://localhost:8080/
 security:
   jwt:
     access-expiration-seconds: 43200 # 12h

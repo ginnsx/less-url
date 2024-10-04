@@ -43,7 +43,7 @@ public class RedirectController {
     public ResponseEntity<String> redirect(@Parameter(description = "短链接") @PathVariable String shortUrl, HttpServletRequest request) {
         String url = urlService.getOriginalUrl(shortUrl);
         try {
-            accessRecordService.save(shortUrl, request);
+            accessRecordService.record(shortUrl, request);
         } catch (Exception e) {
             log.error("record access fail", e);
         }

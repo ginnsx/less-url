@@ -23,11 +23,10 @@ public class CustomCachingUserDetailsService implements UserDetailsService {
     @Override
     @Cacheable(value = "users", key = "#username")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> {
             log.info("User {} not found", username);
-            throw new UsernameNotFoundException("User '" + username + "' not found");
-        }
+            return new UsernameNotFoundException("User '" + username + "' not found");
+        });
         user.setRoles(roleService.listEnabledRolesByUserId(user.getId()));
         return user.asSecurityUser();
     }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.xioshe.less.url.repository.mapper.PermissionMapper">
+  <resultMap id="BaseResultMap" type="com.github.xioshe.less.url.entity.Permission">
+    <!--@mbg.generated-->
+    <!--@Table lu_permissions-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="enabled" jdbcType="BOOLEAN" property="enabled" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, code, `name`, description, enabled, create_time, update_time
+  </sql>
+
+  <select id="listEnabledPermissionsByRoleId" resultMap="BaseResultMap">
+      select p.id, p.code, p.name, p.description, p.enabled, p.create_time, p.update_time
+      from lu_permissions p
+               left join lu_role_permissions rp on p.id = rp.permission_id
+      where rp.role_id = #{roleId}
+        and p.enabled = true
+  </select>
+</mapper>

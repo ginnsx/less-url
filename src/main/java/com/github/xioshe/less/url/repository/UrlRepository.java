@@ -1,28 +1,30 @@
 package com.github.xioshe.less.url.repository;
 
 import com.github.xioshe.less.url.entity.Url;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import com.github.xioshe.less.url.repository.mapper.UrlMapper;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public class UrlRepository extends BaseRepository<UrlMapper, Url> {
+
+    public boolean existsByShortUrl(String shortUrl) {
+        return lambdaQuery().eq(Url::getShortUrl, shortUrl).exists();
+    }
+
+    public Optional<String> selectByOriginalUrlAndUserId(String originalUrl, Long userId) {
+        return lambdaQuery()
+                .select(Url::getShortUrl)
+                .eq(Url::getOriginalUrl, originalUrl)
+                .eq(Url::getUserId, userId)
+                .oneOpt()
+                .map(Url::getShortUrl);
+    }
 
 
-@Mapper
-public interface UrlRepository {
-    int deleteByPrimaryKey(Long id);
+    public Url selectByShortUrl(String shortUrl) {
+        return lambdaQuery().eq(Url::getShortUrl, shortUrl).one();
+    }
 
-    int insert(Url record);
-
-    int insertSelective(Url record);
-
-    Url selectByPrimaryKey(Long id);
-
-    int updateByPrimaryKeySelective(Url record);
-
-    int updateByPrimaryKey(Url record);
-
-    boolean existsByShortUrl(String shortUrl);
-
-    String selectByOriginalUrlAndUserId(@Param("originalUrl") String originalUrl,
-                                        @Param("userId") Long userId);
-
-    Url selectByShortUrl(String shortUrl);
 }

@@ -1,7 +1,9 @@
 package com.github.xioshe.less.url.api;
 
 
+import com.github.xioshe.less.url.entity.Url;
 import com.github.xioshe.less.url.entity.User;
+import com.github.xioshe.less.url.repository.UrlRepository;
 import com.github.xioshe.less.url.repository.UserRepository;
 import com.github.xioshe.less.url.security.SecurityUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 
 @Tag(name = "用户")
 @RestController
@@ -24,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserRepository userRepository;
-
+    private final UrlRepository urlRepository;
 
     @Operation(summary = "获取当前用户信息，需要提供 token")
     @ApiResponse(responseCode = "200", description = "获取用户信息成功")
@@ -39,6 +43,13 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "获取用户信息成功")
     @GetMapping("/{id}")
     public User getUserById(@Parameter(description = "用户 id") @PathVariable Long id) {
-        return userRepository.selectByPrimaryKey(id);
+        return userRepository.getById(id);
+    }
+
+    @Operation(summary = "根据 id 获取用户 url 列表")
+    @ApiResponse(responseCode = "200", description = "获取用户 url 列表成功")
+    @GetMapping("/{id}/urls")
+    public List<Url> getUserUrls(@Parameter(description = "用户 id") @PathVariable("id") Long userId) {
+        return urlRepository.lambdaQuery().eq(Url::getUserId, userId).list();
     }
 }
