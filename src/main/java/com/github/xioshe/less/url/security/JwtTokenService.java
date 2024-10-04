@@ -79,13 +79,6 @@ public class JwtTokenService {
         return extractClaims(token).getExpiration();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        Claims claims = extractClaims(token);
-        Date now = new Date();
-        return !claims.getIssuedAt().after(now)
-               && !isTokenBlacklisted(token);
-    }
-
     public void validateToken(String token) {
         // parse 的时候就会检测 token 是否过期
         extractClaims(token);

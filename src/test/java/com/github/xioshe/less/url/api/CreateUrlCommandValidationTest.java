@@ -5,7 +5,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -68,8 +68,8 @@ class CreateUrlCommandValidationTest {
         command.setUserId(1L);
         command.setOriginalUrl("https://www.google.com");
 
-        var now = new Date();
-        command.setExpirationTime(new Date(now.getTime() + 1000));
+        var now = LocalDateTime.now();
+        command.setExpirationTime(now.plusSeconds(1));
         assertThat(validator.validate(command)).isEmpty();
 
         command.setExpirationTime(now);

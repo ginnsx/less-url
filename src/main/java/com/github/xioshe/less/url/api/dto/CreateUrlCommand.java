@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 
 @Schema(description = "短链接生成请求")
@@ -26,7 +26,7 @@ public class CreateUrlCommand {
 
     @Schema(description = "短链接过期时间", example = "2024-09-08 00:00:00")
     @Future
-    private Date expirationTime;
+    private LocalDateTime expirationTime;
 
     @Positive
     @NotNull

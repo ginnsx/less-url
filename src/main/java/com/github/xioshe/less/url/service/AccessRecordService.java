@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,7 +23,7 @@ public class AccessRecordService {
         accessRecord.setUserAgent(request.getHeader("User-Agent"));
         accessRecord.setIp(request.getRemoteAddr());
         accessRecord.setReferer(request.getHeader("referer"));
-        accessRecord.setAccessTime(new java.util.Date());
+        accessRecord.setAccessTime(LocalDateTime.now());
         accessRecordRepository.save(accessRecord);
     }
 }

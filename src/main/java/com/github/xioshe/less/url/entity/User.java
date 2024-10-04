@@ -1,5 +1,6 @@
 package com.github.xioshe.less.url.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.github.xioshe.less.url.security.CustomGrantedAuthority;
 import com.github.xioshe.less.url.security.SecurityUser;
@@ -11,8 +12,8 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -88,13 +89,15 @@ public class User implements Serializable {
      * 创建时间
      */
     @Schema(description = "创建时间")
-    private Date createTime;
+    @TableField(fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
     @Schema(description = "更新时间")
-    private Date updateTime;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
 
     @TableField(exist = false)
     @Schema(description = "角色")

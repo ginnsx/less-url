@@ -2,7 +2,7 @@ package com.github.xioshe.less.url.entity;
 
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 public class AccessRecord {
@@ -31,5 +31,5 @@ public class AccessRecord {
     /**
      * 创建时间
      */
-    private Date accessTime;
+    private LocalDateTime accessTime;
 }

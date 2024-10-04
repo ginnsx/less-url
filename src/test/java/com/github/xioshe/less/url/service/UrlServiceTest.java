@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -73,7 +73,7 @@ public class UrlServiceTest {
         String originalUrl = "https:///existing.com";
         String decodedUrl = URLDecoder.decode(originalUrl, StandardCharsets.UTF_8);
         String shortUrl = "https://existing-short.com";
-        var date = new Date();
+        var date = LocalDateTime.now();
 
         when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.of(shortUrl));
 
@@ -88,7 +88,7 @@ public class UrlServiceTest {
         String originalUrl = "https://example.com";
         String decodedUrl = URLDecoder.decode(originalUrl, StandardCharsets.UTF_8);
         String shortUrl = "https://short.com";
-        var date = new Date();
+        var date = LocalDateTime.now();
 
         when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.empty());
         when(urlShorter.shorten(decodedUrl)).thenReturn(shortUrl);
@@ -115,7 +115,7 @@ public class UrlServiceTest {
         when(urlRepository.existsByShortUrl(shortUrl)).thenReturn(true);
 
         var e = assertThrows(RuntimeException.class,
-                () -> urlService.shorten(originalUrl, 1L, new Date()));
+                () -> urlService.shorten(originalUrl, 1L, LocalDateTime.now()));
         assertEquals("Failed to shorten url", e.getMessage());
     }
 
@@ -124,7 +124,7 @@ public class UrlServiceTest {
         String originalUrl = "https://conflict.com";
         String decodedUrl = URLDecoder.decode(originalUrl, StandardCharsets.UTF_8);
         String shortUrl = "https://conflict-short.com";
-        var date = new Date();
+        var date = LocalDateTime.now();
 
         when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.empty());
         when(urlShorter.shorten(anyString())).thenReturn(shortUrl);

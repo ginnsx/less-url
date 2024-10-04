@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -35,7 +35,7 @@ public class UrlService {
         return shorten(decodedUrl, command.getUserId(), command.getExpirationTime());
     }
 
-    public String shorten(String originalUrl, Long userId, Date expirationTime) {
+    public String shorten(String originalUrl, Long userId, LocalDateTime expirationTime) {
         // 依靠 userId 索引能保证 ms 级别查询效率
         Optional<String> existedShort = urlRepository.selectByOriginalUrlAndUserId(originalUrl, userId);
         if (existedShort.isPresent()) {
@@ -56,7 +56,7 @@ public class UrlService {
         throw new RuntimeException("Failed to shorten url");
     }
 
-    public void save(String originalUrl, String shortUrl, Date expirationTime, Long userId) {
+    public void save(String originalUrl, String shortUrl, LocalDateTime expirationTime, Long userId) {
         var record = new Url();
         record.setOriginalUrl(originalUrl);
         record.setShortUrl(shortUrl);
@@ -76,7 +76,7 @@ public class UrlService {
         if (!StringUtils.hasText(originalUrl)) {
             throw new UrlNotFoundException(shortUrl);
         }
-        if (url.getExpirationTime() != null && url.getExpirationTime().before(new Date())) {
+        if (url.getExpirationTime() != null && url.getExpirationTime().isBefore(LocalDateTime.now())) {
             throw new UrlNotFoundException(shortUrl);
         }
         return originalUrl;
