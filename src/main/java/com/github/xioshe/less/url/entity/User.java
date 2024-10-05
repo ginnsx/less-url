@@ -2,6 +2,7 @@ package com.github.xioshe.less.url.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.Version;
 import com.github.xioshe.less.url.security.CustomGrantedAuthority;
 import com.github.xioshe.less.url.security.SecurityUser;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -98,6 +99,11 @@ public class User implements Serializable {
     @Schema(description = "更新时间")
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+
+
+    @Schema(description = "版本号")
+    @Version
+    private Integer version;
 
     @TableField(exist = false)
     @Schema(description = "角色")

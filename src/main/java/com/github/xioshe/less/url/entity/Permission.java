@@ -2,6 +2,7 @@ package com.github.xioshe.less.url.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.Version;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -59,6 +60,11 @@ public class Permission implements Serializable {
     @Schema(description = "更新时间")
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+
+
+    @Schema(description = "版本号")
+    @Version
+    private Integer version;
 
     @Serial
     private static final long serialVersionUID = 1L;

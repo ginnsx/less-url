@@ -16,6 +16,7 @@ create table if not exists lu_user
     api_key                 varchar(64) comment 'API 请求密钥',
     create_time             datetime     not null default CURRENT_TIMESTAMP comment '创建时间',
     update_time             datetime     not null default CURRENT_TIMESTAMP comment '更新时间',
+    version                 int                   default 0 comment '版本号',
     unique key u_username (username),
     unique key u_email (email)
 ) ENGINE = InnoDB;
@@ -41,6 +42,7 @@ create table if not exists lu_role
     enabled     boolean     not null default true comment '是否启用',
     create_time datetime    not null default CURRENT_TIMESTAMP comment '创建时间',
     update_time datetime    not null default CURRENT_TIMESTAMP comment '更新时间',
+    version     int                  default 0 comment '版本号',
     unique key r_role_name (name)
 ) ENGINE = InnoDB;
 
@@ -51,7 +53,7 @@ create table if not exists lu_url
     short_url       varchar(8)    not null comment '短链接',
     original_url    varchar(1024) not null comment '原始链接',
     user_id         bigint        not null comment '用户ID',
-    status          tinyint                default 1 comment '状态',
+    status          tinyint                default 0 comment '状态',
     expiration_time datetime comment '过期时间',
     create_time     datetime      not null default CURRENT_TIMESTAMP comment '创建时间',
     update_time     datetime      not null default CURRENT_TIMESTAMP comment '更新时间',
@@ -81,6 +83,7 @@ create table if not exists lu_permission
     enabled     boolean     not null default true comment '是否启用',
     create_time datetime    not null default CURRENT_TIMESTAMP comment '创建时间',
     update_time datetime    not null default CURRENT_TIMESTAMP comment '更新时间',
+    version     int                  default 0 comment '版本号',
     unique key p_code (code)
 ) ENGINE = InnoDB;
 
@@ -103,6 +106,7 @@ create table if not exists lu_subscription
     description varchar(255) comment '订阅描述',
     create_time datetime    not null default CURRENT_TIMESTAMP comment '创建时间',
     update_time datetime    not null default CURRENT_TIMESTAMP comment '更新时间',
+    version     int                  default 0 comment '版本号',
     unique key s_name (name)
 ) ENGINE = InnoDB;
 
@@ -116,5 +120,6 @@ create table if not exists lu_subscription_term
     period_value    integer        not null comment '有效期时间',
     create_time     datetime       not null default CURRENT_TIMESTAMP comment '创建时间',
     update_time     datetime       not null default CURRENT_TIMESTAMP comment '更新时间',
+    version         int                     default 0 comment '版本号',
     unique key subscription_term (subscription_id, period_unit, period_value)
 ) ENGINE = InnoDB;

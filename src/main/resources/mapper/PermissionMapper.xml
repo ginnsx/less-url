@@ -19,8 +19,8 @@
 
   <select id="listEnabledPermissionsByRoleId" resultMap="BaseResultMap">
       select p.id, p.code, p.name, p.description, p.enabled, p.create_time, p.update_time
-      from lu_permissions p
-               left join lu_role_permissions rp on p.id = rp.permission_id
+      from lu_permission p
+               left join lu_role_permission rp on p.id = rp.permission_id
       where rp.role_id = #{roleId}
         and p.enabled = true
   </select>
