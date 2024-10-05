@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class VerifyCodeService {
 
-    private final static String VERIFY_CODE_KEY_PREFIX = "verify:code:";
+    private final static String VERIFY_CODE_KEY_PREFIX = "lu:verify:code:";
 
     private final StringRedisTemplate redisTemplate;
 
