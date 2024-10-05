@@ -180,7 +180,7 @@ class AuthenticationTest {
 
     @Test
     void Login_bad_credentials() throws Exception {
-        mockMvc.perform(post("/api/auth/token")
+        mockMvc.perform(post("/auth/token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"username":"test","password":"bad pwd"}"""))
@@ -193,7 +193,7 @@ class AuthenticationTest {
 
     @Test
     public void Login_successfully() throws Exception {
-        mockMvc.perform(post("/api/auth/token")
+        mockMvc.perform(post("/auth/token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"username":"test","password":"password"}"""))

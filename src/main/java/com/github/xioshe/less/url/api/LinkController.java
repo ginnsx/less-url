@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "短链接")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/links")
+@RequestMapping("/links")
 public class LinkController {
 
     private final LinkService linkService;
