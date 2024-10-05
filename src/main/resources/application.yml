@@ -7,6 +7,8 @@ server:
     enabled: true
 
 spring:
+  config:
+    import: optional:file:.env[.properties] # 加载 .env 文件
   application:
     name: less-url
   sql:
@@ -22,10 +24,18 @@ spring:
     default-property-inclusion: non_null
   data:
     redis:
-      host: 192.168.31.19
+      host: ${REDIS_HOST:localhost}
   cache:
     redis:
       enable-statistics: true
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
@@ -37,7 +47,6 @@ mybatis-plus:
     db-config:
       id-type: auto
       table-prefix: lu_
-      logic-delete-field: deleted_key
     banner: false
   mapper-locations: classpath:mapper/**.xml
   type-aliases-package: com.github.xioshe.less.url.entity
@@ -49,7 +58,7 @@ security:
     access-expiration-seconds: 43200 # 12h
     refresh-expiration-seconds: 86400 # 24h
     key:
-      secret: cThIIoDvwdueQB468K5xDc5633seEFoq
+      secret: ${JWT_SECRET:0123456789abcdefghijklmnopqrstuv}
       rotation:
         cron: 0 0 0 * * ?
 

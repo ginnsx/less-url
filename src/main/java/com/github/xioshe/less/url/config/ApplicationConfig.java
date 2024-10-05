@@ -8,9 +8,11 @@ import com.github.xioshe.less.url.util.codec.Encoder;
 import com.github.xioshe.less.url.util.hash.HashFunctions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 
+@EnableAsync
 @EnableScheduling
 @Configuration
 public class ApplicationConfig {

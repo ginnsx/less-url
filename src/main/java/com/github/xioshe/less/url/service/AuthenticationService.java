@@ -4,6 +4,7 @@ package com.github.xioshe.less.url.service;
 import com.github.xioshe.less.url.api.dto.AuthCommand;
 import com.github.xioshe.less.url.api.dto.AuthResponse;
 import com.github.xioshe.less.url.api.dto.SignupCommand;
+import com.github.xioshe.less.url.api.dto.VerifyCodeCommand;
 import com.github.xioshe.less.url.entity.User;
 import com.github.xioshe.less.url.repository.UserRepository;
 import com.github.xioshe.less.url.security.JwtTokenService;
@@ -18,6 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -27,6 +31,8 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final JwtTokenService tokenService;
     private final UserDetailsService userDetailsService;
+    private final VerifyCodeService verifyCodeService;
+    private final EmailService emailService;
 
     public User signup(SignupCommand command) {
         User user = command.asUser(passwordEncoder);
@@ -73,5 +79,21 @@ public class AuthenticationService {
         if (StringUtils.hasText(refreshToken)) {
             tokenService.blacklistRefreshToken(token);
         }
+    }
+
+    public void sendVerifyCode(VerifyCodeCommand command) {
+        if (userRepository.existsByEmail(command.getEmail())) {
+            throw new IllegalArgumentException("email already exists");
+        }
+        // todo 1 min 分布式锁，避免重复发送
+        String code = verifyCodeService.generate(command.getEmail(), "email");
+        sendVerifyCodeEmail(command.getEmail(), code);
+    }
+
+    private void sendVerifyCodeEmail(String to, String code) {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("code", code);
+        variables.put("expireTime", verifyCodeService.getExpirationMinutes());
+        emailService.sendEmail(to, "register-verify-code", variables);
     }
 }

@@ -4,6 +4,7 @@ import com.github.xioshe.less.url.api.dto.AuthCommand;
 import com.github.xioshe.less.url.api.dto.AuthResponse;
 import com.github.xioshe.less.url.api.dto.RefreshTokenCommand;
 import com.github.xioshe.less.url.api.dto.SignupCommand;
+import com.github.xioshe.less.url.api.dto.VerifyCodeCommand;
 import com.github.xioshe.less.url.entity.User;
 import com.github.xioshe.less.url.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,10 +30,17 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
+
+    @Operation(summary = "发送验证码", description = "发送验证码")
+    @PostMapping("/verify")
+    public void sendVerifyCode(@RequestBody @Validated VerifyCodeCommand command) {
+        authenticationService.sendVerifyCode(command);
+    }
+
     @Operation(summary = "注册新用户", description = "创建一个新的用户并返回创建的用户信息")
     @ApiResponse(responseCode = "200", description = "注册成功",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)))
-    @PostMapping("/signup")
+    @PostMapping("/register")
     public User signup(@RequestBody SignupCommand command) {
         return authenticationService.signup(command);
     }

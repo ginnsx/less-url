@@ -123,3 +123,16 @@ create table if not exists lu_subscription_term
     version         int                     default 0 comment '版本号',
     unique key subscription_term (subscription_id, period_unit, period_value)
 ) ENGINE = InnoDB;
+
+drop table if exists lu_email_template;
+create table if not exists lu_email_template
+(
+    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name        varchar(20) not null comment '模板名称',
+    subject     varchar(255) comment '邮件主题',
+    content     TEXT comment '邮件内容',
+    create_time datetime    not null default CURRENT_TIMESTAMP comment '创建时间',
+    update_time datetime    not null default CURRENT_TIMESTAMP comment '更新时间',
+    version     int                  default 0 comment '版本号',
+    unique key et_name (name)
+)
