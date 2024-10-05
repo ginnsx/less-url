@@ -1,10 +1,9 @@
 package com.github.xioshe.less.url.api;
 
 
-import com.github.xioshe.less.url.api.dto.CreateUrlCommand;
+import com.github.xioshe.less.url.api.dto.CreateLinkCommand;
 import com.github.xioshe.less.url.repository.AccessRecordRepository;
-import com.github.xioshe.less.url.service.AccessRecordService;
-import com.github.xioshe.less.url.service.UrlService;
+import com.github.xioshe.less.url.service.LinkService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,11 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "短链接")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/urls")
-public class UrlController {
+@RequestMapping("/api/links")
+public class LinkController {
 
-    private final UrlService urlService;
-    private final AccessRecordService accessRecordService;
+    private final LinkService linkService;
     private final AccessRecordRepository accessRecordRepository;
 
     @Value("${less.url.prefix:http://localhost:8080/}")
@@ -39,8 +37,8 @@ public class UrlController {
     @Operation(summary = "生成短链接", description = "生成短链接")
     @ApiResponse(responseCode = "200", description = "短链接生成成功")
     @PostMapping
-    public String shorten(@Parameter(description = "原始链接") @RequestBody @Validated CreateUrlCommand command) {
-        return baseUrl + urlService.shorten(command);
+    public String shorten(@Parameter(description = "原始链接") @RequestBody @Validated CreateLinkCommand command) {
+        return baseUrl + linkService.shorten(command);
     }
 
     @Hidden

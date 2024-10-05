@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Schema(description = "短链接生成请求")
 @Data
-public class CreateUrlCommand {
+public class CreateLinkCommand {
 
     @NotNull
     @URL

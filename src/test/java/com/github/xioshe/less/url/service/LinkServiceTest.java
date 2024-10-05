@@ -1,8 +1,8 @@
 package com.github.xioshe.less.url.service;
 
-import com.github.xioshe.less.url.api.dto.CreateUrlCommand;
-import com.github.xioshe.less.url.entity.Url;
-import com.github.xioshe.less.url.repository.UrlRepository;
+import com.github.xioshe.less.url.api.dto.CreateLinkCommand;
+import com.github.xioshe.less.url.entity.Link;
+import com.github.xioshe.less.url.repository.LinkRepository;
 import com.github.xioshe.less.url.shorter.UrlShorter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,33 +22,33 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class UrlServiceTest {
+public class LinkServiceTest {
 
-    private UrlRepository urlRepository;
+    private LinkRepository linkRepository;
 
     private UrlShorter urlShorter;
 
-    private UrlService urlService;
+    private LinkService linkService;
 
     @BeforeEach
     void setUp() {
-        urlRepository = mock(UrlRepository.class);
+        linkRepository = mock(LinkRepository.class);
         urlShorter = mock(UrlShorter.class);
-        urlService = new UrlService(urlRepository, urlShorter);
+        linkService = new LinkService(linkRepository, urlShorter);
     }
 
     @Test
     void Shorten_custom_alias() {
-        var cmd = new CreateUrlCommand();
+        var cmd = new CreateLinkCommand();
         cmd.setUserId(1L);
         cmd.setOriginalUrl("https://example.com");
         cmd.setCustomAlias("custom");
 
-        when(urlRepository.existsByShortUrl("custom")).thenReturn(false);
+        when(linkRepository.existsByShortUrl("custom")).thenReturn(false);
 
-        var result = urlService.shorten(cmd);
+        var result = linkService.shorten(cmd);
         assertEquals("custom", result);
-        verify(urlRepository).save(argThat(url ->
+        verify(linkRepository).save(argThat(url ->
                 url.getOriginalUrl().equals("https://example.com")
                 && url.getUserId() == 1L
                 && url.getShortUrl().equals("custom")
@@ -57,14 +57,14 @@ public class UrlServiceTest {
 
     @Test
     void Shorten_conflicted_custom_alias() {
-        var cmd = new CreateUrlCommand();
+        var cmd = new CreateLinkCommand();
         cmd.setUserId(1L);
         cmd.setOriginalUrl("https://example.com");
         cmd.setCustomAlias("custom");
 
-        when(urlRepository.existsByShortUrl("custom")).thenReturn(true);
+        when(linkRepository.existsByShortUrl("custom")).thenReturn(true);
 
-        var e = assertThrows(RuntimeException.class, () -> urlService.shorten(cmd));
+        var e = assertThrows(RuntimeException.class, () -> linkService.shorten(cmd));
         assertEquals("Alias already exists", e.getMessage());
     }
 
@@ -75,12 +75,12 @@ public class UrlServiceTest {
         String shortUrl = "https://existing-short.com";
         var date = LocalDateTime.now();
 
-        when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.of(shortUrl));
+        when(linkRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.of(shortUrl));
 
-        String result = urlService.shorten(originalUrl, 1L, date);
+        String result = linkService.shorten(originalUrl, 1L, date);
 
         assertEquals(shortUrl, result);
-        verify(urlRepository, never()).save(any(Url.class));
+        verify(linkRepository, never()).save(any(Link.class));
     }
 
     @Test
@@ -90,14 +90,14 @@ public class UrlServiceTest {
         String shortUrl = "https://short.com";
         var date = LocalDateTime.now();
 
-        when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.empty());
+        when(linkRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.empty());
         when(urlShorter.shorten(decodedUrl)).thenReturn(shortUrl);
-        when(urlRepository.existsByShortUrl(shortUrl)).thenReturn(false);
+        when(linkRepository.existsByShortUrl(shortUrl)).thenReturn(false);
 
-        String result = urlService.shorten(originalUrl, 1L, date);
+        String result = linkService.shorten(originalUrl, 1L, date);
 
         assertEquals(shortUrl, result);
-        verify(urlRepository).save(argThat(url ->
+        verify(linkRepository).save(argThat(url ->
                 url.getOriginalUrl().equals(decodedUrl)
                 && url.getUserId() == 1L
                 && url.getShortUrl().equals(shortUrl)
@@ -110,12 +110,12 @@ public class UrlServiceTest {
         String decodedUrl = URLDecoder.decode(originalUrl, StandardCharsets.UTF_8);
         String shortUrl = "https://fail-short.com";
 
-        when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.empty());
+        when(linkRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.empty());
         when(urlShorter.shorten(anyString())).thenReturn(shortUrl);
-        when(urlRepository.existsByShortUrl(shortUrl)).thenReturn(true);
+        when(linkRepository.existsByShortUrl(shortUrl)).thenReturn(true);
 
         var e = assertThrows(RuntimeException.class,
-                () -> urlService.shorten(originalUrl, 1L, LocalDateTime.now()));
+                () -> linkService.shorten(originalUrl, 1L, LocalDateTime.now()));
         assertEquals("Failed to shorten url", e.getMessage());
     }
 
@@ -126,14 +126,14 @@ public class UrlServiceTest {
         String shortUrl = "https://conflict-short.com";
         var date = LocalDateTime.now();
 
-        when(urlRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.empty());
+        when(linkRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.empty());
         when(urlShorter.shorten(anyString())).thenReturn(shortUrl);
-        when(urlRepository.existsByShortUrl(shortUrl)).thenReturn(true).thenReturn(false);
+        when(linkRepository.existsByShortUrl(shortUrl)).thenReturn(true).thenReturn(false);
 
-        String result = urlService.shorten(originalUrl, 1L, date);
+        String result = linkService.shorten(originalUrl, 1L, date);
 
         assertEquals(shortUrl, result);
-        verify(urlRepository).save(argThat(url ->
+        verify(linkRepository).save(argThat(url ->
                 url.getOriginalUrl().equals(decodedUrl)
                 && url.getUserId() == 1L
                 && url.getShortUrl().equals(shortUrl)

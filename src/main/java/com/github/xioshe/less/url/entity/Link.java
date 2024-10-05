@@ -8,7 +8,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class Url {
+public class Link {
     private Long id;
 
     /**

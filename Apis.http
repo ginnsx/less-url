@@ -27,13 +27,13 @@ Authorization: Bearer {{lu_token}}
 GET http://localhost:8080/api/users/1
 Authorization: Bearer {{lu_token}}
 
-### Get User's URLs
-GET http://localhost:8080/api/users/1/urls
+### Get User's Links
+GET http://localhost:8080/api/users/1/links
 Authorization: Bearer {{lu_token}}
 
 
 ### Create Short URL
-POST http://localhost:8080/api/urls
+POST http://localhost:8080/api/links
 Content-Type: application/json
 Authorization: Bearer {{lu_token}}
 
@@ -50,5 +50,5 @@ Authorization: Bearer {{lu_token}}
 GET http://localhost:8080/s/custom
 
 ### Get Access Records
-GET http://localhost:8080/api/urls/custom/access-records
+GET http://localhost:8080/api/links/custom/access-records
 Authorization: Bearer {{lu_token}}

@@ -1,11 +1,11 @@
 package com.github.xioshe.less.url.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.github.xioshe.less.url.entity.Url;
+import com.github.xioshe.less.url.entity.Link;
 import org.apache.ibatis.annotations.Mapper;
 
 
 @Mapper
-public interface UrlMapper extends BaseMapper<Url> {
+public interface LinkMapper extends BaseMapper<Link> {
 
 }

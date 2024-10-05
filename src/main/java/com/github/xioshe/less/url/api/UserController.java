@@ -3,9 +3,9 @@ package com.github.xioshe.less.url.api;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xioshe.less.url.api.dto.Pagination;
-import com.github.xioshe.less.url.entity.Url;
+import com.github.xioshe.less.url.entity.Link;
 import com.github.xioshe.less.url.entity.User;
-import com.github.xioshe.less.url.repository.UrlRepository;
+import com.github.xioshe.less.url.repository.LinkRepository;
 import com.github.xioshe.less.url.repository.UserRepository;
 import com.github.xioshe.less.url.security.SecurityUser;
 import com.github.xioshe.less.url.service.UserService;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserRepository userRepository;
-    private final UrlRepository urlRepository;
+    private final LinkRepository linkRepository;
     private final UserService userService;
 
     @Operation(summary = "获取当前用户信息，需要提供 token")
@@ -58,11 +58,11 @@ public class UserController {
         userService.update(user);
     }
 
-    @Operation(summary = "根据 id 获取用户 url 列表")
-    @ApiResponse(responseCode = "200", description = "获取用户 url 列表成功")
-    @GetMapping("/{id}/urls")
-    public IPage<Url> getUserUrls(@Parameter(description = "用户 id") @PathVariable("id") Long userId,
-                                  @Parameter(hidden = true) @Validated Pagination page) {
-        return urlRepository.lambdaQuery().eq(Url::getUserId, userId).page(page.toPage());
+    @Operation(summary = "根据 id 获取用户短链列表")
+    @ApiResponse(responseCode = "200", description = "获取用户短链列表成功")
+    @GetMapping("/{id}/links")
+    public IPage<Link> getUserUrls(@Parameter(description = "用户 id") @PathVariable("id") Long userId,
+                                   @Parameter(hidden = true) @Validated Pagination page) {
+        return linkRepository.lambdaQuery().eq(Link::getUserId, userId).page(page.toPage());
     }
 }

@@ -1,6 +1,6 @@
 package com.github.xioshe.less.url.api;
 
-import com.github.xioshe.less.url.api.dto.CreateUrlCommand;
+import com.github.xioshe.less.url.api.dto.CreateLinkCommand;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
@@ -9,13 +9,13 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CreateUrlCommandValidationTest {
+class CreateLinkCommandValidationTest {
 
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @Test
     void OriginalUrl() {
-        var command = new CreateUrlCommand();
+        var command = new CreateLinkCommand();
         command.setUserId(1L);
         command.setOriginalUrl("https://www.google.com");
         assertThat(validator.validate(command)).isEmpty();
@@ -27,7 +27,7 @@ class CreateUrlCommandValidationTest {
 
     @Test
     void CustomAlias_shorter_than_six() {
-        var command = new CreateUrlCommand();
+        var command = new CreateLinkCommand();
         command.setUserId(1L);
         command.setOriginalUrl("https://www.google.com");
         command.setCustomAlias("123456");
@@ -38,7 +38,7 @@ class CreateUrlCommandValidationTest {
 
     @Test
     void CustomAlias_contains_letters_or_digits() {
-        var command = new CreateUrlCommand();
+        var command = new CreateLinkCommand();
         command.setUserId(1L);
         command.setOriginalUrl("https://www.google.com");
         command.setCustomAlias("123AbC");
@@ -49,14 +49,14 @@ class CreateUrlCommandValidationTest {
 
     @Test
     void UserId_not_null() {
-        var command = new CreateUrlCommand();
+        var command = new CreateLinkCommand();
         command.setOriginalUrl("https://www.google.com");
         assertThat(validator.validate(command)).hasSize(1);
     }
 
     @Test
     void UserId_bigger_than_zero() {
-        var command = new CreateUrlCommand();
+        var command = new CreateLinkCommand();
         command.setOriginalUrl("https://www.google.com");
         command.setUserId(0L);
         assertThat(validator.validate(command)).hasSize(1);
@@ -64,7 +64,7 @@ class CreateUrlCommandValidationTest {
 
     @Test
     void ExpirationTime() {
-        var command = new CreateUrlCommand();
+        var command = new CreateLinkCommand();
         command.setUserId(1L);
         command.setOriginalUrl("https://www.google.com");
 

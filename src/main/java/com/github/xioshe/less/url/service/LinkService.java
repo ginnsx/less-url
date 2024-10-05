@@ -1,9 +1,9 @@
 package com.github.xioshe.less.url.service;
 
-import com.github.xioshe.less.url.api.dto.CreateUrlCommand;
-import com.github.xioshe.less.url.entity.Url;
+import com.github.xioshe.less.url.api.dto.CreateLinkCommand;
+import com.github.xioshe.less.url.entity.Link;
 import com.github.xioshe.less.url.exceptions.UrlNotFoundException;
-import com.github.xioshe.less.url.repository.UrlRepository;
+import com.github.xioshe.less.url.repository.LinkRepository;
 import com.github.xioshe.less.url.shorter.UrlShorter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -17,16 +17,16 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UrlService {
+public class LinkService {
 
-    private final UrlRepository urlRepository;
+    private final LinkRepository linkRepository;
     private final UrlShorter urlShorter;
 
-    public String shorten(CreateUrlCommand command) {
+    public String shorten(CreateLinkCommand command) {
         String decodedUrl = URLDecoder.decode(command.getOriginalUrl(), StandardCharsets.UTF_8);
         String customAlias = command.getCustomAlias();
         if (StringUtils.hasText(customAlias)) {
-            if (urlRepository.existsByShortUrl(customAlias)) {
+            if (linkRepository.existsByShortUrl(customAlias)) {
                 throw new IllegalArgumentException("Alias already exists");
             }
             save(decodedUrl, customAlias, command.getExpirationTime(), command.getUserId());
@@ -37,7 +37,7 @@ public class UrlService {
 
     public String shorten(String originalUrl, Long userId, LocalDateTime expirationTime) {
         // 依靠 userId 索引能保证 ms 级别查询效率
-        Optional<String> existedShort = urlRepository.selectByOriginalUrlAndUserId(originalUrl, userId);
+        Optional<String> existedShort = linkRepository.selectByOriginalUrlAndUserId(originalUrl, userId);
         if (existedShort.isPresent()) {
             return existedShort.get();
         }
@@ -47,7 +47,7 @@ public class UrlService {
         // 最多尝试 3 次，尽最大努力解决冲突
         for (int i = 0; i < 3; i++) {
             shortUrl = urlShorter.shorten(shortUrl);
-            if (!urlRepository.existsByShortUrl(shortUrl)) {
+            if (!linkRepository.existsByShortUrl(shortUrl)) {
                 save(originalUrl, shortUrl, expirationTime, userId);
                 return shortUrl;
             }
@@ -57,26 +57,26 @@ public class UrlService {
     }
 
     public void save(String originalUrl, String shortUrl, LocalDateTime expirationTime, Long userId) {
-        var record = new Url();
+        var record = new Link();
         record.setOriginalUrl(originalUrl);
         record.setShortUrl(shortUrl);
         record.setUserId(userId);
         record.setStatus(1);
         record.setExpirationTime(expirationTime);
-        urlRepository.save(record);
+        linkRepository.save(record);
     }
 
-    @Cacheable(cacheNames = "urls", key = "#shortUrl")
+    @Cacheable(cacheNames = "links", key = "#shortUrl")
     public String getOriginalUrl(String shortUrl) {
-        Url url = urlRepository.selectByShortUrl(shortUrl);
-        if (url == null) {
+        Link link = linkRepository.selectByShortUrl(shortUrl);
+        if (link == null) {
             throw new UrlNotFoundException(shortUrl);
         }
-        String originalUrl = url.getOriginalUrl();
+        String originalUrl = link.getOriginalUrl();
         if (!StringUtils.hasText(originalUrl)) {
             throw new UrlNotFoundException(shortUrl);
         }
-        if (url.getExpirationTime() != null && url.getExpirationTime().isBefore(LocalDateTime.now())) {
+        if (link.getExpirationTime() != null && link.getExpirationTime().isBefore(LocalDateTime.now())) {
             throw new UrlNotFoundException(shortUrl);
         }
         return originalUrl;

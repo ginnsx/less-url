@@ -46,8 +46,8 @@ create table if not exists lu_role
     unique key r_role_name (name)
 ) ENGINE = InnoDB;
 
-drop table if exists lu_url;
-create table if not exists lu_url
+drop table if exists lu_link;
+create table if not exists lu_link
 (
     id              BIGINT PRIMARY KEY AUTO_INCREMENT,
     short_url       varchar(8)    not null comment '短链接',
