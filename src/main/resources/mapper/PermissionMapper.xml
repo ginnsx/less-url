@@ -3,7 +3,7 @@
 <mapper namespace="com.github.xioshe.less.url.repository.mapper.PermissionMapper">
   <resultMap id="BaseResultMap" type="com.github.xioshe.less.url.entity.Permission">
     <!--@mbg.generated-->
-    <!--@Table lu_permissions-->
+    <!--@Table lu_permission-->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="code" jdbcType="VARCHAR" property="code" />
     <result column="name" jdbcType="VARCHAR" property="name" />

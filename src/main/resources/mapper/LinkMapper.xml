@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.xioshe.less.url.repository.mapper.LinkMapper">
     <resultMap id="BaseResultMap" type="com.github.xioshe.less.url.entity.Link">
-        <!--@Table lu_url-->
+        <!--@Table lu_link-->
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="short_url" jdbcType="VARCHAR" property="shortUrl"/>
         <result column="original_url" jdbcType="VARCHAR" property="originalUrl"/>

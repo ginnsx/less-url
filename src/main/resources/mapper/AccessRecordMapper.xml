@@ -3,7 +3,7 @@
 <mapper namespace="com.github.xioshe.less.url.repository.mapper.AccessRecordMapper">
   <resultMap id="BaseResultMap" type="com.github.xioshe.less.url.entity.AccessRecord">
     <!--@mbg.generated-->
-    <!--@Table lu_access_records-->
+    <!--@Table lu_access_record-->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="short_url" jdbcType="VARCHAR" property="shortUrl" />
     <result column="user_agent" jdbcType="VARCHAR" property="userAgent" />
