@@ -24,7 +24,7 @@ public class Pagination {
     @Parameter(description = "页码，从 1 开始", example = "1")
     private Integer page = 1;
     @Parameter(description = "每页大小", example = "20")
-    private Integer size;
+    private Integer size = 20;
     @Parameter(description = "按游标分页，上一页的最后一个元素 id，会忽略 page")
     private Long after;
     @Parameter(description = "排序条件", example = "email,-last_modify,+name")

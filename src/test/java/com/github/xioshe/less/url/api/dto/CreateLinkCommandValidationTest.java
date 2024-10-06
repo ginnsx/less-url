@@ -22,7 +22,6 @@ class CreateLinkCommandValidationTest {
     @Test
     void OriginalUrl() {
         var command = new CreateLinkCommand();
-        command.setUserId(1L);
         command.setOriginalUrl("https://www.google.com");
         assertThat(validator.validate(command)).isEmpty();
         command.setOriginalUrl("http://www.google.com");
@@ -34,7 +33,6 @@ class CreateLinkCommandValidationTest {
     @Test
     void CustomAlias_shorter_than_six() {
         var command = new CreateLinkCommand();
-        command.setUserId(1L);
         command.setOriginalUrl("https://www.google.com");
         command.setCustomAlias("123456");
         assertThat(validator.validate(command)).isEmpty();
@@ -45,7 +43,6 @@ class CreateLinkCommandValidationTest {
     @Test
     void CustomAlias_contains_letters_or_digits() {
         var command = new CreateLinkCommand();
-        command.setUserId(1L);
         command.setOriginalUrl("https://www.google.com");
         command.setCustomAlias("123AbC");
         assertThat(validator.validate(command)).isEmpty();
@@ -54,24 +51,8 @@ class CreateLinkCommandValidationTest {
     }
 
     @Test
-    void UserId_not_null() {
-        var command = new CreateLinkCommand();
-        command.setOriginalUrl("https://www.google.com");
-        assertThat(validator.validate(command)).hasSize(1);
-    }
-
-    @Test
-    void UserId_bigger_than_zero() {
-        var command = new CreateLinkCommand();
-        command.setOriginalUrl("https://www.google.com");
-        command.setUserId(0L);
-        assertThat(validator.validate(command)).hasSize(1);
-    }
-
-    @Test
     void ExpirationTime() {
         var command = new CreateLinkCommand();
-        command.setUserId(1L);
         command.setOriginalUrl("https://www.google.com");
 
         var now = LocalDateTime.now();

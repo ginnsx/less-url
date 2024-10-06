@@ -43,6 +43,7 @@ class ExpiredJwtTest {
     void expired_jwt() throws Exception {
         var user = new User();
         user.setUsername("test");
+        user.setEmail("test@lu.com");
         user.setPassword("password");
         var token = jwtTokenService.generateAccessToken(user.asSecurityUser());
 
@@ -57,7 +58,7 @@ class ExpiredJwtTest {
     void invalid_jwt() throws Exception {
         var token = Jwts.builder()
                 .claims()
-                .subject("test")
+                .subject("test@lu.com")
                 .issuedAt(new Date(System.currentTimeMillis() + 10_000))
                 .notBefore(new Date(System.currentTimeMillis() + 10_000))
                 .expiration(new Date(System.currentTimeMillis() + 10_000))
@@ -89,15 +90,15 @@ class AuthenticationTest {
 
     @BeforeEach
     void setup() {
-        stringRedisTemplate.delete("lu:users:test");
-        stringRedisTemplate.delete("lu:users:admin");
-        stringRedisTemplate.delete("lu:blacklist:test");
-        stringRedisTemplate.delete("lu:blacklist:admin");
+        stringRedisTemplate.delete("lu:users:test@lu.com");
+        stringRedisTemplate.delete("lu:users:admin@lu.com");
+        stringRedisTemplate.delete("lu:blacklist:test@lu.com");
+        stringRedisTemplate.delete("lu:blacklist:admin@lu.com");
     }
 
 
     @Test
-    @WithUserDetails("test")
+    @WithUserDetails("test@lu.com")
     void access_successfully() throws Exception {
         mockMvc.perform(get("/test/user"))
                 .andExpect(status().isOk())
@@ -105,7 +106,7 @@ class AuthenticationTest {
     }
 
     @Test
-    @WithUserDetails("admin")
+    @WithUserDetails("admin@lu.com")
     void admin_access_successfully() throws Exception {
         mockMvc.perform(get("/test/admin"))
                 .andExpect(status().isOk())
@@ -133,7 +134,7 @@ class AuthenticationTest {
     @Test
     void blacklist_jwt() throws Exception {
         var user = SecurityUser.builder()
-                .username("test")
+                .email("test@lu.com")
                 .password("password")
                 .build();
         var token = jwtTokenService.generateAccessToken(user);
@@ -152,6 +153,7 @@ class AuthenticationTest {
     void not_authorized() throws Exception {
         var user = new User();
         user.setUsername("test");
+        user.setEmail("test@lu.com");
         user.setPassword("password");
         var token = jwtTokenService.generateAccessToken(user.asSecurityUser());
 
@@ -166,7 +168,7 @@ class AuthenticationTest {
     @Test
     void required_permission() throws Exception {
         var user = SecurityUser.builder()
-                .username("test")
+                .email("test@lu.com")
                 .password("password")
                 .build();
         var token = jwtTokenService.generateAccessToken(user);
@@ -183,7 +185,7 @@ class AuthenticationTest {
         mockMvc.perform(post("/auth/token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"username":"test","password":"bad pwd"}"""))
+                                {"email":"test@lu.com","password":"bad pwd"}"""))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("$.description")
@@ -196,7 +198,7 @@ class AuthenticationTest {
         mockMvc.perform(post("/auth/token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"username":"test","password":"password"}"""))
+                                {"email":"test@lu.com","password":"password"}"""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.accessToken").exists());

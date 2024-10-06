@@ -22,17 +22,17 @@ public class LinkService {
     private final LinkRepository linkRepository;
     private final UrlShorter urlShorter;
 
-    public String shorten(CreateLinkCommand command) {
+    public String shorten(CreateLinkCommand command, Long userId) {
         String decodedUrl = URLDecoder.decode(command.getOriginalUrl(), StandardCharsets.UTF_8);
         String customAlias = command.getCustomAlias();
         if (StringUtils.hasText(customAlias)) {
             if (linkRepository.existsByShortUrl(customAlias)) {
                 throw new IllegalArgumentException("Alias already exists");
             }
-            save(decodedUrl, customAlias, command.getExpirationTime(), command.getUserId());
+            save(decodedUrl, customAlias, command.getExpirationTime(), userId);
             return customAlias;
         }
-        return shorten(decodedUrl, command.getUserId(), command.getExpirationTime());
+        return shorten(decodedUrl, userId, command.getExpirationTime());
     }
 
     public String shorten(String originalUrl, Long userId, LocalDateTime expirationTime) {

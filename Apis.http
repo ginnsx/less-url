@@ -3,7 +3,7 @@ POST http://localhost:8080/auth/token
 Content-Type: application/json
 
 {
-  "username": "test",
+  "email": "test@lu.com",
   "password": "password"
 }
 
@@ -14,9 +14,10 @@ POST http://localhost:8080/auth/register
 Content-Type: application/json
 
 {
-  "username": "admin111",
+  "username": "alice",
   "password": "password",
-  "email": "me@lu.com"
+  "email": "me@lu.com",
+  "verifyCode": "123456"
 }
 
 ### Get Current User
@@ -28,7 +29,7 @@ GET http://localhost:8080/users/1
 Authorization: Bearer {{lu_token}}
 
 ### Get User's Links
-GET http://localhost:8080/users/1/links
+GET http://localhost:8080/users/1/links?page=1&size=20&sortBy=-update_time
 Authorization: Bearer {{lu_token}}
 
 
@@ -40,8 +41,7 @@ Authorization: Bearer {{lu_token}}
 {
   "originalUrl": "https://en.wikipedia.org/wiki/Cuckoo_filter",
   "customAlias": "custom",
-  "expirationTime": "",
-  "userId": 1
+  "expirationTime": ""
 }
 
 

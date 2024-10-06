@@ -40,13 +40,12 @@ public class LinkServiceTest {
     @Test
     void Shorten_custom_alias() {
         var cmd = new CreateLinkCommand();
-        cmd.setUserId(1L);
         cmd.setOriginalUrl("https://example.com");
         cmd.setCustomAlias("custom");
 
         when(linkRepository.existsByShortUrl("custom")).thenReturn(false);
 
-        var result = linkService.shorten(cmd);
+        var result = linkService.shorten(cmd, 1L);
         assertEquals("custom", result);
         verify(linkRepository).save(argThat(url ->
                 url.getOriginalUrl().equals("https://example.com")
@@ -58,13 +57,12 @@ public class LinkServiceTest {
     @Test
     void Shorten_conflicted_custom_alias() {
         var cmd = new CreateLinkCommand();
-        cmd.setUserId(1L);
         cmd.setOriginalUrl("https://example.com");
         cmd.setCustomAlias("custom");
 
         when(linkRepository.existsByShortUrl("custom")).thenReturn(true);
 
-        var e = assertThrows(RuntimeException.class, () -> linkService.shorten(cmd));
+        var e = assertThrows(RuntimeException.class, () -> linkService.shorten(cmd, 1L));
         assertEquals("Alias already exists", e.getMessage());
     }
 

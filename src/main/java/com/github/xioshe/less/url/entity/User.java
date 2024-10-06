@@ -36,7 +36,7 @@ public class User implements Serializable {
      * 用户名
      */
     @Schema(description = "用户名")
-    @Size(max = 20, message = "用户名最大长度要小于 20")
+    @Size(min = 4, max = 16, message = "用户名长度为 4-16 位")
     @NotBlank(message = "用户名不能为空")
     private String username;
 
@@ -114,8 +114,8 @@ public class User implements Serializable {
 
     public SecurityUser asSecurityUser() {
         return SecurityUser.builder()
+                .id(this.id)
                 .email(this.email)
-                .username(this.username)
                 .password(this.password)
                 .nickname(this.username)
                 .authorities(getAuthorities())

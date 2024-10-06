@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
 
@@ -27,10 +26,6 @@ public class CreateLinkCommand {
     @Schema(description = "短链接过期时间", example = "2024-09-08 00:00:00")
     @Future
     private LocalDateTime expirationTime;
-
-    @Positive
-    @NotNull
-    private Long userId;
     //    private String apiDevKey;
 
 }

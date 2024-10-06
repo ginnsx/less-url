@@ -21,13 +21,13 @@ public class SecurityUser implements UserDetails {
 
     public static final String ROLE_PREFIX = "ROLE_";
 
+    private Long id;
+
     private String email;
 
     private String nickname;
 
     private String password;
-
-    private String username;
 
     @Singular
     private Set<GrantedAuthority> authorities;
@@ -43,4 +43,9 @@ public class SecurityUser implements UserDetails {
 
     @Builder.Default
     private boolean credentialsNonExpired = true;
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 }
