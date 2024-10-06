@@ -3,8 +3,10 @@ package com.github.xioshe.less.url.service;
 
 import com.github.xioshe.less.url.api.dto.AuthCommand;
 import com.github.xioshe.less.url.api.dto.AuthResponse;
+import com.github.xioshe.less.url.api.dto.LoginCommand;
+import com.github.xioshe.less.url.api.dto.RegisterEmailCommand;
 import com.github.xioshe.less.url.api.dto.SignupCommand;
-import com.github.xioshe.less.url.api.dto.VerifyCodeCommand;
+import com.github.xioshe.less.url.api.dto.VerificationCommand;
 import com.github.xioshe.less.url.entity.User;
 import com.github.xioshe.less.url.repository.UserRepository;
 import com.github.xioshe.less.url.security.JwtTokenService;
@@ -22,26 +24,44 @@ import org.springframework.util.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.xioshe.less.url.service.VerificationType.LOGIN;
+import static com.github.xioshe.less.url.service.VerificationType.REGISTER;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
+
+    private static final String ACCOUNT_CREATION = "account-creation";
 
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final JwtTokenService tokenService;
     private final UserDetailsService userDetailsService;
-    private final VerifyCodeService verifyCodeService;
+    private final VerificationService verificationService;
     private final EmailService emailService;
 
     public User signup(SignupCommand command) {
+        if (!verificationService.verify(REGISTER.getValue(), command.getEmail(), command.getVerifyCode())) {
+            throw new IllegalArgumentException("无效验证码");
+        }
+        // todo 密码强度检测
         User user = command.asUser(passwordEncoder);
         userRepository.save(user);
+        // 清理验证码
+        verificationService.clean(REGISTER.getValue(), command.getEmail());
+        sendAccountCreationEmail(command.getEmail(), user.getUsername());
         return user;
     }
 
-    public AuthResponse login(AuthCommand command) {
-        UserDetails user = authenticate(command.getUsername(), command.getPassword());
+    private void sendAccountCreationEmail(String to, String username) {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("username", username);
+        emailService.sendEmail(to, ACCOUNT_CREATION, variables);
+    }
+
+    public AuthResponse auth(AuthCommand command) {
+        UserDetails user = authenticate(command.getEmail(), command.getPassword());
         return generateAuth(user);
     }
 
@@ -81,19 +101,45 @@ public class AuthenticationService {
         }
     }
 
-    public void sendVerifyCode(VerifyCodeCommand command) {
+    public void verifyEmailBeforeRegister(RegisterEmailCommand command) {
         if (userRepository.existsByEmail(command.getEmail())) {
-            throw new IllegalArgumentException("email already exists");
+            throw new IllegalArgumentException("邮箱已注册");
         }
         // todo 1 min 分布式锁，避免重复发送
-        String code = verifyCodeService.generate(command.getEmail(), "email");
-        sendVerifyCodeEmail(command.getEmail(), code);
+        String code = verificationService.generate(REGISTER.getValue(), command.getEmail());
+        sendRegisterVerificationEmail(command.getEmail(), code);
     }
 
-    private void sendVerifyCodeEmail(String to, String code) {
+    private void sendRegisterVerificationEmail(String to, String code) {
         Map<String, Object> variables = new HashMap<>();
         variables.put("code", code);
-        variables.put("expireTime", verifyCodeService.getExpirationMinutes());
-        emailService.sendEmail(to, "register-verify-code", variables);
+        variables.put("expireTime", verificationService.getExpirationMinutes());
+        emailService.sendEmail(to, REGISTER.getTemplateName(), variables);
+    }
+
+    public void sendEmailVerification(VerificationCommand command) {
+        if (!userRepository.existsByEmail(command.getEmail())) {
+            throw new IllegalArgumentException("邮箱未注册");
+        }
+        String code = verificationService.generate(command.getType().getValue(), command.getEmail());
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("code", code);
+        variables.put("expireTime", verificationService.getExpirationMinutes());
+        emailService.sendEmail(command.getEmail(), LOGIN.getTemplateName(), variables);
+    }
+
+    public AuthResponse login(LoginCommand command) {
+        if (!command.isValid()) {
+            throw new IllegalArgumentException("无效参数");
+        }
+        if (command.hasVerifyCode()) {
+            if (!verificationService.verify(LOGIN.getValue(), command.getEmail(), command.getVerifyCode())) {
+                throw new IllegalArgumentException("无效验证码");
+            }
+            UserDetails userDetails = userDetailsService.loadUserByUsername(command.getEmail());
+            verificationService.clean(LOGIN.getValue(), command.getEmail());
+            return generateAuth(userDetails);
+        }
+        return auth(new AuthCommand(command.getEmail(), command.getPassword()));
     }
 }

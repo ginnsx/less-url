@@ -8,8 +8,8 @@ import java.util.Optional;
 
 @Repository
 public class UserRepository extends BaseRepository<UserMapper, User> {
-    public Optional<User> findByUsername(String username) {
-        return lambdaQuery().eq(User::getUsername, username).oneOpt();
+    public Optional<User> findByEmail(String email) {
+        return lambdaQuery().eq(User::getEmail, email).oneOpt();
     }
 
     public boolean existsByEmail(String email) {

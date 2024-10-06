@@ -22,7 +22,7 @@ public class EmailTemplate implements Serializable {
      * 模板名称
      */
     @Schema(description = "模板名称")
-    @Size(max = 20, message = "模板名称最大长度要小于 20")
+    @Size(max = 50, message = "模板名称最大长度要小于 50")
     @NotBlank(message = "模板名称不能为空")
     private String name;
 

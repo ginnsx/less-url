@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册验证码</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        header img {
+            max-width: 150px;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .verification-code {
+            background-color: #f2f2f2;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+        .warning {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://example.com/logo.png" alt="公司标志">
+    </header>
+
+    <main>
+        <h1>欢迎注册 - 验证您的邮箱</h1>
+        <p>尊敬的新用户：</p>
+        <p>感谢您注册我们的服务。为了完成注册流程并验证您的邮箱地址，请使用以下验证码：</p>
+        <div class="verification-code">{{ code }}</div>
+        <p>此验证码将在 {{ expireTime }} 分钟内有效。请在注册页面输入此验证码以完成注册。</p>
+        <p class="warning">请勿将验证码透露给他人，以保护您的账户安全。</p>
+        <p>如果您没有尝试注册，请忽略此邮件。</p>
+        <p>注册完成后，您将可以享受我们提供的所有服务。如有任何疑问，欢迎联系我们的客户支持团队。</p>
+    </main>
+
+    <footer>
+        <p>此邮件由系统自动发送，请勿直接回复。</p>
+        <p>© 2024 Less Url。保留所有权利。</p>
+    </footer>
+</body>
+</html>

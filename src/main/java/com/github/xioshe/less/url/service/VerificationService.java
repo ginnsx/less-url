@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -12,9 +13,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class VerifyCodeService {
+public class VerificationService {
 
-    private final static String VERIFY_CODE_KEY_PREFIX = "lu:verify:code:";
+    private final static String VERIFY_CODE_KEY_PREFIX = "lu:verify:";
 
     private final StringRedisTemplate redisTemplate;
 
@@ -22,9 +23,9 @@ public class VerifyCodeService {
     @Setter
     private int expirationMinutes = 5;
 
-    public String generate(String contacts, String type) {
+    public String generate(String type, String identity) {
         String code = generateCode();
-        redisTemplate.opsForValue().set(getKey(contacts, type), code, expirationMinutes, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(getKey(type, identity), code, expirationMinutes, TimeUnit.MINUTES);
         return code;
     }
 
@@ -38,18 +39,19 @@ public class VerifyCodeService {
         return String.valueOf((int) ((Math.random() * 9 + 1) * 100_000));
     }
 
-    public boolean exists(String contacts, String type) {
-        return Boolean.TRUE.equals(redisTemplate.hasKey(getKey(contacts, type)));
-    }
-
-    public boolean verify(String contacts, String type, String code) {
+    public boolean verify(String type, String identity, String code) {
         if (code == null) {
             return false;
         }
-        return code.equals(redisTemplate.opsForValue().get(getKey(contacts, type)));
+        return code.equals(redisTemplate.opsForValue().get(getKey(type, identity)));
     }
 
-    private static String getKey(String contacts, String type) {
-        return VERIFY_CODE_KEY_PREFIX + type + ":" + contacts;
+    private static String getKey(String type, String identity) {
+        return VERIFY_CODE_KEY_PREFIX + type + ":" + identity;
+    }
+
+    @Async
+    public void clean(String type, String identity) {
+        redisTemplate.delete(getKey(type, identity));
     }
 }

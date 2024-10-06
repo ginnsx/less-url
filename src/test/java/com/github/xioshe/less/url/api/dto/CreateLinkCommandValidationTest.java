@@ -1,8 +1,8 @@
-package com.github.xioshe.less.url.api;
+package com.github.xioshe.less.url.api.dto;
 
-import com.github.xioshe.less.url.api.dto.CreateLinkCommand;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -11,7 +11,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CreateLinkCommandValidationTest {
 
-    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+    private final Validator validator;
+
+    CreateLinkCommandValidationTest() {
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            validator = factory.getValidator();
+        }
+    }
 
     @Test
     void OriginalUrl() {

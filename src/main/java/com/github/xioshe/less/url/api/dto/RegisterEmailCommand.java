@@ -1,25 +1,15 @@
 package com.github.xioshe.less.url.api.dto;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@Schema
-@NoArgsConstructor
-@AllArgsConstructor
-public class AuthCommand {
+public class RegisterEmailCommand {
 
-    @Schema(description = "邮箱")
-    @Email
+    @Schema(description = "邮箱地址")
     @NotNull
+    @Email
     private String email;
-
-    @Schema(description = "密码")
-    private String password;
-
 }
