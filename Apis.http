@@ -44,6 +44,13 @@ Authorization: Bearer {{lu_token}}
   "expirationTime": ""
 }
 
+### Get Short URL
+GET http://localhost:8080/links/1
+Authorization: Bearer {{lu_token}}
+
+### Delete Short URL
+DELETE http://localhost:8080/links/1
+Authorization: Bearer {{lu_token}}
 
 ### Visit Short URL
 // @no-redirect

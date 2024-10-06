@@ -6,6 +6,7 @@ import com.github.xioshe.less.url.exceptions.UrlNotFoundException;
 import com.github.xioshe.less.url.repository.LinkRepository;
 import com.github.xioshe.less.url.shorter.UrlShorter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -21,6 +22,7 @@ public class LinkService {
 
     private final LinkRepository linkRepository;
     private final UrlShorter urlShorter;
+    private final CacheManager cacheManager;
 
     public String shorten(CreateLinkCommand command, Long userId) {
         String decodedUrl = URLDecoder.decode(command.getOriginalUrl(), StandardCharsets.UTF_8);
@@ -80,5 +82,13 @@ public class LinkService {
             throw new UrlNotFoundException(shortUrl);
         }
         return originalUrl;
+    }
+
+    public void delete(Long id) {
+        linkRepository.getOptById(id).ifPresent(link -> {
+            linkRepository.removeById(id);
+            Optional.ofNullable(cacheManager.getCache("links"))
+                    .ifPresent(cache -> cache.evict(link.getShortUrl()));
+        });
     }
 }

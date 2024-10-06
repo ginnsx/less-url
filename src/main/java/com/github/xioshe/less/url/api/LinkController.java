@@ -2,10 +2,11 @@ package com.github.xioshe.less.url.api;
 
 
 import com.github.xioshe.less.url.api.dto.CreateLinkCommand;
+import com.github.xioshe.less.url.entity.Link;
 import com.github.xioshe.less.url.repository.AccessRecordRepository;
+import com.github.xioshe.less.url.repository.LinkRepository;
 import com.github.xioshe.less.url.security.SecurityUser;
 import com.github.xioshe.less.url.service.LinkService;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,10 +32,17 @@ public class LinkController {
 
     private final LinkService linkService;
     private final AccessRecordRepository accessRecordRepository;
+    private final LinkRepository linkRepository;
 
     @Value("${less.url.prefix:http://localhost:8080/}")
     private String baseUrl;
 
+    @Operation(summary = "获取短链接", description = "获取短链接")
+    @ApiResponse(responseCode = "200", description = "短链接获取成功")
+    @GetMapping("/{id}")
+    public Link getById(@Parameter(description = "短链接 id") @PathVariable Long id) {
+        return linkRepository.getOptById(id).orElseThrow();
+    }
 
     @Operation(summary = "生成短链接", description = "生成短链接")
     @ApiResponse(responseCode = "200", description = "短链接生成成功")
@@ -44,10 +52,10 @@ public class LinkController {
         return baseUrl + linkService.shorten(command, user.getId());
     }
 
-    @Hidden
-    @DeleteMapping("/{shortUrl}")
-    public void delete(@PathVariable String shortUrl) {
-        // todo token 获取 apiDevKey
+    @Operation(summary = "删除短链接", description = "删除短链接")
+    @DeleteMapping("/{id}")
+    public void delete(@Parameter(description = "短链接 id")  @PathVariable Long id) {
+        linkService.delete(id);
     }
 
 

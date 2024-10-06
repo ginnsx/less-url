@@ -16,10 +16,22 @@
     <result column="api_key" jdbcType="VARCHAR" property="apiKey" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="version" jdbcType="INTEGER" property="version" />
   </resultMap>
   <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    id, `level`, username, integral, balance, `password`, `status`, deleted_key, email, 
-    api_key, create_time, update_time
+      <!--@mbg.generated-->
+      id,
+      `level`,
+      username,
+      integral,
+      balance,
+      `password`,
+      `status`,
+      deleted_key,
+      email,
+      api_key,
+      create_time,
+      update_time,
+      version
   </sql>
 </mapper>

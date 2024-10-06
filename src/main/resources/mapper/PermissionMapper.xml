@@ -11,10 +11,11 @@
     <result column="enabled" jdbcType="BOOLEAN" property="enabled" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="version" jdbcType="INTEGER" property="version" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, code, `name`, description, enabled, create_time, update_time
+    id, code, `name`, description, enabled, create_time, update_time, version
   </sql>
 
   <select id="listEnabledPermissionsByRoleId" resultMap="BaseResultMap">

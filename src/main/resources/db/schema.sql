@@ -57,6 +57,7 @@ create table if not exists lu_link
     expiration_time datetime comment '过期时间',
     create_time     datetime      not null default CURRENT_TIMESTAMP comment '创建时间',
     update_time     datetime      not null default CURRENT_TIMESTAMP comment '更新时间',
+    version         int                     default 0 comment '版本号',
     unique key url_short_url (short_url),
     key url_user_id (user_id)
 ) ENGINE = InnoDB;
