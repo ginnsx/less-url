@@ -11,6 +11,9 @@ import com.github.xioshe.less.url.entity.User;
 import com.github.xioshe.less.url.repository.UserRepository;
 import com.github.xioshe.less.url.security.JwtTokenService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,10 +26,13 @@ import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.github.xioshe.less.url.service.VerificationType.LOGIN;
 import static com.github.xioshe.less.url.service.VerificationType.REGISTER;
 
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -40,6 +46,7 @@ public class AuthenticationService {
     private final UserDetailsService userDetailsService;
     private final VerificationService verificationService;
     private final EmailService emailService;
+    private final RedissonClient redissonClient;
 
     public User signup(SignupCommand command) {
         if (!verificationService.verify(REGISTER.getValue(), command.getEmail(), command.getVerifyCode())) {
@@ -48,9 +55,10 @@ public class AuthenticationService {
         // todo 密码强度检测
         User user = command.asUser(passwordEncoder);
         userRepository.save(user);
+        // 发送通知邮件
+        sendAccountCreationEmail(command.getEmail(), user.getUsername());
         // 清理验证码
         verificationService.clean(REGISTER.getValue(), command.getEmail());
-        sendAccountCreationEmail(command.getEmail(), user.getUsername());
         return user;
     }
 
@@ -105,9 +113,19 @@ public class AuthenticationService {
         if (userRepository.existsByEmail(command.getEmail())) {
             throw new IllegalArgumentException("邮箱已注册");
         }
-        // todo 1 min 分布式锁，避免重复发送
+        // 每个邮箱地址锁定 1min
+        RLock lock = redissonClient.getLock("lu:lock:" + REGISTER.getValue() + ":" + command.getEmail());
+        log.info("lock name: {}", lock.getName());
+        try {
+            if (!lock.tryLock(0, 1, TimeUnit.MINUTES)) {
+                throw new IllegalArgumentException("频繁发送验证码，请稍后再试");
+            }
+        } catch (InterruptedException e) {
+            throw new IllegalArgumentException("频繁发送验证码，请稍后再试");
+        }
         String code = verificationService.generate(REGISTER.getValue(), command.getEmail());
         sendRegisterVerificationEmail(command.getEmail(), code);
+        // 不解锁，依靠锁的过期时间自动释放
     }
 
     private void sendRegisterVerificationEmail(String to, String code) {

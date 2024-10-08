@@ -6,6 +6,7 @@ import com.github.xioshe.less.url.repository.LinkRepository;
 import com.github.xioshe.less.url.shorter.UrlShorter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.cache.CacheManager;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -34,7 +35,7 @@ public class LinkServiceTest {
     void setUp() {
         linkRepository = mock(LinkRepository.class);
         urlShorter = mock(UrlShorter.class);
-        linkService = new LinkService(linkRepository, urlShorter);
+        linkService = new LinkService(linkRepository, urlShorter, mock(CacheManager.class));
     }
 
     @Test
