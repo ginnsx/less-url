@@ -10,6 +10,7 @@ import com.github.xioshe.less.url.api.dto.VerificationCommand;
 import com.github.xioshe.less.url.entity.User;
 import com.github.xioshe.less.url.repository.UserRepository;
 import com.github.xioshe.less.url.security.JwtTokenService;
+import com.github.xioshe.less.url.util.PasswordStrengthChecker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -52,7 +53,9 @@ public class AuthenticationService {
         if (!verificationService.verify(REGISTER.getValue(), command.getEmail(), command.getVerifyCode())) {
             throw new IllegalArgumentException("无效验证码");
         }
-        // todo 密码强度检测
+        if (PasswordStrengthChecker.checkStrength(command.getPassword()) < 3) {
+            throw new IllegalArgumentException("密码强度不够，请使用字母、数字、符号组合，长度为 8-16 位");
+        }
         User user = command.asUser(passwordEncoder);
         userRepository.save(user);
         // 发送通知邮件
