@@ -54,6 +54,15 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(DistributedLockException.class)
+    public ProblemDetail handleDistributedLockException(UrlNotFoundException exception, HttpServletRequest request) {
+        log.debug("occur DistributedLockException: ", exception);
+        log.warn("DistributedLockException: {} because of {}", request.getRequestURI(), exception.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+        problemDetail.setProperty("description", "Concurrent operation exception");
+        return problemDetail;
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleSecurityException(Exception exception) {
 
