@@ -6,9 +6,14 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Configuration
 @SecurityScheme(
@@ -57,6 +62,10 @@ public class SwaggerSpringdocConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
+        SpringDocUtils.getConfig()
+                .replaceWithClass(Date.class, Long.class)
+                .replaceWithClass(LocalDateTime.class, Long.class)
+                .replaceWithClass(LocalDate.class, Long.class);
         return new OpenAPI()
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .info(new Info()
