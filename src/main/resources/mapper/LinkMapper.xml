@@ -9,14 +9,14 @@
         <result column="original_url" jdbcType="VARCHAR" property="originalUrl" />
         <result column="user_id" jdbcType="BIGINT" property="userId" />
         <result column="status" jdbcType="TINYINT" property="status" />
-        <result column="expiration_time" jdbcType="TIMESTAMP" property="expirationTime" />
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="expires_at" jdbcType="TIMESTAMP" property="expiresAt" />
+        <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+        <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
         <result column="version" jdbcType="INTEGER" property="version" />
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        id, short_url, original_url, user_id, `status`, expiration_time, create_time, update_time,
+        id, short_url, original_url, user_id, `status`, expires_at, created_at, updated_at,
         version
     </sql>
 </mapper>

@@ -52,7 +52,7 @@ public class LinkServiceTest {
                 url.getOriginalUrl().equals("https://example.com")
                 && url.getUserId() == 1L
                 && url.getShortUrl().equals("custom")
-                && url.getExpirationTime() == null));
+                && url.getExpiresAt() == null));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class LinkServiceTest {
                 url.getOriginalUrl().equals(decodedUrl)
                 && url.getUserId() == 1L
                 && url.getShortUrl().equals(shortUrl)
-                && url.getExpirationTime() == date));
+                && url.getExpiresAt() == date));
     }
 
     @Test
@@ -136,6 +136,6 @@ public class LinkServiceTest {
                 url.getOriginalUrl().equals(decodedUrl)
                 && url.getUserId() == 1L
                 && url.getShortUrl().equals(shortUrl)
-                && url.getExpirationTime() == date));
+                && url.getExpiresAt() == date));
     }
 }

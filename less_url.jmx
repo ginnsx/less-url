@@ -86,7 +86,7 @@
                 <stringProp name="Argument.value">{&#xd;
   &quot;originalUrl&quot;: &quot;https://www.bing.com/?intlF=&quot;,&#xd;
   &quot;customAlias&quot;: &quot;bing&quot;,&#xd;
-  &quot;expirationTime&quot;: &quot;&quot;,&#xd;
+  &quot;expiresAt&quot;: &quot;&quot;,&#xd;
   &quot;userId&quot;: 1&#xd;
 }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
@@ -107,7 +107,7 @@
                 <stringProp name="Argument.value">{&#xd;
   &quot;originalUrl&quot;: &quot;https://baidu.com&quot;,&#xd;
   &quot;customAlias&quot;: &quot;baidu&quot;,&#xd;
-  &quot;expirationTime&quot;: &quot;&quot;,&#xd;
+  &quot;expiresAt&quot;: &quot;&quot;,&#xd;
   &quot;userId&quot;: 1&#xd;
 }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>

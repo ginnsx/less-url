@@ -29,7 +29,7 @@ GET http://localhost:8080/users/1
 Authorization: Bearer {{lu_token}}
 
 ### Get User's Links
-GET http://localhost:8080/users/1/links?page=1&size=20&sortBy=-update_time
+GET http://localhost:8080/users/1/links?page=1&size=20&sortBy=-updated_at
 Authorization: Bearer {{lu_token}}
 
 
@@ -41,7 +41,7 @@ Authorization: Bearer {{lu_token}}
 {
   "originalUrl": "https://en.wikipedia.org/wiki/Cuckoo_filter",
   "customAlias": "custom",
-  "expirationTime": ""
+  "expiresAt": ""
 }
 
 ### Get Short URL

@@ -51,15 +51,15 @@ class CreateLinkCommandValidationTest {
     }
 
     @Test
-    void ExpirationTime() {
+    void expiresAt() {
         var command = new CreateLinkCommand();
         command.setOriginalUrl("https://www.google.com");
 
         var now = LocalDateTime.now();
-        command.setExpirationTime(now.plusSeconds(1));
+        command.setExpiresAt(now.plusSeconds(1));
         assertThat(validator.validate(command)).isEmpty();
 
-        command.setExpirationTime(now);
+        command.setExpiresAt(now);
         assertThat(validator.validate(command)).hasSize(1);
     }
 

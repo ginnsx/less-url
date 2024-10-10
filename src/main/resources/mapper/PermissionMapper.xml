@@ -9,17 +9,17 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="enabled" jdbcType="BOOLEAN" property="enabled" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
     <result column="version" jdbcType="INTEGER" property="version" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, code, `name`, description, enabled, create_time, update_time, version
+    id, code, `name`, description, enabled, created_at, updated_at, version
   </sql>
 
   <select id="listEnabledPermissionsByRoleId" resultMap="BaseResultMap">
-      select p.id, p.code, p.name, p.description, p.enabled, p.create_time, p.update_time
+      select p.id, p.code, p.name, p.description, p.enabled, p.created_at, p.updated_at
       from lu_permission p
                left join lu_role_permission rp on p.id = rp.permission_id
       where rp.role_id = #{roleId}

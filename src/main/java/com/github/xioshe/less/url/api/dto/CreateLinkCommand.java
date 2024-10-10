@@ -25,7 +25,7 @@ public class CreateLinkCommand {
 
     @Schema(description = "短链接过期时间", example = "2024-09-08 00:00:00")
     @Future
-    private LocalDateTime expirationTime;
+    private LocalDateTime expiresAt;
     //    private String apiDevKey;
 
 }

@@ -14,8 +14,8 @@
     <result column="deleted_key" jdbcType="BIGINT" property="deletedKey" />
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="api_key" jdbcType="VARCHAR" property="apiKey" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
     <result column="version" jdbcType="INTEGER" property="version" />
   </resultMap>
   <sql id="Base_Column_List">
@@ -30,8 +30,8 @@
       deleted_key,
       email,
       api_key,
-      create_time,
-      update_time,
+      created_at,
+      updated_at,
       version
   </sql>
 </mapper>

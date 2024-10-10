@@ -31,13 +31,13 @@ public class LinkService {
             if (linkRepository.existsByShortUrl(customAlias)) {
                 throw new IllegalArgumentException("Alias already exists");
             }
-            save(decodedUrl, customAlias, command.getExpirationTime(), userId);
+            save(decodedUrl, customAlias, command.getExpiresAt(), userId);
             return customAlias;
         }
-        return shorten(decodedUrl, userId, command.getExpirationTime());
+        return shorten(decodedUrl, userId, command.getExpiresAt());
     }
 
-    public String shorten(String originalUrl, Long userId, LocalDateTime expirationTime) {
+    public String shorten(String originalUrl, Long userId, LocalDateTime expiresAt) {
         // 依靠 userId 索引能保证 ms 级别查询效率
         Optional<String> existedShort = linkRepository.selectByOriginalUrlAndUserId(originalUrl, userId);
         if (existedShort.isPresent()) {
@@ -50,7 +50,7 @@ public class LinkService {
         for (int i = 0; i < 3; i++) {
             shortUrl = urlShorter.shorten(shortUrl);
             if (!linkRepository.existsByShortUrl(shortUrl)) {
-                save(originalUrl, shortUrl, expirationTime, userId);
+                save(originalUrl, shortUrl, expiresAt, userId);
                 return shortUrl;
             }
             shortUrl += userId;
@@ -58,13 +58,13 @@ public class LinkService {
         throw new RuntimeException("Failed to shorten url");
     }
 
-    public void save(String originalUrl, String shortUrl, LocalDateTime expirationTime, Long userId) {
+    public void save(String originalUrl, String shortUrl, LocalDateTime expiresAt, Long userId) {
         var record = new Link();
         record.setOriginalUrl(originalUrl);
         record.setShortUrl(shortUrl);
         record.setUserId(userId);
         record.setStatus(1);
-        record.setExpirationTime(expirationTime);
+        record.setExpiresAt(expiresAt);
         linkRepository.save(record);
     }
 
@@ -78,7 +78,7 @@ public class LinkService {
         if (!StringUtils.hasText(originalUrl)) {
             throw new UrlNotFoundException(shortUrl);
         }
-        if (link.getExpirationTime() != null && link.getExpirationTime().isBefore(LocalDateTime.now())) {
+        if (link.getExpiresAt() != null && link.getExpiresAt().isBefore(LocalDateTime.now())) {
             throw new UrlNotFoundException(shortUrl);
         }
         return originalUrl;

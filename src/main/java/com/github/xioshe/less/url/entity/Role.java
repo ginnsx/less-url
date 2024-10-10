@@ -47,14 +47,14 @@ public class Role implements Serializable {
      */
     @Schema(description = "创建时间")
     @TableField(fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
+    private LocalDateTime createdAt;
 
     /**
      * 更新时间
      */
     @Schema(description = "更新时间")
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
 
     @Schema(description = "版本号")

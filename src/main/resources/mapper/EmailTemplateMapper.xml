@@ -8,12 +8,12 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="subject" jdbcType="VARCHAR" property="subject" />
     <result column="content" jdbcType="LONGVARCHAR" property="content" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
     <result column="version" jdbcType="INTEGER" property="version" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, `name`, subject, content, create_time, update_time, version
+    id, `name`, subject, content, created_at, updated_at, version
   </sql>
 </mapper>
