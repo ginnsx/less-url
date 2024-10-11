@@ -9,6 +9,7 @@
         <result column="original_url" jdbcType="VARCHAR" property="originalUrl" />
         <result column="user_id" jdbcType="BIGINT" property="userId" />
         <result column="status" jdbcType="TINYINT" property="status" />
+        <result column="is_custom" jdbcType="BOOLEAN" property="isCustom" />
         <result column="expires_at" jdbcType="TIMESTAMP" property="expiresAt" />
         <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
         <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
@@ -16,7 +17,7 @@
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        id, short_url, original_url, user_id, `status`, expires_at, created_at, updated_at,
+        id, short_url, original_url, user_id, `status`, is_custom, expires_at, created_at, updated_at,
         version
     </sql>
 </mapper>

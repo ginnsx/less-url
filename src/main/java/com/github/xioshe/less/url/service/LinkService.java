@@ -31,7 +31,7 @@ public class LinkService {
             if (linkRepository.existsByShortUrl(customAlias)) {
                 throw new IllegalArgumentException("Alias already exists");
             }
-            save(decodedUrl, customAlias, command.getExpiresAt(), userId);
+            save(decodedUrl, customAlias, command.getExpiresAt(), userId, true);
             return customAlias;
         }
         return shorten(decodedUrl, userId, command.getExpiresAt());
@@ -50,7 +50,7 @@ public class LinkService {
         for (int i = 0; i < 3; i++) {
             shortUrl = urlShorter.shorten(shortUrl);
             if (!linkRepository.existsByShortUrl(shortUrl)) {
-                save(originalUrl, shortUrl, expiresAt, userId);
+                save(originalUrl, shortUrl, expiresAt, userId, false);
                 return shortUrl;
             }
             shortUrl += userId;
@@ -58,13 +58,14 @@ public class LinkService {
         throw new RuntimeException("Failed to shorten url");
     }
 
-    public void save(String originalUrl, String shortUrl, LocalDateTime expiresAt, Long userId) {
+    public void save(String originalUrl, String shortUrl, LocalDateTime expiresAt, Long userId, boolean isCustomAlias) {
         var record = new Link();
         record.setOriginalUrl(originalUrl);
         record.setShortUrl(shortUrl);
         record.setUserId(userId);
         record.setStatus(1);
         record.setExpiresAt(expiresAt);
+        record.setCustom(isCustomAlias);
         linkRepository.save(record);
     }
 

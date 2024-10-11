@@ -48,11 +48,12 @@ public class LinkServiceTest {
 
         var result = linkService.shorten(cmd, 1L);
         assertEquals("custom", result);
-        verify(linkRepository).save(argThat(url ->
-                url.getOriginalUrl().equals("https://example.com")
-                && url.getUserId() == 1L
-                && url.getShortUrl().equals("custom")
-                && url.getExpiresAt() == null));
+        verify(linkRepository).save(argThat(link ->
+                link.getOriginalUrl().equals("https://example.com")
+                && link.getUserId() == 1L
+                && link.getShortUrl().equals("custom")
+                && link.getExpiresAt() == null
+                && link.isCustom()));
     }
 
     @Test
@@ -96,11 +97,12 @@ public class LinkServiceTest {
         String result = linkService.shorten(originalUrl, 1L, date);
 
         assertEquals(shortUrl, result);
-        verify(linkRepository).save(argThat(url ->
-                url.getOriginalUrl().equals(decodedUrl)
-                && url.getUserId() == 1L
-                && url.getShortUrl().equals(shortUrl)
-                && url.getExpiresAt() == date));
+        verify(linkRepository).save(argThat(link ->
+                link.getOriginalUrl().equals(decodedUrl)
+                && link.getUserId() == 1L
+                && link.getShortUrl().equals(shortUrl)
+                && link.getExpiresAt() == date
+                && !link.isCustom()));
     }
 
     @Test
@@ -132,10 +134,11 @@ public class LinkServiceTest {
         String result = linkService.shorten(originalUrl, 1L, date);
 
         assertEquals(shortUrl, result);
-        verify(linkRepository).save(argThat(url ->
-                url.getOriginalUrl().equals(decodedUrl)
-                && url.getUserId() == 1L
-                && url.getShortUrl().equals(shortUrl)
-                && url.getExpiresAt() == date));
+        verify(linkRepository).save(argThat(link ->
+                link.getOriginalUrl().equals(decodedUrl)
+                && link.getUserId() == 1L
+                && link.getShortUrl().equals(shortUrl)
+                && link.getExpiresAt() == date
+                && !link.isCustom()));
     }
 }

@@ -36,6 +36,9 @@ public class Link {
     @Schema(description = "状态")
     private Integer status;
 
+    @Schema(description = "是否自定义短链接")
+    private boolean isCustom;
+
     /**
      * 过期时间
      */

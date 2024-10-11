@@ -54,6 +54,7 @@ create table if not exists lu_link
     original_url    varchar(1024) not null comment '原始链接',
     user_id         bigint        not null comment '用户ID',
     status          tinyint                default 0 comment '状态',
+    is_custom       boolean       not null default false comment '是否自定义短链接',
     expires_at datetime comment '过期时间',
     created_at     datetime      not null default CURRENT_TIMESTAMP comment '创建时间',
     updated_at     datetime      not null default CURRENT_TIMESTAMP comment '更新时间',
