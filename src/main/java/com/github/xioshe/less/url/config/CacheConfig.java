@@ -3,6 +3,7 @@ package com.github.xioshe.less.url.config;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.xioshe.less.url.util.constants.RedisKeys;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +27,7 @@ public class CacheConfig {
         return RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(60))
                 .disableCachingNullValues()
-                .computePrefixWith(cacheName -> "lu:" + cacheName + ":") // 用单冒号替换调默认双冒号
+                .computePrefixWith(cacheName -> RedisKeys.REDIS_KEY_PREFIX + cacheName + ":") // 用单冒号替换调默认双冒号
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
                         .fromSerializer(new GenericJackson2JsonRedisSerializer(customObjectMapper)));
     }

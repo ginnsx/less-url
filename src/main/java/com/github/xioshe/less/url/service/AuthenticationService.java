@@ -9,8 +9,9 @@ import com.github.xioshe.less.url.api.dto.SignupCommand;
 import com.github.xioshe.less.url.api.dto.VerificationCommand;
 import com.github.xioshe.less.url.entity.User;
 import com.github.xioshe.less.url.repository.UserRepository;
-import com.github.xioshe.less.url.security.JwtTokenService;
+import com.github.xioshe.less.url.security.JwtTokenManager;
 import com.github.xioshe.less.url.util.PasswordStrengthChecker;
+import com.github.xioshe.less.url.util.constants.RedisKeys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -43,7 +44,8 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private final JwtTokenService tokenService;
+    private final JwtTokenManager jwtTokenManager;
+    private final RefreshTokenService refreshTokenService;
     private final UserDetailsService userDetailsService;
     private final VerificationService verificationService;
     private final EmailService emailService;
@@ -84,31 +86,39 @@ public class AuthenticationService {
     }
 
     public AuthResponse generateAuth(UserDetails securityUser) {
-        String accessToken = tokenService.generateAccessToken(securityUser);
-        String refreshToken = tokenService.generateRefreshToken(securityUser);
+        String accessToken = jwtTokenManager.generateAccessToken(securityUser);
+        String refreshToken = refreshTokenService.generateRefreshToken(securityUser);
         return AuthResponse.builder()
                 .accessToken(accessToken)
-                .expiresIn(tokenService.getAccessTokenExpiration())
+                .expiresIn(jwtTokenManager.getAccessTokenExpiration())
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    public AuthResponse refreshToken(String refreshToken) {
-        String username = tokenService.extractUsername(refreshToken);
-        UserDetails user = userDetailsService.loadUserByUsername(username);
-        boolean isValid = tokenService.isRefreshTokenValid(refreshToken, user);
+    public AuthResponse refreshToken(String refreshToken, String accessToken) {
+        boolean isValid = refreshTokenService.validateRefreshToken(refreshToken);
         if (!isValid) {
             throw new BadCredentialsException("refresh token is invalid");
         }
-        return generateAuth(user);
+        String username = jwtTokenManager.extractUsername(refreshToken);
+        if (!username.equals(jwtTokenManager.extractUsername(accessToken))) {
+            throw new BadCredentialsException("refresh token is invalid");
+        }
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+        AuthResponse newTokens = generateAuth(user);
+
+        // 将旧的 refreshToken 加入黑名单
+        refreshTokenService.blacklistRefreshToken(refreshToken);
+
+        return newTokens;
     }
 
     public void logout(String token, String refreshToken) {
         if (StringUtils.hasText(token)) {
-            tokenService.blacklistAccessToken(token);
+            jwtTokenManager.blacklistAccessToken(token);
         }
         if (StringUtils.hasText(refreshToken)) {
-            tokenService.blacklistRefreshToken(token);
+            refreshTokenService.blacklistRefreshToken(token);
         }
     }
 
@@ -117,7 +127,7 @@ public class AuthenticationService {
             throw new IllegalArgumentException("邮箱已注册");
         }
         // 每个邮箱地址锁定 1min
-        RLock lock = redissonClient.getLock("lu:lock:" + REGISTER.getValue() + ":" + command.getEmail());
+        RLock lock = redissonClient.getLock(RedisKeys.LOCK_PREFIX + REGISTER.getValue() + ":" + command.getEmail());
         log.info("lock name: {}", lock.getName());
         try {
             if (!lock.tryLock(0, 1, TimeUnit.MINUTES)) {

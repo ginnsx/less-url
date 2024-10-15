@@ -1,5 +1,6 @@
 package com.github.xioshe.less.url.service;
 
+import com.github.xioshe.less.url.util.constants.RedisKeys;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -14,8 +15,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 public class VerificationService {
-
-    private final static String VERIFY_CODE_KEY_PREFIX = "lu:verify:";
 
     private final StringRedisTemplate redisTemplate;
 
@@ -47,7 +46,7 @@ public class VerificationService {
     }
 
     private static String getKey(String type, String identity) {
-        return VERIFY_CODE_KEY_PREFIX + type + ":" + identity;
+        return RedisKeys.VERIFY_CODE_KEY_PREFIX + type + ":" + identity;
     }
 
     @Async

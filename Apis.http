@@ -7,7 +7,7 @@ Content-Type: application/json
   "password": "password"
 }
 
-> {% client.global.set("lu_token", response.body.accessToken); %}
+> {% client.global.set("lu_token", response.body.access_token); %}
 
 ### Signup
 POST http://localhost:8080/auth/register

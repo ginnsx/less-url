@@ -73,6 +73,6 @@ public class AuthenticationController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthResponse.class)))
     @PostMapping("/refresh")
     public AuthResponse refreshToken(@RequestBody RefreshTokenCommand command) {
-        return authenticationService.refreshToken(command.getRefreshToken());
+        return authenticationService.refreshToken(command.getRefreshToken(), command.getAccessToken());
     }
 }

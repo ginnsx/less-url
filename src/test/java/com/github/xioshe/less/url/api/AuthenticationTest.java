@@ -1,9 +1,10 @@
 package com.github.xioshe.less.url.api;
 
 import com.github.xioshe.less.url.entity.User;
-import com.github.xioshe.less.url.security.JwtTokenService;
+import com.github.xioshe.less.url.security.JwtTokenManager;
 import com.github.xioshe.less.url.security.RotatingSecretKeyManager;
 import com.github.xioshe.less.url.security.SecurityUser;
+import com.github.xioshe.less.url.util.constants.RedisKeys;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ class ExpiredJwtTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private JwtTokenService jwtTokenService;
+    private JwtTokenManager jwtTokenManager;
 
     @Autowired
     private RotatingSecretKeyManager keyManager;
@@ -45,7 +46,7 @@ class ExpiredJwtTest {
         user.setUsername("test");
         user.setEmail("test@lu.com");
         user.setPassword("password");
-        var token = jwtTokenService.generateAccessToken(user.asSecurityUser());
+        var token = jwtTokenManager.generateAccessToken(user.asSecurityUser());
 
         mockMvc.perform(get("/test/user")
                         .header("Authorization", "Bearer " + token))
@@ -83,17 +84,15 @@ class AuthenticationTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private JwtTokenService jwtTokenService;
+    private JwtTokenManager jwtTokenManager;
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
     @BeforeEach
     void setup() {
-        stringRedisTemplate.delete("lu:users:test@lu.com");
-        stringRedisTemplate.delete("lu:users:admin@lu.com");
-        stringRedisTemplate.delete("lu:blacklist:test@lu.com");
-        stringRedisTemplate.delete("lu:blacklist:admin@lu.com");
+        stringRedisTemplate.delete(RedisKeys.CACHE_USER_PREFIX + "test@lu.com");
+        stringRedisTemplate.delete(RedisKeys.CACHE_USER_PREFIX + "admin@lu.com");
     }
 
 
@@ -137,9 +136,9 @@ class AuthenticationTest {
                 .email("test@lu.com")
                 .password("password")
                 .build();
-        var token = jwtTokenService.generateAccessToken(user);
+        var token = jwtTokenManager.generateAccessToken(user);
 
-        jwtTokenService.blacklistAccessToken(token);
+        jwtTokenManager.blacklistAccessToken(token);
 
         mockMvc.perform(get("/test/user")
                         .header("Authorization", "Bearer " + token))
@@ -155,7 +154,7 @@ class AuthenticationTest {
         user.setUsername("test");
         user.setEmail("test@lu.com");
         user.setPassword("password");
-        var token = jwtTokenService.generateAccessToken(user.asSecurityUser());
+        var token = jwtTokenManager.generateAccessToken(user.asSecurityUser());
 
         mockMvc.perform(get("/test/admin")
                         .header("Authorization", "Bearer " + token))
@@ -171,7 +170,7 @@ class AuthenticationTest {
                 .email("test@lu.com")
                 .password("password")
                 .build();
-        var token = jwtTokenService.generateAccessToken(user);
+        var token = jwtTokenManager.generateAccessToken(user);
 
         mockMvc.perform(get("/test/edit").header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden())
@@ -201,6 +200,6 @@ class AuthenticationTest {
                                 {"email":"test@lu.com","password":"password"}"""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.accessToken").exists());
+                .andExpect(jsonPath("$.access_token").exists());
     }
 }

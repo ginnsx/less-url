@@ -28,7 +28,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private final JwtTokenService jwtTokenService;
+    private final JwtTokenManager jwtTokenManager;
     private final UserDetailsService userDetailsService;
     private final HandlerExceptionResolver exceptionResolver;
 
@@ -46,11 +46,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         try {
             // "Bearer ".length() == 7
             String token = authorization.substring(7);
-            String username = jwtTokenService.extractUsername(token);
+            String username = jwtTokenManager.extractUsername(token);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails user = userDetailsService.loadUserByUsername(username);
-                jwtTokenService.validateToken(token);
+                jwtTokenManager.validateToken(token);
                 // 创建一个新的认证令牌，并将其设置为当前的安全上下文
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(

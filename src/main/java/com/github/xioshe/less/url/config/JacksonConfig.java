@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 
 @Configuration
@@ -25,10 +26,12 @@ public class JacksonConfig {
             // deserializers
             builder.deserializers(new LocalDateDeserializer());
             builder.deserializers(new LocalDateTimeDeserializer());
+            builder.deserializers(new LocalTimeDeserializer());
 
             // serializers
             builder.serializers(new LocalDateSerializer());
             builder.serializers(new LocalDateTimeSerializer());
+            builder.serializers(new LocalTimeSerializer());
         };
     }
 
@@ -95,6 +98,39 @@ public class JacksonConfig {
             long timestamp = parser.getValueAsLong();
             return timestamp < 0 ? null :
                     Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate();
+        }
+    }
+
+    public static class LocalTimeSerializer extends JsonSerializer<LocalTime> {
+
+        @Override
+        public Class<LocalTime> handledType() {
+            return LocalTime.class;
+        }
+
+        @Override
+        public void serialize(LocalTime value, JsonGenerator gen, SerializerProvider serializers)
+                throws IOException {
+            if (value != null) {
+                gen.writeNumber(value.atDate(LocalDate.now())
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant().toEpochMilli());
+            }
+        }
+    }
+
+    public static class LocalTimeDeserializer extends JsonDeserializer<LocalTime> {
+
+        @Override
+        public Class<?> handledType() {
+            return LocalTime.class;
+        }
+
+        @Override
+        public LocalTime deserialize(JsonParser parser, DeserializationContext deserializationContext) throws IOException {
+            long timestamp = parser.getValueAsLong();
+            return timestamp < 0 ? null :
+                    Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalTime();
         }
     }
 }

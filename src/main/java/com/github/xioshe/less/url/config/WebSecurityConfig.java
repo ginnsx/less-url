@@ -3,7 +3,7 @@ package com.github.xioshe.less.url.config;
 import com.github.xioshe.less.url.security.DelegatedAccessDeniedHandler;
 import com.github.xioshe.less.url.security.DelegatedAuthenticationEntryPoint;
 import com.github.xioshe.less.url.security.JwtTokenFilter;
-import com.github.xioshe.less.url.security.JwtTokenService;
+import com.github.xioshe.less.url.security.JwtTokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,12 +30,12 @@ import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @EnableWebSecurity // 用于支持覆盖 UserDetailsService PasswordEncoder SecurityFilterChain
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 @Configuration
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class WebSecurityConfig {
 
-    private final JwtTokenService jwtTokenService;
+    private final JwtTokenManager jwtTokenManager;
     private final UserDetailsService userDetailsService;
 
     /**
@@ -72,12 +72,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(manager ->
                         manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/auth/**", "/s/**").permitAll()
-                            .requestMatchers("/doc.html", "/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                            .requestMatchers("/actuator/**").permitAll()
-                            .anyRequest().authenticated();
-                })
+                .authorizeHttpRequests(auth ->
+                        auth.requestMatchers("/auth/**", "/s/**").permitAll()
+                                .requestMatchers("/doc.html", "/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                                .requestMatchers("/actuator/**").permitAll()
+                                .anyRequest().authenticated())
                 .exceptionHandling(exceptionHanding ->
                         exceptionHanding.authenticationEntryPoint(entryPoint)
                                 .accessDeniedHandler(accessDeniedHandler))
@@ -88,7 +87,7 @@ public class SecurityConfig {
     @Bean
     public JwtTokenFilter jwtTokenFilter(@Qualifier("handlerExceptionResolver")
                                          HandlerExceptionResolver exceptionResolver) {
-        return new JwtTokenFilter(jwtTokenService, userDetailsService, exceptionResolver);
+        return new JwtTokenFilter(jwtTokenManager, userDetailsService, exceptionResolver);
     }
 
     @Bean
