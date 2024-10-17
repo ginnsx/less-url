@@ -1,6 +1,10 @@
 package com.github.xioshe.less.url.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xioshe.less.url.api.dto.CreateLinkCommand;
+import com.github.xioshe.less.url.api.dto.LinkQuery;
+import com.github.xioshe.less.url.api.dto.Pagination;
+import com.github.xioshe.less.url.config.AppProperties;
 import com.github.xioshe.less.url.entity.Link;
 import com.github.xioshe.less.url.exceptions.CustomAliasDuplicatedException;
 import com.github.xioshe.less.url.exceptions.UrlNotFoundException;
@@ -24,35 +28,57 @@ public class LinkService {
     private final LinkRepository linkRepository;
     private final UrlShorter urlShorter;
     private final CacheManager cacheManager;
+    private final AppProperties appProperties;
 
-    public Link shorten(CreateLinkCommand command, Long userId) {
-        String decodedUrl = URLDecoder.decode(command.getOriginalUrl(), StandardCharsets.UTF_8);
-        String customAlias = command.getCustomAlias();
-        if (StringUtils.hasText(customAlias)) {
-            if (linkRepository.existsByShortUrl(customAlias)) {
-                throw new CustomAliasDuplicatedException(customAlias);
-            }
-            return save(decodedUrl, customAlias, command.getExpiresAt(), userId, true);
-        }
-        return shorten(decodedUrl, userId, command.getExpiresAt());
+    public Link getById(Long id) {
+        return linkRepository.getOptById(id)
+                .map(link -> link.addUrlPrefix(appProperties.getBaseUrl()))
+                .orElseThrow();
     }
 
-    public Link shorten(String originalUrl, Long userId, LocalDateTime expiresAt) {
-        // 依靠 userId 索引能保证 ms 级别查询效率
-        Optional<Link> existed = linkRepository.selectByOriginalUrlAndUserId(originalUrl, userId);
-        if (existed.isPresent()) {
-            return existed.get();
-        }
+    public IPage<Link> query(LinkQuery filters, Pagination page) {
+        IPage<Link> pageResult = linkRepository.page(page.toPage(), filters.toQueryWrapper());
+        pageResult.getRecords().forEach(link -> link.addUrlPrefix(appProperties.getBaseUrl()));
+        return pageResult;
+    }
 
+    public Link create(CreateLinkCommand command, Long userId) {
+        Link link = createLink(command, userId);
+        link.addUrlPrefix(appProperties.getBaseUrl());
+        return link;
+    }
+
+    public Link createLink(CreateLinkCommand command, Long userId) {
+        String decodedUrl = URLDecoder.decode(command.getOriginalUrl(), StandardCharsets.UTF_8);
+        String shortUrl = command.getCustomAlias();
+        // 处理自定义短链
+        boolean useCustom = false;
+        if (StringUtils.hasText(shortUrl)) {
+            if (linkRepository.existsByShortUrl(shortUrl)) {
+                throw new CustomAliasDuplicatedException(shortUrl);
+            }
+            useCustom = true;
+        }
+        // 未指定自定义短链，则自动生成
+        if (!useCustom) {
+            shortUrl = shorten(decodedUrl);
+        }
+        if (command.getExpiresAt() == null) {
+            command.setExpiresAt(LocalDateTime.now().plusSeconds(appProperties.getLink().getDefaultTimeToLiveSeconds()));
+        }
+        return save(decodedUrl, shortUrl, command.getExpiresAt(), userId, useCustom);
+    }
+
+    public String shorten(String originalUrl) {
         // 构建，检查并解决冲突
         String shortUrl = originalUrl;
         // 最多尝试 3 次，尽最大努力解决冲突
         for (int i = 0; i < 3; i++) {
             shortUrl = urlShorter.shorten(shortUrl);
             if (!linkRepository.existsByShortUrl(shortUrl)) {
-                return save(originalUrl, shortUrl, expiresAt, userId, false);
+                return shortUrl;
             }
-            shortUrl += userId;
+            shortUrl += System.currentTimeMillis();
         }
         throw new RuntimeException("Failed to shorten url");
     }

@@ -67,11 +67,10 @@ public class Link {
     @Schema(description = "点击次数")
     private Long clicks;
 
-    @TableField(exist = false)
-    @Schema(description = "是否新创建")
-    private boolean newCreated;
-
-    public void addUrlPrefix(String urlPrefix) {
-        shortUrl = shortUrl == null ? null : urlPrefix + shortUrl;
+    public Link addUrlPrefix(String urlPrefix) {
+        if (shortUrl != null && !shortUrl.startsWith(urlPrefix)) {
+            shortUrl = urlPrefix + shortUrl;
+        }
+        return this;
     }
 }

@@ -57,6 +57,11 @@ mybatis-plus:
 less:
   url:
     prefix: http://localhost:8080/
+lu:
+  base-url: ${BASE_URL:http://localhost:8080/}
+  link:
+    #      max-length: 6
+    default-time-to-live-seconds: 86400 # 24h
 security:
   jwt:
     access-expiration-seconds: 43200 # 12h
