@@ -39,6 +39,7 @@ public class JacksonConfig {
 
         /**
          * 如果没有重写 handledType() 方法，会报错
+         *
          * @return LocalDateTime.class
          */
         @Override
@@ -50,7 +51,8 @@ public class JacksonConfig {
         public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider serializers)
                 throws IOException {
             if (value != null) {
-                gen.writeNumber(value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+                long epochMilli = value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                gen.writeNumber(epochMilli);
             }
         }
     }
@@ -64,9 +66,13 @@ public class JacksonConfig {
 
         @Override
         public LocalDateTime deserialize(JsonParser parser, DeserializationContext deserializationContext) throws IOException {
-            long timestamp = parser.getValueAsLong();
-            return timestamp < 0 ? null :
-                    Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime();
+            try {
+                long timestamp = Long.parseLong(parser.getValueAsString());
+                return timestamp < 0 ? null :
+                        Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime();
+            } catch (NumberFormatException e) {
+                return null;
+            }
         }
     }
 
@@ -81,7 +87,8 @@ public class JacksonConfig {
         public void serialize(LocalDate value, JsonGenerator gen, SerializerProvider serializers)
                 throws IOException {
             if (value != null) {
-                gen.writeNumber(value.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli());
+                long epochMilli = value.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                gen.writeNumber(epochMilli);
             }
         }
     }
@@ -95,9 +102,13 @@ public class JacksonConfig {
 
         @Override
         public LocalDate deserialize(JsonParser parser, DeserializationContext deserializationContext) throws IOException {
-            long timestamp = parser.getValueAsLong();
-            return timestamp < 0 ? null :
-                    Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate();
+            try {
+                long timestamp = Long.parseLong(parser.getValueAsString());
+                return timestamp < 0 ? null :
+                        Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate();
+            } catch (NumberFormatException e) {
+                return null;
+            }
         }
     }
 
@@ -112,9 +123,10 @@ public class JacksonConfig {
         public void serialize(LocalTime value, JsonGenerator gen, SerializerProvider serializers)
                 throws IOException {
             if (value != null) {
-                gen.writeNumber(value.atDate(LocalDate.now())
+                long epochMilli = value.atDate(LocalDate.now())
                         .atZone(ZoneId.systemDefault())
-                        .toInstant().toEpochMilli());
+                        .toInstant().toEpochMilli();
+                gen.writeNumber(epochMilli);
             }
         }
     }
@@ -128,9 +140,13 @@ public class JacksonConfig {
 
         @Override
         public LocalTime deserialize(JsonParser parser, DeserializationContext deserializationContext) throws IOException {
-            long timestamp = parser.getValueAsLong();
-            return timestamp < 0 ? null :
-                    Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalTime();
+            try {
+                long timestamp = Long.parseLong(parser.getValueAsString());
+                return timestamp < 0 ? null :
+                        Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalTime();
+            } catch (NumberFormatException e) {
+                return null;
+            }
         }
     }
 }

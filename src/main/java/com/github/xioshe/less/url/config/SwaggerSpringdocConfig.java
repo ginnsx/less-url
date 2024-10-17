@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 @Configuration
@@ -65,7 +66,8 @@ public class SwaggerSpringdocConfig {
         SpringDocUtils.getConfig()
                 .replaceWithClass(Date.class, Long.class)
                 .replaceWithClass(LocalDateTime.class, Long.class)
-                .replaceWithClass(LocalDate.class, Long.class);
+                .replaceWithClass(LocalDate.class, Long.class)
+                .replaceWithClass(LocalTime.class, Long.class);
         return new OpenAPI()
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .info(new Info()

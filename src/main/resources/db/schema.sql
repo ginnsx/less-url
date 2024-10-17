@@ -52,7 +52,7 @@ create table if not exists lu_link
     id              BIGINT PRIMARY KEY AUTO_INCREMENT,
     short_url       varchar(8)    not null comment '短链接',
     original_url    varchar(1024) not null comment '原始链接',
-    user_id         bigint        not null comment '用户ID',
+    user_id         bigint                 comment '用户ID',
     status          tinyint                default 0 comment '状态',
     is_custom       boolean       not null default false comment '是否自定义短链接',
     expires_at datetime comment '过期时间',

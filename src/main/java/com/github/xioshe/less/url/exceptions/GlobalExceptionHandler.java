@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,85 +24,92 @@ import java.security.SignatureException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
-    public ProblemDetail handleAuthenticationException(AuthenticationException exception,
+    public ResponseEntity<ProblemDetail> handleAuthenticationException(AuthenticationException exception,
                                                        HttpServletRequest request,
                                                        HttpServletResponse response) {
         log.debug("occur AuthenticationException: ", exception);
         log.warn("AuthenticationException in path {}: {}", request.getRequestURI(), exception.getMessage());
-        response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
         ProblemDetail errorDetail =
                 ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
         errorDetail.setProperty("description", "Full authentication is required to access this resource");
-        return errorDetail;
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .header(HttpHeaders.WWW_AUTHENTICATE, "Bearer")
+                .body(errorDetail);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ProblemDetail handleAccessDeniedException(AccessDeniedException exception,
+    public ResponseEntity<ProblemDetail> handleAccessDeniedException(AccessDeniedException exception,
                                                      HttpServletRequest request) {
         log.debug("occur AccessDeniedException: ", exception);
         log.warn("AccessDeniedException in path {} : {}", request.getRequestURI(), exception.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());
         problemDetail.setProperty("description", "You are not authorized to access this resource");
-        return problemDetail;
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail);
     }
 
     @ExceptionHandler(UrlNotFoundException.class)
-    public ProblemDetail handleUrlNotFoundException(UrlNotFoundException exception, HttpServletRequest request) {
-        log.debug("occur AuthenticationException: ", exception);
+    public ResponseEntity<ProblemDetail> handleUrlNotFoundException(UrlNotFoundException exception, HttpServletRequest request) {
+        log.debug("occur UrlNotFoundException: ", exception);
         log.warn("UrlNotFoundException: {} because of {}", request.getRequestURI(), exception.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
         problemDetail.setProperty("description", "The short url is not found");
-        return problemDetail;
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
     }
 
     @ExceptionHandler(DistributedLockException.class)
-    public ProblemDetail handleDistributedLockException(UrlNotFoundException exception, HttpServletRequest request) {
+    public ResponseEntity<ProblemDetail> handleDistributedLockException(DistributedLockException exception, HttpServletRequest request) {
         log.debug("occur DistributedLockException: ", exception);
         log.warn("DistributedLockException: {} because of {}", request.getRequestURI(), exception.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
         problemDetail.setProperty("description", "Concurrent operation exception");
-        return problemDetail;
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ProblemDetail> handleBadCredentialsException(BadCredentialsException exception) {
+        log.error("occur BadCredentialsException: ", exception);
+        ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
+        errorDetail.setProperty("description", "The username or password is incorrect");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDetail);
+    }
+
+    @ExceptionHandler(AccountStatusException.class)
+    public ResponseEntity<ProblemDetail> handleAccountStatusException(AccountStatusException exception) {
+        log.error("occur AccountStatusException: ", exception);
+        ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());
+        errorDetail.setProperty("description", "The account is locked");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDetail);
+    }
+
+    @ExceptionHandler({SignatureException.class, JwtException.class})
+    public ResponseEntity<ProblemDetail> handleJwtException(Exception exception) {
+        log.error("occur JWT Exception: ", exception);
+        ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
+        errorDetail.setProperty("description", "The JWT signature is invalid");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDetail);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ProblemDetail> handleExpiredJwtException(ExpiredJwtException exception) {
+        log.error("occur ExpiredJwtException: ", exception);
+        ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
+        errorDetail.setProperty("description", "The JWT token has expired");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDetail);
+    }
+
+    @ExceptionHandler(PrematureJwtException.class)
+    public ResponseEntity<ProblemDetail> handlePrematureJwtException(PrematureJwtException exception) {
+        log.error("occur PrematureJwtException: ", exception);
+        ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
+        errorDetail.setProperty("description", "The JWT token has not become valid yet");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDetail);
     }
 
     @ExceptionHandler(Exception.class)
-    public ProblemDetail handleSecurityException(Exception exception) {
-
-        ProblemDetail errorDetail = null;
-
-        log.error("occur exception: ", exception);
-
-        if (exception instanceof BadCredentialsException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
-            errorDetail.setProperty("description", "The username or password is incorrect");
-
-            return errorDetail;
-        }
-
-        if (exception instanceof AccountStatusException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());
-            errorDetail.setProperty("description", "The account is locked");
-        }
-
-        if (exception instanceof SignatureException || exception instanceof JwtException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
-            errorDetail.setProperty("description", "The JWT signature is invalid");
-        }
-
-        if (exception instanceof ExpiredJwtException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
-            errorDetail.setProperty("description", "The JWT token has expired");
-        }
-
-        if (exception instanceof PrematureJwtException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
-            errorDetail.setProperty("description", "The JWT token has not become valid yet");
-        }
-
-        if (errorDetail == null) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
-            errorDetail.setProperty("description", "Unknown internal server error.");
-        }
-
-        return errorDetail;
+    public ResponseEntity<ProblemDetail> handleGenericException(Exception exception) {
+        log.error("occur unexpected exception: ", exception);
+        ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+        errorDetail.setProperty("description", "Unknown internal server error.");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetail);
     }
 }

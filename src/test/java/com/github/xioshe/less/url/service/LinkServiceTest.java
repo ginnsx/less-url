@@ -47,13 +47,13 @@ public class LinkServiceTest {
         when(linkRepository.existsByShortUrl("custom")).thenReturn(false);
 
         var result = linkService.shorten(cmd, 1L);
-        assertEquals("custom", result);
+        assertEquals("custom", result.getShortUrl());
         verify(linkRepository).save(argThat(link ->
                 link.getOriginalUrl().equals("https://example.com")
                 && link.getUserId() == 1L
                 && link.getShortUrl().equals("custom")
                 && link.getExpiresAt() == null
-                && link.isCustom()));
+                && link.getIsCustom()));
     }
 
     @Test
@@ -75,11 +75,15 @@ public class LinkServiceTest {
         String shortUrl = "https://existing-short.com";
         var date = LocalDateTime.now();
 
-        when(linkRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.of(shortUrl));
 
-        String result = linkService.shorten(originalUrl, 1L, date);
+        var expect = new Link();
+        expect.setShortUrl(shortUrl);
 
-        assertEquals(shortUrl, result);
+        when(linkRepository.selectByOriginalUrlAndUserId(decodedUrl, 1L)).thenReturn(Optional.of(expect));
+
+        var result = linkService.shorten(originalUrl, 1L, date);
+
+        assertEquals(shortUrl, result.getShortUrl());
         verify(linkRepository, never()).save(any(Link.class));
     }
 
@@ -94,15 +98,15 @@ public class LinkServiceTest {
         when(urlShorter.shorten(decodedUrl)).thenReturn(shortUrl);
         when(linkRepository.existsByShortUrl(shortUrl)).thenReturn(false);
 
-        String result = linkService.shorten(originalUrl, 1L, date);
+        var result = linkService.shorten(originalUrl, 1L, date);
 
-        assertEquals(shortUrl, result);
+        assertEquals(shortUrl, result.getShortUrl());
         verify(linkRepository).save(argThat(link ->
                 link.getOriginalUrl().equals(decodedUrl)
                 && link.getUserId() == 1L
                 && link.getShortUrl().equals(shortUrl)
                 && link.getExpiresAt() == date
-                && !link.isCustom()));
+                && !link.getIsCustom()));
     }
 
     @Test
@@ -131,14 +135,14 @@ public class LinkServiceTest {
         when(urlShorter.shorten(anyString())).thenReturn(shortUrl);
         when(linkRepository.existsByShortUrl(shortUrl)).thenReturn(true).thenReturn(false);
 
-        String result = linkService.shorten(originalUrl, 1L, date);
+        var result = linkService.shorten(originalUrl, 1L, date);
 
-        assertEquals(shortUrl, result);
+        assertEquals(shortUrl, result.getShortUrl());
         verify(linkRepository).save(argThat(link ->
                 link.getOriginalUrl().equals(decodedUrl)
                 && link.getUserId() == 1L
                 && link.getShortUrl().equals(shortUrl)
                 && link.getExpiresAt() == date
-                && !link.isCustom()));
+                && !link.getIsCustom()));
     }
 }

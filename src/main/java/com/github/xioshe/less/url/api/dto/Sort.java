@@ -8,17 +8,22 @@ import org.springdoc.core.annotations.ParameterObject;
 
 import java.util.List;
 
+import static com.github.xioshe.less.url.util.constants.RegexPatterns.SORT_STR_PATTERN;
+
 @ParameterObject
 @Data
 public class Sort {
 
     public static final String SORT_SEPARATOR = ",";
-    public static final String SORT_STR_PATTERN = "^[+-]?[a-zA-Z_]*(?:,[+-]?[a-zA-Z_]*)*$";
 
 
-    @Parameter(description = "排序条件", example = "email,-last_modify,+name")
-    @Pattern(regexp = SORT_STR_PATTERN)
+    @Parameter(name = "sort_by", description = "排序条件", example = "email,-last_modify,+name")
+    @Pattern(regexp = SORT_STR_PATTERN, message = "排序参数格式不正确")
     private String sortBy;
+
+    public void setSort_by(@Pattern(regexp = SORT_STR_PATTERN, message = "排序参数格式不正确") String sort_by) {
+        this.sortBy = sort_by;
+    }
 
     public List<OrderItem> toOrderItems() {
         return SortParamParser.parse(sortBy, true);

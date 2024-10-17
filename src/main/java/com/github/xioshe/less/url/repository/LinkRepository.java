@@ -13,13 +13,11 @@ public class LinkRepository extends BaseRepository<LinkMapper, Link> {
         return lambdaQuery().eq(Link::getShortUrl, shortUrl).exists();
     }
 
-    public Optional<String> selectByOriginalUrlAndUserId(String originalUrl, Long userId) {
+    public Optional<Link> selectByOriginalUrlAndUserId(String originalUrl, Long userId) {
         return lambdaQuery()
-                .select(Link::getShortUrl)
                 .eq(Link::getOriginalUrl, originalUrl)
-                .eq(Link::getUserId, userId)
-                .oneOpt()
-                .map(Link::getShortUrl);
+                .eq(userId != null, Link::getUserId, userId)
+                .oneOpt();
     }
 
 

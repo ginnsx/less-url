@@ -44,6 +44,10 @@ Authorization: Bearer {{lu_token}}
   "expiresAt": ""
 }
 
+### Query Short URL
+GET http://localhost:8080/links?page=1&size=20&sort_by=short_url%2C-updated_at&q=custom
+Authorization: Bearer {{lu_token}}
+
 ### Get Short URL
 GET http://localhost:8080/links/1
 Authorization: Bearer {{lu_token}}

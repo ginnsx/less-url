@@ -37,7 +37,7 @@ public class Link {
     private Integer status;
 
     @Schema(description = "是否自定义短链接")
-    private boolean isCustom;
+    private Boolean isCustom;
 
     /**
      * 过期时间
@@ -62,4 +62,16 @@ public class Link {
     @Schema(description = "版本号")
     @Version
     private Integer version;
+
+    @TableField(exist = false)
+    @Schema(description = "点击次数")
+    private Long clicks;
+
+    @TableField(exist = false)
+    @Schema(description = "是否新创建")
+    private boolean newCreated;
+
+    public void addUrlPrefix(String urlPrefix) {
+        shortUrl = shortUrl == null ? null : urlPrefix + shortUrl;
+    }
 }
