@@ -1,10 +1,13 @@
 package com.github.xioshe.less.url.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.Version;
 import com.github.xioshe.less.url.security.CustomGrantedAuthority;
 import com.github.xioshe.less.url.security.SecurityUser;
+import com.github.xioshe.less.url.util.constants.RoleNames;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 @Data
 public class User implements Serializable {
 
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
@@ -125,7 +129,7 @@ public class User implements Serializable {
     private Set<CustomGrantedAuthority> getAuthorities() {
         Set<String> authorities = new HashSet<>();
         for (Role role : getRoles()) {
-            authorities.add(SecurityUser.ROLE_PREFIX + role.getCode());
+            authorities.add(RoleNames.ROLE_PREFIX + role.getCode());
             for (Permission permission : role.getPermissions()) {
                 authorities.add(permission.getCode());
             }

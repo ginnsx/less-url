@@ -1,7 +1,7 @@
 drop table if exists lu_user;
 create table if not exists lu_user
 (
-    id                      BIGINT PRIMARY KEY AUTO_INCREMENT,
+    id                      BIGINT PRIMARY KEY,
     level                   tinyint      not null default 0 comment '等级',
     username                varchar(20)  not null comment '用户名',
     integral                int                   default 0 comment '积分',

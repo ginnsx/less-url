@@ -15,7 +15,7 @@ Content-Type: application/json
 
 {
   "username": "alice",
-  "password": "password",
+  "password": "passw0rd",
   "email": "me@lu.com",
   "verifyCode": "123456"
 }
