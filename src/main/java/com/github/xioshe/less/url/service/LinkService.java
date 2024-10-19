@@ -3,6 +3,7 @@ package com.github.xioshe.less.url.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xioshe.less.url.api.dto.CreateLinkCommand;
 import com.github.xioshe.less.url.api.dto.LinkQuery;
+import com.github.xioshe.less.url.api.dto.MigrateResponse;
 import com.github.xioshe.less.url.api.dto.Pagination;
 import com.github.xioshe.less.url.config.AppProperties;
 import com.github.xioshe.less.url.entity.Link;
@@ -83,8 +84,8 @@ public class LinkService {
         throw new RuntimeException("Failed to shorten url");
     }
 
-
-    public Link save(String originalUrl, String shortUrl, LocalDateTime expiresAt, String ownerId, boolean isCustomAlias) {
+    public Link save(String originalUrl, String shortUrl,
+                     LocalDateTime expiresAt, String ownerId, boolean isCustomAlias) {
         Link record = new Link();
         record.setOriginalUrl(originalUrl);
         record.setShortUrl(shortUrl);
@@ -116,5 +117,13 @@ public class LinkService {
             Optional.ofNullable(cacheManager.getCache("links"))
                     .ifPresent(cache -> cache.evict(link.getShortUrl()));
         });
+    }
+
+    public MigrateResponse migrate(String guestId, String userId) {
+        String ownerId = "g_" + guestId;
+        var links = linkRepository.selectByOwnerId(ownerId);
+        links.forEach(link -> link.setOwnerId("u_" + userId));
+        boolean result = linkRepository.updateBatchById(links, 200);
+        return new MigrateResponse(result ? links.size() : 0);
     }
 }

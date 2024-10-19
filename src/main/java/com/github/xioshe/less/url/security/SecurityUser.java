@@ -48,6 +48,7 @@ public class SecurityUser implements UserDetails {
     @Builder.Default
     private boolean credentialsNonExpired = true;
 
+    @Builder.Default
     private boolean isGuest = false;
 
     @Override
@@ -62,14 +63,14 @@ public class SecurityUser implements UserDetails {
 
     public static SecurityUser guest(String guestId) {
         return SecurityUser.builder()
-                .userId("g_" + guestId)
+                .userId(guestId)
                 .isGuest(true)
                 .build();
     }
 
     public static SecurityUser from(User user) {
         return SecurityUser.builder()
-                .userId("u_" + user.getId())
+                .userId(String.valueOf(user.getId()))
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .nickname(user.getUsername())

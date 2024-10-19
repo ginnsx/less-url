@@ -3,6 +3,7 @@ package com.github.xioshe.less.url.service;
 
 import com.github.xioshe.less.url.api.dto.AuthCommand;
 import com.github.xioshe.less.url.api.dto.AuthResponse;
+import com.github.xioshe.less.url.api.dto.GuestIdResponse;
 import com.github.xioshe.less.url.api.dto.LoginCommand;
 import com.github.xioshe.less.url.api.dto.RegisterEmailCommand;
 import com.github.xioshe.less.url.api.dto.SignupCommand;
@@ -10,6 +11,7 @@ import com.github.xioshe.less.url.api.dto.VerificationCommand;
 import com.github.xioshe.less.url.entity.User;
 import com.github.xioshe.less.url.repository.UserRepository;
 import com.github.xioshe.less.url.security.JwtTokenManager;
+import com.github.xioshe.less.url.security.SecurityUserHelper;
 import com.github.xioshe.less.url.util.PasswordStrengthChecker;
 import com.github.xioshe.less.url.util.constants.RedisKeys;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +52,8 @@ public class AuthenticationService {
     private final VerificationService verificationService;
     private final EmailService emailService;
     private final RedissonClient redissonClient;
+    private final GuestIdService guestIdService;
+    private final SecurityUserHelper securityUserHelper;
 
     public User signup(SignupCommand command) {
         if (!verificationService.verify(REGISTER.getValue(), command.getEmail(), command.getVerifyCode())) {
@@ -172,5 +176,13 @@ public class AuthenticationService {
             return generateAuth(userDetails);
         }
         return auth(new AuthCommand(command.getEmail(), command.getPassword()));
+    }
+
+    public GuestIdResponse generateGuestId() {
+        if (securityUserHelper.isGuest()) {
+            String guestId = securityUserHelper.getUserId();
+            return new GuestIdResponse(guestId);
+        }
+        return new GuestIdResponse(guestIdService.generateGuestId());
     }
 }

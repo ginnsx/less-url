@@ -35,7 +35,7 @@ class GuestAuthenticationTest {
                         .header(CustomHeaders.GUEST_ID, guestId)
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().string("g_" + guestId));
+                .andExpect(content().string(guestId));
     }
 
     @Test

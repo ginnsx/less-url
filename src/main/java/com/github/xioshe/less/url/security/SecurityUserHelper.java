@@ -13,8 +13,12 @@ import java.util.Optional;
 @Component
 public class SecurityUserHelper {
 
+    public String getUserId() {
+        return getUser().map(SecurityUser::getUserId).orElse(null);
+    }
+
     public Optional<String> getTypedUserId() {
-        return getUser().map(SecurityUser::getUserId);
+        return getUser().map(user -> user.isGuest() ? "g_" + user.getUserId() : "u_" + user.getUserId());
     }
 
     public String getTypedUserIdOrThrow() {

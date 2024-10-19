@@ -2,6 +2,7 @@ package com.github.xioshe.less.url.api;
 
 import com.github.xioshe.less.url.api.dto.AuthCommand;
 import com.github.xioshe.less.url.api.dto.AuthResponse;
+import com.github.xioshe.less.url.api.dto.GuestIdResponse;
 import com.github.xioshe.less.url.api.dto.LoginCommand;
 import com.github.xioshe.less.url.api.dto.RefreshTokenCommand;
 import com.github.xioshe.less.url.api.dto.RegisterEmailCommand;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,5 +76,13 @@ public class AuthenticationController {
     @PostMapping("/refresh")
     public AuthResponse refreshToken(@RequestBody RefreshTokenCommand command) {
         return authenticationService.refreshToken(command.getRefreshToken(), command.getAccessToken());
+    }
+
+    @Operation(summary = "获取游客 id", description = "获取游客 id")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = GuestIdResponse.class)))
+    @GetMapping("/guest-id")
+    public GuestIdResponse generateGuestId() {
+        return authenticationService.generateGuestId();
     }
 }

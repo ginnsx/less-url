@@ -6,11 +6,13 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +23,7 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
     private final EmailTemplateRepository templateRepository;
+    private final Environment env;
 
     @Value("${spring.mail.username}")
     private String fromAddress;
@@ -51,7 +54,9 @@ public class EmailService {
                 }
             }
 
-            mailSender.send(message);
+            if (isProd()) {
+                mailSender.send(message);
+            }
             log.info("Email sent successfully to: {}", to);
         } catch (Exception e) {
             log.error("Failed to send email to: {}", to, e);
@@ -71,5 +76,10 @@ public class EmailService {
             content = content.replace("{{ " + entry.getKey() + " }}", entry.getValue().toString());
         }
         return content;
+    }
+
+    private boolean isProd() {
+        return Arrays.stream(env.getActiveProfiles())
+                .anyMatch("prod"::equalsIgnoreCase);
     }
 }
