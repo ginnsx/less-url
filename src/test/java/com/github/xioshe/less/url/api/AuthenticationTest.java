@@ -46,7 +46,7 @@ class ExpiredJwtTest {
         user.setUsername("test");
         user.setEmail("test@lu.com");
         user.setPassword("password");
-        var token = jwtTokenManager.generateAccessToken(user.asSecurityUser());
+        var token = jwtTokenManager.generateAccessToken(SecurityUser.from(user));
 
         mockMvc.perform(get("/test/user")
                         .header("Authorization", "Bearer " + token))
@@ -154,7 +154,7 @@ class AuthenticationTest {
         user.setUsername("test");
         user.setEmail("test@lu.com");
         user.setPassword("password");
-        var token = jwtTokenManager.generateAccessToken(user.asSecurityUser());
+        var token = jwtTokenManager.generateAccessToken(SecurityUser.from(user));
 
         mockMvc.perform(get("/test/admin")
                         .header("Authorization", "Bearer " + token))
@@ -188,7 +188,7 @@ class AuthenticationTest {
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("$.description")
-                        .value("Full authentication is required to access this resource"))
+                        .value("The username or password is incorrect"))
                 .andExpect(jsonPath("$.detail").value("Bad credentials"));
     }
 

@@ -30,10 +30,10 @@ public class LinkService {
     private final CacheManager cacheManager;
     private final AppProperties appProperties;
 
-    public Link getById(Long id) {
-        return linkRepository.getOptById(id)
+    public Link getById(Long id, String ownerId) {
+        return linkRepository.getById(id, ownerId)
                 .map(link -> link.addUrlPrefix(appProperties.getBaseUrl()))
-                .orElseThrow();
+                .orElseThrow(UrlNotFoundException::new);
     }
 
     public IPage<Link> query(LinkQuery filters, Pagination page) {
@@ -42,13 +42,13 @@ public class LinkService {
         return pageResult;
     }
 
-    public Link create(CreateLinkCommand command, Long userId) {
-        Link link = createLink(command, userId);
+    public Link create(CreateLinkCommand command, String ownerId) {
+        Link link = createLink(command, ownerId);
         link.addUrlPrefix(appProperties.getBaseUrl());
         return link;
     }
 
-    public Link createLink(CreateLinkCommand command, Long userId) {
+    public Link createLink(CreateLinkCommand command, String ownerId) {
         String decodedUrl = URLDecoder.decode(command.getOriginalUrl(), StandardCharsets.UTF_8);
         String shortUrl = command.getCustomAlias();
         // 处理自定义短链
@@ -66,7 +66,7 @@ public class LinkService {
         if (command.getExpiresAt() == null) {
             command.setExpiresAt(LocalDateTime.now().plusSeconds(appProperties.getLink().getDefaultTimeToLiveSeconds()));
         }
-        return save(decodedUrl, shortUrl, command.getExpiresAt(), userId, useCustom);
+        return save(decodedUrl, shortUrl, command.getExpiresAt(), ownerId, useCustom);
     }
 
     public String shorten(String originalUrl) {
@@ -84,24 +84,22 @@ public class LinkService {
     }
 
 
-    public Link save(String originalUrl, String shortUrl, LocalDateTime expiresAt, Long userId, boolean isCustomAlias) {
+    public Link save(String originalUrl, String shortUrl, LocalDateTime expiresAt, String ownerId, boolean isCustomAlias) {
         Link record = new Link();
         record.setOriginalUrl(originalUrl);
         record.setShortUrl(shortUrl);
-        record.setUserId(userId);
+        record.setOwnerId(ownerId);
         record.setStatus(1);
         record.setExpiresAt(expiresAt);
         record.setIsCustom(isCustomAlias);
         linkRepository.save(record);
-        return record;
+        return linkRepository.getById(record.getId());
     }
 
     @Cacheable(cacheNames = "links", key = "#shortUrl")
-    public String getOriginalUrl(String shortUrl) {
-        Link link = linkRepository.selectByShortUrl(shortUrl);
-        if (link == null) {
-            throw new UrlNotFoundException(shortUrl);
-        }
+    public String getOriginalUrl(final String shortUrl) {
+        Link link = linkRepository.selectByShortUrl(shortUrl)
+                .orElseThrow(() -> new UrlNotFoundException(shortUrl));
         String originalUrl = link.getOriginalUrl();
         if (!StringUtils.hasText(originalUrl)) {
             throw new UrlNotFoundException(shortUrl);
@@ -112,8 +110,8 @@ public class LinkService {
         return originalUrl;
     }
 
-    public void delete(Long id) {
-        linkRepository.getOptById(id).ifPresent(link -> {
+    public void delete(Long id, String ownerId) {
+        linkRepository.getById(id, ownerId).ifPresent(link -> {
             linkRepository.removeById(id);
             Optional.ofNullable(cacheManager.getCache("links"))
                     .ifPresent(cache -> cache.evict(link.getShortUrl()));

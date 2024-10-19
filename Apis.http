@@ -28,10 +28,20 @@ Authorization: Bearer {{lu_token}}
 GET http://localhost:8080/users/1
 Authorization: Bearer {{lu_token}}
 
-### Get User's Links
-GET http://localhost:8080/users/1/links?page=1&size=20&sortBy=-updated_at
-Authorization: Bearer {{lu_token}}
+### Create Short URL by Guest
+POST http://localhost:8080/links
+Content-Type: application/json
+Guest-Id: a0da3af0-c4a1-40c5-9470-f4e6fc11910f
 
+{
+  "originalUrl": "https://en.wikipedia.org/wiki/Cuckoo_filter",
+  "customAlias": "custom",
+  "expiresAt": ""
+}
+
+### Get Short URL by Guest
+GET http://localhost:8080/links/1
+Guest-Id: a0da3af0-c4a1-40c5-9470-f4e6fc11910f
 
 ### Create Short URL
 POST http://localhost:8080/links

@@ -28,6 +28,6 @@ public class CustomCachingUserDetailsService implements UserDetailsService {
             return new UsernameNotFoundException("User '" + email + "' not found");
         });
         user.setRoles(roleService.listEnabledRolesByUserId(user.getId()));
-        return user.asSecurityUser();
+        return SecurityUser.from(user);
     }
 }

@@ -27,7 +27,7 @@ public class RefreshTokenService {
     private final JwtTokenManager jwtTokenManager;
     private final RedisTemplate<String, String> redisTemplate;
 
-    public String getRefreshTokenId(String username ) {
+    public String getRefreshTokenId(String username) {
         String key = RedisKeys.REFRESH_TOKEN_STORE_PREFIX + username;
         return redisTemplate.opsForValue().get(key);
     }

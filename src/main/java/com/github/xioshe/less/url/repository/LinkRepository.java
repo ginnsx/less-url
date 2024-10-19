@@ -9,20 +9,20 @@ import java.util.Optional;
 @Repository
 public class LinkRepository extends BaseRepository<LinkMapper, Link> {
 
+    public Optional<Link> getById(Long id, String ownerId) {
+        return lambdaQuery()
+                .eq(Link::getId, id)
+                .eq(ownerId != null, Link::getOwnerId, ownerId)
+                .oneOpt();
+    }
+
     public boolean existsByShortUrl(String shortUrl) {
         return lambdaQuery().eq(Link::getShortUrl, shortUrl).exists();
     }
 
-    public Optional<Link> selectByOriginalUrlAndUserId(String originalUrl, Long userId) {
-        return lambdaQuery()
-                .eq(Link::getOriginalUrl, originalUrl)
-                .eq(userId != null, Link::getUserId, userId)
-                .oneOpt();
-    }
 
-
-    public Link selectByShortUrl(String shortUrl) {
-        return lambdaQuery().eq(Link::getShortUrl, shortUrl).one();
+    public Optional<Link> selectByShortUrl(String shortUrl) {
+        return lambdaQuery().eq(Link::getShortUrl, shortUrl).oneOpt();
     }
 
 }

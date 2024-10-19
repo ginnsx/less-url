@@ -45,8 +45,7 @@ class LinkServiceTest {
         when(urlShorter.shorten(cmd.getOriginalUrl())).thenReturn(expectedShortUrl);
         when(linkRepository.existsByShortUrl(expectedShortUrl)).thenReturn(false);
 
-        var result = linkService.createLink(cmd, 1L);
-        assertEquals(expectedShortUrl, result.getShortUrl());
+        linkService.createLink(cmd, "u_1");
         verify(linkRepository).save(argThat(link ->
                 link.getExpiresAt() != null
         ));
@@ -60,11 +59,10 @@ class LinkServiceTest {
 
         when(linkRepository.existsByShortUrl("custom")).thenReturn(false);
 
-        var result = linkService.createLink(cmd, 1L);
-        assertEquals("custom", result.getShortUrl());
+        linkService.createLink(cmd, "u_1");
         verify(linkRepository).save(argThat(link ->
                 link.getOriginalUrl().equals("https://example.com")
-                && link.getUserId() == 1L
+                && link.getOwnerId().equals("u_1")
                 && link.getShortUrl().equals("custom")
                 && link.getExpiresAt() != null
                 && link.getIsCustom()));
@@ -78,7 +76,7 @@ class LinkServiceTest {
 
         when(linkRepository.existsByShortUrl("custom")).thenReturn(true);
 
-        var e = assertThrows(CustomAliasDuplicatedException.class, () -> linkService.createLink(cmd, 1L));
+        var e = assertThrows(CustomAliasDuplicatedException.class, () -> linkService.createLink(cmd, "u_1"));
         assertEquals("自定义短链接已存在", e.getMessage());
     }
 
@@ -94,12 +92,11 @@ class LinkServiceTest {
         when(urlShorter.shorten(originalUrl)).thenReturn(expectedShortUrl);
         when(linkRepository.existsByShortUrl(expectedShortUrl)).thenReturn(false);
 
-        var result = linkService.createLink(cmd, 1L);
+        linkService.createLink(cmd, "u_1");
 
-        assertEquals(expectedShortUrl, result.getShortUrl());
         verify(linkRepository).save(argThat(link ->
                 link.getOriginalUrl().equals(originalUrl)
-                && link.getUserId() == 1L
+                && link.getOwnerId().equals("u_1")
                 && link.getShortUrl().equals(expectedShortUrl)
                 && link.getExpiresAt() == expiresAt
                 && !link.getIsCustom()));

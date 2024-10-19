@@ -4,7 +4,7 @@ public class RedisKeys {
     //***------------------- Common -------------------***//
     public static final String REDIS_KEY_PREFIX = "lu:";
 
-    //***------------------- Token -------------------***//
+    //***------------------- Security -------------------***//
     public static final String BLACKLIST_KEY = REDIS_KEY_PREFIX + "blacklist:";
     public static final String ACCESS_TOKEN_BLACKLIST_PREFIX = BLACKLIST_KEY + "at:";
     public static final String REFRESH_TOKEN_BLACKLIST_PREFIX = BLACKLIST_KEY + "rt:";
@@ -13,6 +13,8 @@ public class RedisKeys {
     public static final String REFRESH_TOKEN_STORE_PREFIX = AUTH_PREFIX + "rt:";
 
     public static final String TOKEN_TYPE = "type";
+
+    public static final String GUEST_ID_PREFIX = REDIS_KEY_PREFIX + "guest:";
 
     //***------------------- VerifyCode -------------------***//
     public final static String VERIFY_CODE_KEY_PREFIX = REDIS_KEY_PREFIX + "verify:";

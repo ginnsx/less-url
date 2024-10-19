@@ -2,14 +2,18 @@ package com.github.xioshe.less.url.config;
 
 import com.github.xioshe.less.url.security.DelegatedAccessDeniedHandler;
 import com.github.xioshe.less.url.security.DelegatedAuthenticationEntryPoint;
-import com.github.xioshe.less.url.security.JwtTokenFilter;
+import com.github.xioshe.less.url.security.GuestAuthenticationFilter;
+import com.github.xioshe.less.url.security.GuestAuthenticationProvider;
+import com.github.xioshe.less.url.security.JwtAuthenticationFilter;
 import com.github.xioshe.less.url.security.JwtTokenManager;
+import com.github.xioshe.less.url.util.constants.RoleNames;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.authorization.method.PrePostTemplateDefaults;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -62,9 +66,27 @@ public class WebSecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * 用于支持用户密码登录。在提供了 GuestAuthenticationProvider 时，Spring Boot 不会自动注册 DaoAuthenticationProvider。
+     *
+     * @return DaoAuthenticationProvider
+     * @throws Exception afterPropertiesSet 抛出的异常，正常配置时可以忽略
+     */
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() throws Exception {
+        DaoAuthenticationProvider provider;
+        provider = new DaoAuthenticationProvider(passwordEncoder());
+        provider.setUserDetailsService(userDetailsService);
+        provider.afterPropertiesSet();
+        return provider;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   JwtTokenFilter jwtTokenFilter,
+                                                   JwtAuthenticationFilter jwtTokenFilter,
+                                                   GuestAuthenticationFilter guestAuthenticationFilter,
+                                                   GuestAuthenticationProvider guestAuthenticationProvider,
+                                                   DaoAuthenticationProvider daoAuthenticationProvider,
                                                    DelegatedAuthenticationEntryPoint entryPoint,
                                                    DelegatedAccessDeniedHandler accessDeniedHandler) throws Exception {
         return http
@@ -73,21 +95,25 @@ public class WebSecurityConfig {
                 .sessionManagement(manager ->
                         manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/**", "/s/**", "/links/**").permitAll()
+                        auth.requestMatchers("/auth/**", "/s/**").permitAll()
                                 .requestMatchers("/doc.html", "/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .requestMatchers("/actuator/**").permitAll()
+                                .requestMatchers("/links/**").hasAnyRole(RoleNames.ALL_AUTHENTICATED_ROLES)
                                 .anyRequest().authenticated())
                 .exceptionHandling(exceptionHanding ->
                         exceptionHanding.authenticationEntryPoint(entryPoint)
                                 .accessDeniedHandler(accessDeniedHandler))
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(guestAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .authenticationProvider(guestAuthenticationProvider)
+                .authenticationProvider(daoAuthenticationProvider)
                 .build();
     }
 
     @Bean
-    public JwtTokenFilter jwtTokenFilter(@Qualifier("handlerExceptionResolver")
-                                         HandlerExceptionResolver exceptionResolver) {
-        return new JwtTokenFilter(jwtTokenManager, userDetailsService, exceptionResolver);
+    public JwtAuthenticationFilter jwtAuthenticationFilter(@Qualifier("handlerExceptionResolver")
+                                                           HandlerExceptionResolver exceptionResolver) {
+        return new JwtAuthenticationFilter(jwtTokenManager, userDetailsService, exceptionResolver);
     }
 
     @Bean

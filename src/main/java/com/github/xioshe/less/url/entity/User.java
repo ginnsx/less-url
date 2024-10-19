@@ -5,9 +5,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.Version;
-import com.github.xioshe.less.url.security.CustomGrantedAuthority;
-import com.github.xioshe.less.url.security.SecurityUser;
-import com.github.xioshe.less.url.util.constants.RoleNames;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -20,7 +17,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Schema(description = "用户")
@@ -115,27 +111,6 @@ public class User implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    public SecurityUser asSecurityUser() {
-        return SecurityUser.builder()
-                .id(this.id)
-                .email(this.email)
-                .password(this.password)
-                .nickname(this.username)
-                .authorities(getAuthorities())
-                .build();
-    }
-
-    private Set<CustomGrantedAuthority> getAuthorities() {
-        Set<String> authorities = new HashSet<>();
-        for (Role role : getRoles()) {
-            authorities.add(RoleNames.ROLE_PREFIX + role.getCode());
-            for (Permission permission : role.getPermissions()) {
-                authorities.add(permission.getCode());
-            }
-        }
-        return authorities.stream().map(CustomGrantedAuthority::new).collect(Collectors.toSet());
-    }
 
     public void setRoles(Collection<Role> roles) {
         this.roles = new HashSet<>(roles);

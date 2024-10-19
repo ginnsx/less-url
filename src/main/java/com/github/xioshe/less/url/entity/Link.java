@@ -28,7 +28,7 @@ public class Link {
     * 用户ID
     */
     @Schema(description = "用户ID")
-    private Long userId;
+    private String ownerId;
 
     /**
     * 状态
