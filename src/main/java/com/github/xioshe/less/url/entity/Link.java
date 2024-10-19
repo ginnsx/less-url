@@ -65,7 +65,7 @@ public class Link {
 
     @TableField(exist = false)
     @Schema(description = "点击次数")
-    private Long clicks;
+    private long clicks = 0;
 
     public Link addUrlPrefix(String urlPrefix) {
         if (shortUrl != null && !shortUrl.startsWith(urlPrefix)) {

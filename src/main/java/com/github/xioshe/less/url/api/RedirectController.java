@@ -1,6 +1,5 @@
 package com.github.xioshe.less.url.api;
 
-import com.github.xioshe.less.url.service.AccessRecordService;
 import com.github.xioshe.less.url.service.LinkService;
 import com.github.xioshe.less.url.util.constants.CustomHeaders;
 import io.micrometer.observation.annotation.Observed;
@@ -32,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 public class RedirectController {
 
     private final LinkService linkService;
-    private final AccessRecordService accessRecordService;
 
     @Operation(summary = "短链重定向", description = "访问短链接，返回重定向响应")
     @ApiResponse(responseCode = "302", description = "重定向到原始链接")
@@ -43,7 +41,7 @@ public class RedirectController {
     public ResponseEntity<String> redirect(@Parameter(description = "短链接") @PathVariable String shortUrl, HttpServletRequest request) {
         String url = linkService.getOriginalUrl(shortUrl);
         try {
-            accessRecordService.record(shortUrl, request);
+            linkService.recordVisit(shortUrl, request);
         } catch (Exception e) {
             log.error("record access fail", e);
         }

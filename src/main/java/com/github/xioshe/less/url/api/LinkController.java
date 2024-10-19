@@ -9,6 +9,7 @@ import com.github.xioshe.less.url.entity.Link;
 import com.github.xioshe.less.url.repository.AccessRecordRepository;
 import com.github.xioshe.less.url.security.SecurityUserHelper;
 import com.github.xioshe.less.url.service.LinkService;
+import com.github.xioshe.less.url.service.VisitCountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -37,6 +38,7 @@ public class LinkController {
     private final LinkService linkService;
     private final AccessRecordRepository accessRecordRepository;
     private final SecurityUserHelper securityUserHelper;
+    private final VisitCountService visitCountService;
 
     @Operation(summary = "查询短链接", description = "获取短链接")
     @GetMapping
@@ -70,7 +72,7 @@ public class LinkController {
     @ApiResponse(responseCode = "200", description = "短链接访问记录获取成功")
     @GetMapping("/{shortUrl}/access-records")
     public long accessRecords(@Parameter(description = "短链接") @PathVariable String shortUrl) {
-        return accessRecordRepository.countByShortUrl(shortUrl);
+        return visitCountService.getVisitCount(shortUrl);
     }
 
 }

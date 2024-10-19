@@ -30,4 +30,8 @@ public class RedisKeys {
 
     //***------------------- Lock -------------------***//
     public static final String LOCK_PREFIX = REDIS_KEY_PREFIX + "lock:";
+
+    //***------------------- Link -------------------***//
+    public static final String VISIT_COUNT_PREFIX = REDIS_KEY_PREFIX + "vc:";
+
 }
