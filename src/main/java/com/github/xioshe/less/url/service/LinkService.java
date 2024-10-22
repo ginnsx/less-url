@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -34,6 +35,7 @@ public class LinkService {
     private final AppProperties appProperties;
     private final AccessRecordService accessRecordService;
     private final VisitCountService visitCountService;
+    private final Clock globalClock;
 
     public Link getById(Long id, String ownerId) {
         return linkRepository.getById(id, ownerId)
@@ -78,14 +80,16 @@ public class LinkService {
             shortUrl = shorten(decodedUrl);
         }
         if (command.getExpiresAt() == null) {
-            command.setExpiresAt(LocalDateTime.now().plusSeconds(appProperties.getLink().getDefaultTimeToLiveSeconds()));
+            var defaultTtl = appProperties.getLink().getDefaultTimeToLiveSeconds();
+            command.setExpiresAt(LocalDateTime.now(globalClock).plusSeconds(defaultTtl));
         }
         return save(decodedUrl, shortUrl, command.getExpiresAt(), ownerId, useCustom);
     }
 
     public String shorten(String originalUrl) {
         // 构建，检查并解决冲突
-        String shortUrl = originalUrl;
+        // 允许相同 originalUrl 生成不同的短链，第一次缩短时也要加上随机值，否则多条相同 original 第一次必定冲突
+        String shortUrl = originalUrl + System.currentTimeMillis();
         // 最多尝试 3 次，尽最大努力解决冲突
         for (int i = 0; i < 3; i++) {
             shortUrl = urlShorter.shorten(shortUrl);
@@ -118,7 +122,7 @@ public class LinkService {
         if (!StringUtils.hasText(originalUrl)) {
             throw new UrlNotFoundException(shortUrl);
         }
-        if (link.getExpiresAt() != null && link.getExpiresAt().isBefore(LocalDateTime.now())) {
+        if (link.getExpiresAt() != null && link.getExpiresAt().isBefore(LocalDateTime.now(globalClock))) {
             throw new UrlNotFoundException(shortUrl);
         }
         return originalUrl;

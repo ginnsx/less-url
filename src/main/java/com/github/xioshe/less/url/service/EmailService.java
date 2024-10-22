@@ -2,6 +2,7 @@ package com.github.xioshe.less.url.service;
 
 import com.github.xioshe.less.url.entity.EmailTemplate;
 import com.github.xioshe.less.url.repository.EmailTemplateRepository;
+import com.google.common.base.Strings;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +48,7 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setFrom(fromAddress);
             helper.setTo(to);
-            helper.setSubject(template.getSubject());
+            helper.setSubject(Strings.nullToEmpty(template.getSubject()));
             helper.setText(content, true);
 
             if (attachments != null) {
@@ -74,6 +75,7 @@ public class EmailService {
     }
 
     private String replaceVariables(String content, Map<String, Object> variables) {
+        content = Strings.nullToEmpty(content);
         for (Map.Entry<String, Object> entry : variables.entrySet()) {
             content = content.replace("{{ " + entry.getKey() + " }}", entry.getValue().toString());
         }

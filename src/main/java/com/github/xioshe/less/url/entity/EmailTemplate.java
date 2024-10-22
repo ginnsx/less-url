@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.Version;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -30,6 +31,7 @@ public class EmailTemplate implements Serializable {
      * 邮件主题
      */
     @Schema(description = "邮件主题")
+    @NotNull(message = "邮件主题不能为空")
     @Size(max = 255, message = "邮件主题最大长度要小于 255")
     private String subject;
 
@@ -37,6 +39,7 @@ public class EmailTemplate implements Serializable {
      * 邮件内容
      */
     @Schema(description = "邮件内容")
+    @NotNull(message = "邮件内容不能为空")
     private String content;
 
     /**

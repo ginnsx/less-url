@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
+import java.time.Clock;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,8 @@ public class JwtTokenManager {
 
     private final RotatingSecretKeyManager secretKeyManager;
 
+    private final Clock globalClock;
+
 
     public String generateAccessToken(UserDetails userDetails) {
         return generateAccessToken(userDetails, new HashMap<>());
@@ -52,9 +55,9 @@ public class JwtTokenManager {
         return Jwts.builder()
                 .claims()
                 .subject(userDetails.getUsername())
-                .issuedAt(new Date())
-                .notBefore(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expirationMills))
+                .issuedAt(new Date(globalClock.millis()))
+                .notBefore(new Date(globalClock.millis()))
+                .expiration(new Date(globalClock.millis() + expirationMills))
                 .id(UUID.randomUUID().toString())
                 .add(extraClaims)
                 .and()

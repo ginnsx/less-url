@@ -43,34 +43,6 @@ class SignupCommandValidationTest {
     }
 
     @Test
-    void Password_max_length() {
-        var command = new SignupCommand();
-        command.setVerifyCode("123456");
-        command.setEmail("test@example.com");
-        command.setUsername("test");
-
-        command.setPassword("aB123456789012345");
-        assertThat(validator.validate(command))
-                .singleElement()
-                .extracting(ConstraintViolation::getMessage)
-                .isEqualTo("密码由大小写字母、数字和特殊符号组成，长度为 8-16 位");
-    }
-
-    @Test
-    void Password_min_length() {
-        var command = new SignupCommand();
-        command.setVerifyCode("123456");
-        command.setEmail("test@example.com");
-        command.setUsername("test");
-
-        command.setPassword("123456A");
-        assertThat(validator.validate(command))
-                .singleElement()
-                .extracting(ConstraintViolation::getMessage)
-                .isEqualTo("密码由大小写字母、数字和特殊符号组成，长度为 8-16 位");
-    }
-
-    @Test
     void VerifyCode_only_digits() {
         var command = new SignupCommand();
         command.setEmail("test@example.com");

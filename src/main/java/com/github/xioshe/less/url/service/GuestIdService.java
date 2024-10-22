@@ -12,8 +12,9 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class GuestIdService {
 
-    private final StringRedisTemplate redisTemplate;
     private static final long GUEST_ID_EXPIRATION = 14; // 14 days
+
+    private final StringRedisTemplate redisTemplate;
 
     public String generateGuestId() {
         String guestId = UUID.randomUUID().toString();

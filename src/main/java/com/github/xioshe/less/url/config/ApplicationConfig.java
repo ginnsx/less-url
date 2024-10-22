@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.time.Clock;
+
 
 @EnableAsync
 @EnableScheduling
@@ -23,5 +25,15 @@ public class ApplicationConfig {
     public UrlShorter urlShorter() {
         Encoder encoder = new Base58Codec();
         return new HashEncodingUrlShorter(encoder, HashFunctions.MURMUR3);
+    }
+
+    /**
+     * 全局时钟，便于单元测试
+     *
+     * @return Clock
+     */
+    @Bean
+    public Clock globalClock() {
+        return Clock.systemDefaultZone();
     }
 }

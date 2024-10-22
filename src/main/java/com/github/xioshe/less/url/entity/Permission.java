@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.annotation.Version;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -14,6 +16,8 @@ import java.time.LocalDateTime;
 
 @Schema
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Permission implements Serializable {
 
     private Long id;
@@ -68,4 +72,12 @@ public class Permission implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+    public Permission(Long id, String code, String name, String description, Boolean enabled) {
+        this.id = id;
+        this.code = code;
+        this.name = name;
+        this.description = description;
+        this.enabled = enabled;
+    }
 }

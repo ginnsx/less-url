@@ -2,52 +2,67 @@ package com.github.xioshe.less.url.service;
 
 import com.github.xioshe.less.url.api.dto.CreateLinkCommand;
 import com.github.xioshe.less.url.config.AppProperties;
+import com.github.xioshe.less.url.entity.Link;
 import com.github.xioshe.less.url.exceptions.CustomAliasDuplicatedException;
+import com.github.xioshe.less.url.exceptions.UrlNotFoundException;
 import com.github.xioshe.less.url.repository.LinkRepository;
 import com.github.xioshe.less.url.shorter.UrlShorter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.CacheManager;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class LinkServiceTest {
 
+    @Mock
     private LinkRepository linkRepository;
-
+    @Mock
     private UrlShorter urlShorter;
+    @Mock
+    private CacheManager cacheManager;
+    @Spy
+    private AppProperties appProperties = new AppProperties();
+    @Mock
+    private AccessRecordService accessRecordService;
+    @Mock
+    private VisitCountService visitCountService;
+    @Spy
+    private Clock globalClock = Clock.systemDefaultZone();
 
+    @InjectMocks
     private LinkService linkService;
 
-    private final AppProperties appProperties = new AppProperties();
+    private CreateLinkCommand createLinkCommand;
 
     @BeforeEach
     void setUp() {
-        linkRepository = mock(LinkRepository.class);
-        urlShorter = mock(UrlShorter.class);
-        linkService = new LinkService(linkRepository, urlShorter,
-                mock(CacheManager.class), appProperties,
-                mock(AccessRecordService.class), mock(VisitCountService.class));
+        createLinkCommand = new CreateLinkCommand();
+        createLinkCommand.setOriginalUrl("https://example.com");
     }
 
     @Test
     void createLink_with_default_ttl() {
-        var cmd = new CreateLinkCommand();
-        cmd.setOriginalUrl("https://example.com");
+        when(urlShorter.shorten(anyString())).thenReturn("generated");
+        when(linkRepository.existsByShortUrl("generated")).thenReturn(false);
 
-        String expectedShortUrl = "https://short.com";
-        when(urlShorter.shorten(cmd.getOriginalUrl())).thenReturn(expectedShortUrl);
-        when(linkRepository.existsByShortUrl(expectedShortUrl)).thenReturn(false);
-
-        linkService.createLink(cmd, "u_1");
+        linkService.createLink(createLinkCommand, "u_1");
         verify(linkRepository).save(argThat(link ->
                 link.getExpiresAt() != null
         ));
@@ -83,23 +98,19 @@ class LinkServiceTest {
     }
 
     @Test
-    void createLink_shorten_url() {
-        String originalUrl = "https://example.com";
+    void createLink_with_expiration_alias_shorten_url() {
         var expiresAt = LocalDateTime.now();
-        var cmd = new CreateLinkCommand();
-        cmd.setOriginalUrl(originalUrl);
-        cmd.setExpiresAt(expiresAt);
+        createLinkCommand.setExpiresAt(expiresAt);
 
-        String expectedShortUrl = "https://short.com";
-        when(urlShorter.shorten(originalUrl)).thenReturn(expectedShortUrl);
-        when(linkRepository.existsByShortUrl(expectedShortUrl)).thenReturn(false);
+        when(urlShorter.shorten(anyString())).thenReturn("generated");
+        when(linkRepository.existsByShortUrl("generated")).thenReturn(false);
 
-        linkService.createLink(cmd, "u_1");
+        linkService.createLink(createLinkCommand, "u_1");
 
         verify(linkRepository).save(argThat(link ->
-                link.getOriginalUrl().equals(originalUrl)
+                link.getOriginalUrl().equals("https://example.com")
                 && link.getOwnerId().equals("u_1")
-                && link.getShortUrl().equals(expectedShortUrl)
+                && link.getShortUrl().equals("generated")
                 && link.getExpiresAt() == expiresAt
                 && !link.getIsCustom()));
     }
@@ -131,5 +142,80 @@ class LinkServiceTest {
         var result = linkService.shorten(originalUrl);
 
         assertEquals(shortUrl, result);
+    }
+
+    @Test
+    void createLink_withCustomAlias_shouldSaveLink() {
+        createLinkCommand.setCustomAlias("custom");
+        when(linkRepository.existsByShortUrl("custom")).thenReturn(false);
+
+        linkService.createLink(createLinkCommand, "u_1");
+
+        verify(linkRepository).save(argThat(link ->
+                link.getOriginalUrl().equals("https://example.com")
+                && link.getOwnerId().equals("u_1")
+                && link.getShortUrl().equals("custom")
+                && link.getExpiresAt() != null
+                && link.getIsCustom()));
+    }
+
+    @Test
+    void createLink_withConflictingCustomAlias_shouldThrowException() {
+        createLinkCommand.setCustomAlias("custom");
+        when(linkRepository.existsByShortUrl("custom")).thenReturn(true);
+
+        assertThrows(CustomAliasDuplicatedException.class, () -> linkService.createLink(createLinkCommand, "u_1"));
+    }
+
+    @Test
+    void createLink_withoutCustomAlias_shouldGenerateShortUrl() {
+        when(urlShorter.shorten(anyString())).thenReturn("generated");
+        when(linkRepository.existsByShortUrl("generated")).thenReturn(false);
+
+        linkService.createLink(createLinkCommand, "u_1");
+
+        verify(linkRepository).save(argThat(link ->
+                link.getOriginalUrl().equals("https://example.com")
+                && link.getOwnerId().equals("u_1")
+                && link.getShortUrl().equals("generated")
+                && link.getExpiresAt() != null
+                && !link.getIsCustom()));
+    }
+
+    @Test
+    void getOriginalUrl_shouldReturnOriginalUrl() {
+        Link link = new Link();
+        link.setOriginalUrl("https://example.com");
+        link.setExpiresAt(LocalDateTime.now().plusDays(1));
+        when(linkRepository.selectByShortUrl("short")).thenReturn(Optional.of(link));
+
+        String result = linkService.getOriginalUrl("short");
+
+        assertEquals("https://example.com", result);
+    }
+
+    @Test
+    void getOriginalUrl_withExpiredLink_shouldThrowException() {
+        Link link = new Link();
+        link.setOriginalUrl("https://example.com");
+        link.setExpiresAt(LocalDateTime.now().minusDays(1));
+
+        when(linkRepository.selectByShortUrl("short")).thenReturn(Optional.of(link));
+
+        assertThrows(UrlNotFoundException.class, () -> linkService.getOriginalUrl("short"));
+    }
+
+    @Test
+    void shorten_withConflict_shouldRetryAndSucceed() {
+        when(urlShorter.shorten(anyString()))
+                .thenReturn("conflict")
+                .thenReturn("success");
+        when(linkRepository.existsByShortUrl("conflict")).thenReturn(true);
+        when(linkRepository.existsByShortUrl("success")).thenReturn(false);
+
+        String result = linkService.shorten("https://example.com");
+
+        assertEquals("success", result);
+        verify(urlShorter, times(2)).shorten(anyString());
     }
 }
