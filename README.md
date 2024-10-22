@@ -75,7 +75,6 @@
 ```http
 POST http://localhost:8080/links
 Content-Type: application/json
-# Authorization: Bearer {{your_token}}
 Guest-Id: {{your_guest_id}}
 
 {
