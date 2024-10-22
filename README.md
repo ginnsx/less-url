@@ -30,13 +30,13 @@
 
 2. 提供 Redis 和 MySQL 服务。可以使用 Docker Compose 快速启动。项目 enviroments 目录下提供了 [docker-compose.yml](environments/docker-compose.yml) 文件。
 
-   ```shell
+   ```bash
    docker compose up -d
    ```
 
 3. 克隆仓库：
 
-   ```shell
+   ```bash
    git clone https://github.com/yourusername/less-url.git
    cd less-url
    ```
@@ -58,13 +58,13 @@
 
 5. 编译项目：
 
-   ```shell
+   ```bash
    mvn clean package
    ```
 
 6. 运行应用：
 
-   ```shell
+   ```bash
    java -jar target/less-url-0.0.1-SNAPSHOT.jar
    ```
 
