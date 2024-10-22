@@ -54,21 +54,31 @@ public class AuthenticationService {
     private final RedissonClient redissonClient;
     private final GuestIdService guestIdService;
     private final SecurityUserHelper securityUserHelper;
+    private final UserService userService;
 
     public User signup(SignupCommand command) {
         if (!verificationService.verify(REGISTER.getValue(), command.getEmail(), command.getVerifyCode())) {
             throw new IllegalArgumentException("无效验证码");
         }
-        if (PasswordStrengthChecker.checkStrength(command.getPassword()) < 3) {
-            throw new IllegalArgumentException("密码强度不够，请使用字母、数字、符号组合，长度为 8-16 位");
+        if (PasswordStrengthChecker.checkStrength(command.getPassword()) < 60) {
+            throw new IllegalArgumentException("密码强度不够，请使用更复杂的大小写字母、数字、特殊符号组合");
         }
         User user = command.asUser(passwordEncoder);
-        userRepository.save(user);
+        userService.creatUser(user);
         // 发送通知邮件
         sendAccountCreationEmail(command.getEmail(), user.getUsername());
         // 清理验证码
         verificationService.clean(REGISTER.getValue(), command.getEmail());
         return user;
+    }
+
+    public void verifyEmailBeforeRegister(RegisterEmailCommand command) {
+        if (userRepository.existsByEmail(command.getEmail())) {
+            throw new IllegalArgumentException("邮箱已注册");
+        }
+        if (!verificationService.verify(REGISTER.getValue(), command.getEmail(), command.getVerifyCode())) {
+            throw new IllegalArgumentException("无效验证码");
+        }
     }
 
     private void sendAccountCreationEmail(String to, String username) {
@@ -126,13 +136,13 @@ public class AuthenticationService {
         }
     }
 
-    public void verifyEmailBeforeRegister(RegisterEmailCommand command) {
+    public void sendRegisterVerificationEmail(RegisterEmailCommand command) {
         if (userRepository.existsByEmail(command.getEmail())) {
             throw new IllegalArgumentException("邮箱已注册");
         }
         // 每个邮箱地址锁定 1min
         RLock lock = redissonClient.getLock(RedisKeys.LOCK_PREFIX + REGISTER.getValue() + ":" + command.getEmail());
-        log.info("lock name: {}", lock.getName());
+        log.debug("lock name: {}", lock.getName());
         try {
             if (!lock.tryLock(0, 1, TimeUnit.MINUTES)) {
                 throw new IllegalArgumentException("频繁发送验证码，请稍后再试");
@@ -141,15 +151,8 @@ public class AuthenticationService {
             throw new IllegalArgumentException("频繁发送验证码，请稍后再试");
         }
         String code = verificationService.generate(REGISTER.getValue(), command.getEmail());
-        sendRegisterVerificationEmail(command.getEmail(), code);
+        emailService.sendRegisterVerificationEmail(command.getEmail(), code, verificationService.getExpirationMinutes());
         // 不解锁，依靠锁的过期时间自动释放
-    }
-
-    private void sendRegisterVerificationEmail(String to, String code) {
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("code", code);
-        variables.put("expireTime", verificationService.getExpirationMinutes());
-        emailService.sendEmail(to, REGISTER.getTemplateName(), variables);
     }
 
     public void sendEmailVerification(VerificationCommand command) {

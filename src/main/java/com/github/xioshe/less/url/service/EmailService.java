@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static com.github.xioshe.less.url.service.VerificationType.REGISTER;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -81,5 +83,10 @@ public class EmailService {
     private boolean isProd() {
         return Arrays.stream(env.getActiveProfiles())
                 .anyMatch("prod"::equalsIgnoreCase);
+    }
+
+    public void sendRegisterVerificationEmail(String email, String code, int expirationMinutes) {
+        Map<String, Object> variables = Map.of("code", code, "expireTime", expirationMinutes);
+        sendEmail(email, REGISTER.getTemplateName(), variables);
     }
 }

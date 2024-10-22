@@ -61,6 +61,18 @@ public class SwaggerSpringdocConfig {
 //                .build();
 //    }
 
+//    @Bean
+//    public GlobalOpenApiCustomizer consumerTypeHeaderOpenAPICustomizer() {
+//        return openApi -> openApi.getPaths().values().stream()
+//                .flatMap(pathItem -> pathItem.readOperations().stream())
+//                .forEach(operation -> {
+//                    var parameter = new HeaderParameter()
+//                            .name(CustomHeaders.GUEST_ID)
+//                            .description("游客 id");
+//                    operation.addParametersItem(parameter);
+//                });
+//    }
+
     @Bean
     public OpenAPI customOpenAPI() {
         SpringDocUtils.getConfig()

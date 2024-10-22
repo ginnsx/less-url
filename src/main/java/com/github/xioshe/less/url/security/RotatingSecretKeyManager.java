@@ -26,6 +26,9 @@ public class RotatingSecretKeyManager implements InitializingBean {
     private static final int MAX_KEYS = 2;
     private final Deque<SecretKey> keys = new ConcurrentLinkedDeque<>();
 
+    /**
+     * JWT 签名密钥，至少 32 个字符（256 位）
+     */
     @Value("${security.jwt.key.secret}")
     private String secret;
 

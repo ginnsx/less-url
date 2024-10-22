@@ -2,6 +2,8 @@ package com.github.xioshe.less.url.api;
 
 import com.github.xioshe.less.url.api.dto.AuthCommand;
 import com.github.xioshe.less.url.api.dto.AuthResponse;
+import com.github.xioshe.less.url.api.dto.CheckEmailCommand;
+import com.github.xioshe.less.url.api.dto.CheckEmailResponse;
 import com.github.xioshe.less.url.api.dto.GuestIdResponse;
 import com.github.xioshe.less.url.api.dto.LoginCommand;
 import com.github.xioshe.less.url.api.dto.RefreshTokenCommand;
@@ -9,6 +11,7 @@ import com.github.xioshe.less.url.api.dto.RegisterEmailCommand;
 import com.github.xioshe.less.url.api.dto.SignupCommand;
 import com.github.xioshe.less.url.api.dto.VerificationCommand;
 import com.github.xioshe.less.url.entity.User;
+import com.github.xioshe.less.url.repository.UserRepository;
 import com.github.xioshe.less.url.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,10 +36,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final UserRepository userRepository;
 
-    @Operation(summary = "验证注册邮箱", description = "验证注册邮箱，发送验证码")
+    @Operation(summary = "检查邮箱", description = "检查邮箱是否已经注册")
+    @PostMapping("/check-email")
+    public CheckEmailResponse checkEmail(@RequestBody @Validated CheckEmailCommand command) {
+        return new CheckEmailResponse(userRepository.existsByEmail(command.getEmail()));
+    }
+
+    @Operation(summary = "发送注册验证码", description = "验证注册邮箱，发送验证码")
     @PostMapping("/register-verification")
     public void registerVerification(@RequestBody @Validated RegisterEmailCommand command) {
+        authenticationService.sendRegisterVerificationEmail(command);
+    }
+
+    @Operation(summary = "验证注册邮箱", description = "验证注册邮箱")
+    @PostMapping("/register-verification/verify")
+    public void verifyEmailBeforeRegister(@RequestBody @Validated RegisterEmailCommand command) {
         authenticationService.verifyEmailBeforeRegister(command);
     }
 

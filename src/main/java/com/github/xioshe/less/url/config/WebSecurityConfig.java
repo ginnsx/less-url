@@ -99,6 +99,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/doc.html", "/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .requestMatchers("/actuator/**").permitAll()
                                 .requestMatchers("/links/**").hasAnyRole(RoleNames.ALL_AUTHENTICATED_ROLES)
+                                .requestMatchers("/guest/**").hasRole(RoleNames.ROLE_GUEST)
                                 .anyRequest().authenticated())
                 .exceptionHandling(exceptionHanding ->
                         exceptionHanding.authenticationEntryPoint(entryPoint)

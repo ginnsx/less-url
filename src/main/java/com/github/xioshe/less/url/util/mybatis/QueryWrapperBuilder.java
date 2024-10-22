@@ -16,7 +16,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class QueryWrapperBuilder {
 
+    /**
+     * 缓存每个类的字段名映射关系，小驼峰 -> 下划线，避免多次反射获取字段名
+     */
     private static final Map<Class<?>, Map<String, String>> columnNameCacheMap = new ConcurrentHashMap<>();
+    /**
+     * 缓存每个类可以作为查询参数的字段，避免多次反射获取字段
+     */
     private static final Map<Class<?>, List<Field>> validFieldsCacheMap = new ConcurrentHashMap<>();
 
     public static <T> QueryWrapper<T> build(Object query) {
@@ -34,7 +40,7 @@ public class QueryWrapperBuilder {
                     applyCondition(queryWrapper, queryClass, fieldName, value);
                 }
             } catch (IllegalAccessException e) {
-                log.error("Error accessing field: " + field.getName(), e);
+                log.error("Error accessing field: {}", field.getName(), e);
             }
         }
 

@@ -25,4 +25,9 @@
       where ur.user_id = #{userId}
         and r.enabled = true
   </select>
+
+  <insert id="assignRoleToUser">
+      insert into lu_user_role (user_id, role_id)
+      values (#{userId}, #{roleId})
+  </insert>
 </mapper>

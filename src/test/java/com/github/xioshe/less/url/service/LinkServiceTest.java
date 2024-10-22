@@ -33,7 +33,9 @@ class LinkServiceTest {
     void setUp() {
         linkRepository = mock(LinkRepository.class);
         urlShorter = mock(UrlShorter.class);
-        linkService = new LinkService(linkRepository, urlShorter, mock(CacheManager.class), appProperties);
+        linkService = new LinkService(linkRepository, urlShorter,
+                mock(CacheManager.class), appProperties,
+                mock(AccessRecordService.class), mock(VisitCountService.class));
     }
 
     @Test

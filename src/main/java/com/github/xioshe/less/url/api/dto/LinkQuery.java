@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.annotation.Transient;
 
 import java.util.Date;
 
@@ -15,7 +14,9 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 public class LinkQuery extends BaseQuery<Link> {
 
-    @Transient
+    @Schema(hidden = true, description = "精确匹配用户 ID")
+    private String ownerId;
+
     @Schema(description = "精确匹配短链接")
     private String shortUrl_eq;
 

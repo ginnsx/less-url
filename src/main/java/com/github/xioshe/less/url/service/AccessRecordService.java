@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -25,5 +26,9 @@ public class AccessRecordService {
         accessRecord.setReferer(request.getHeader("referer"));
         accessRecord.setAccessTime(LocalDateTime.now());
         accessRecordRepository.save(accessRecord);
+    }
+
+    public long countByShortUrls(List<String> shortUrls) {
+        return accessRecordRepository.lambdaQuery().in(AccessRecord::getShortUrl, shortUrls).count();
     }
 }

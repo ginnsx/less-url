@@ -7,11 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MigrateResponse {
-    private int links;
-    private long analytics;
+public class CheckEmailResponse {
 
-    public MigrateResponse(int links) {
-        this.links = links;
-    }
+    private boolean exist;
 }

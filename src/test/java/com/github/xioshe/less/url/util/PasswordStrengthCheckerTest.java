@@ -1,59 +1,71 @@
 package com.github.xioshe.less.url.util;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class PasswordStrengthCheckerTest {
-    private String weakPassword;
-    private String strongPassword;
-
-    @BeforeEach
-    public void setUp() {
-        weakPassword = "weak";
-        strongPassword = "StrongPassword123!";
+    @Test
+    void testWeakPassword() {
+        int strength = PasswordStrengthChecker.checkStrength("weak");
+        assertThat(strength).isEqualTo(0);
     }
 
     @Test
-    public void checkStrength_WeakPassword_ReturnsLowStrength() {
-        int strength = PasswordStrengthChecker.checkStrength(weakPassword);
-        assertEquals(1, strength, "Expected strength 1 for a weak password");
+    void testStrongPassword() {
+        int strength = PasswordStrengthChecker.checkStrength("Str0ngP@ssw0rd");
+        assertThat(strength).isEqualTo(80);
     }
 
     @Test
-    public void checkStrength_StrongPassword_ReturnsHighStrength() {
-        int strength = PasswordStrengthChecker.checkStrength(strongPassword);
-        assertEquals(6, strength, "Expected strength 6 for a strong password");
+    void testVeryStrongPassword() {
+        int strength = PasswordStrengthChecker.checkStrength("Str0ngP@ssw0rd!!!2024");
+        assertThat(strength).isEqualTo(100);
     }
 
     @Test
-    public void checkStrength_EmptyPassword_ReturnsZeroStrength() {
-        int strength = PasswordStrengthChecker.checkStrength("");
-        assertEquals(0, strength, "Expected strength 0 for an empty password");
+    void testPasswordWithOnlyLowerCase() {
+        int strength = PasswordStrengthChecker.checkStrength("onlylowercase");
+        assertThat(strength).isEqualTo(10);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "password123, 30",
+            "Password123, 50",
+            "P@ssw0rd, 60",
+            "L0ngP@ssw0rdWithManyChars, 100"
+    })
+    void testVariousPasswords(String password, int expectedStrength) {
+        int strength = PasswordStrengthChecker.checkStrength(password);
+        assertThat(strength).isEqualTo(expectedStrength);
     }
 
     @Test
-    public void checkStrength_PasswordWithOnlyUppercase_ReturnsPartialStrength() {
-        int strength = PasswordStrengthChecker.checkStrength("ALLUPPER");
-        assertEquals(2, strength, "Expected strength 2 for a password with only uppercase letters");
+    void testPasswordLength() {
+        assertThat(PasswordStrengthChecker.checkStrength("Aa1!")).isLessThan(
+                PasswordStrengthChecker.checkStrength("Aa1!5678")
+        );
+        assertThat(PasswordStrengthChecker.checkStrength("Aa1!5678")).isLessThan(
+                PasswordStrengthChecker.checkStrength("Aa1!567890123456")
+        );
+        assertThat(PasswordStrengthChecker.checkStrength("Aa1!567890123456")).isLessThan(
+                PasswordStrengthChecker.checkStrength("Aa1!5678901234567890")
+        );
     }
 
     @Test
-    public void checkStrength_PasswordWithOnlyLowercase_ReturnsPartialStrength() {
-        int strength = PasswordStrengthChecker.checkStrength("alllower");
-        assertEquals(2, strength, "Expected strength 2 for a password with only lowercase letters");
-    }
-
-    @Test
-    public void checkStrength_PasswordWithOnlyNumbers_ReturnsPartialStrength() {
-        int strength = PasswordStrengthChecker.checkStrength("12345678");
-        assertEquals(2, strength, "Expected strength 2 for a password with only numbers");
-    }
-
-    @Test
-    public void checkStrength_PasswordWithOnlySpecialChars_ReturnsPartialStrength() {
-        int strength = PasswordStrengthChecker.checkStrength("!!!###");
-        assertEquals(1, strength, "Expected strength 1 for a password with only special characters");
+    void testCharacterTypes() {
+        assertThat(PasswordStrengthChecker.checkStrength("lowercase")).isLessThan(
+                PasswordStrengthChecker.checkStrength("Lowercase")
+        );
+        assertThat(PasswordStrengthChecker.checkStrength("Lowercase")).isLessThan(
+                PasswordStrengthChecker.checkStrength("Lowercase123")
+        );
+        assertThat(PasswordStrengthChecker.checkStrength("Lowercase123")).isLessThan(
+                PasswordStrengthChecker.checkStrength("Lowercase123!")
+        );
     }
 }

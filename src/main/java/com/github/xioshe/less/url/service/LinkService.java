@@ -38,8 +38,8 @@ public class LinkService {
     public Link getById(Long id, String ownerId) {
         return linkRepository.getById(id, ownerId)
                 .map(link -> {
-                    link.addUrlPrefix(appProperties.getBaseUrl());
                     link.setClicks(visitCountService.getVisitCount(link.getShortUrl()));
+                    link.addUrlPrefix(appProperties.getBaseUrl());
                     return link;
                 })
                 .orElseThrow(UrlNotFoundException::new);
@@ -50,8 +50,8 @@ public class LinkService {
         var shortUrls = pageResult.getRecords().stream().map(Link::getShortUrl).toList();
         var counts = visitCountService.batchGetVisitCounts(shortUrls);
         pageResult.getRecords().forEach(link -> {
-            link.addUrlPrefix(appProperties.getBaseUrl());
             link.setClicks(counts.getOrDefault(link.getShortUrl(), 0L));
+            link.addUrlPrefix(appProperties.getBaseUrl());
         });
         return pageResult;
     }
@@ -146,5 +146,18 @@ public class LinkService {
         accessRecordService.record(url, request);
         // 统计访问量
         visitCountService.record(url);
+    }
+
+    public MigrateResponse countByOwner(String ownerId) {
+        var links = linkRepository.lambdaQuery()
+                .select(Link::getShortUrl).eq(Link::getOwnerId, ownerId).list();
+        if (links.isEmpty()) {
+            return new MigrateResponse(0);
+        }
+
+        var shortUrls = links.stream().map(Link::getShortUrl).toList();
+        var analytics = accessRecordService.countByShortUrls(shortUrls);
+
+        return new MigrateResponse(shortUrls.size(), analytics);
     }
 }
