@@ -28,14 +28,20 @@
 
 1. 确保您的系统已安装 Java 17 和 Maven。
 
-2. 克隆仓库：
+2. 提供 Redis 和 MySQL 服务。可以使用 Docker Compose 快速启动。项目 enviroments 目录下提供了 [docker-compose.yml](environments/docker-compose.yml) 文件。
+
+   ```shell
+   docker compose up -d
+   ```
+
+3. 克隆仓库：
 
    ```shell
    git clone https://github.com/yourusername/less-url.git
    cd less-url
    ```
 
-3. 在项目根目录创建 `.env` 文件，并填写以下配置：
+4. 在项目根目录创建 `.env` 文件，并填写以下配置：
 
     ```dotenv
     REDIS_HOST=
@@ -50,13 +56,13 @@
     MYSQL_PASSWORD=
     ```
 
-4. 编译项目：
+5. 编译项目：
 
    ```shell
    mvn clean package
    ```
 
-5. 运行应用：
+6. 运行应用：
 
    ```shell
    java -jar target/less-url-0.0.1-SNAPSHOT.jar
@@ -79,19 +85,18 @@ Guest-Id: {{your_guest_id}}
 }
 ```
 
-游客模式使用 `Guest-Id` 头，正式用户使用 JWT 认证（`Authorization`）。
+游客模式使用 `Guest-Id` 头，正式用户使用 JWT 认证（`Authorization: Bearer {{your_token}}`）。
 
 ### 查询短链接
 
 ```http
 GET http://localhost:8080/links?page=1&size=20&sort_by=short_url,-updated_at
-# Authorization: Bearer {{your_token}}
 Guest-Id: {{your_guest_id}}
 ```
 
 支持丰富的查询条件，包括分页和排序。
 
-游客模式使用 `Guest-Id` 头，正式用户使用 JWT 认证（`Authorization`）。
+游客模式使用 `Guest-Id` 头，正式用户使用 JWT 认证（`Authorization: Bearer {{your_token}}`）。
 
 ### 访问短链接
 

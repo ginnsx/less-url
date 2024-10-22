@@ -1,3 +1,38 @@
+# Auth
+
+### Check Email
+POST http://localhost:8080/auth/check-email
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+### Send Register Verification
+POST http://localhost:8080/auth/register-verification
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+### Verify Email Before Register
+POST http://localhost:8080/auth/register-verification/verify
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "verifyCode": "123456"
+}
+
+### Send Email Verification
+POST http://localhost:8080/auth/email-verification
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
 ### Login
 POST http://localhost:8080/auth/token
 Content-Type: application/json
@@ -25,6 +60,8 @@ GET http://localhost:8080/auth/guest-id
 
 > {% client.global.set("guest_id", response.body.guestId); %}
 
+# User
+
 ### Get Current User
 GET http://localhost:8080/users/me
 Authorization: Bearer {{lu_token}}
@@ -36,7 +73,24 @@ Authorization: Bearer {{lu_token}}
 ### Migrate Data
 POST http://localhost:8080/users/migrate
 Authorization: Bearer {{lu_token}}
-Guest-Id: {{guest_id}}
+Content-Type: application/json
+
+{
+  "guestId": "{{guest_id}}"
+}
+
+### Update User
+PUT http://localhost:8080/users
+Authorization: Bearer {{lu_token}}
+Content-Type: application/json
+
+{
+  "id": 1,
+  "username": "updated_username",
+  "email": "updated_email@example.com"
+}
+
+# Link
 
 ### Create Short URL by Guest
 POST http://localhost:8080/links
@@ -83,3 +137,8 @@ GET http://localhost:8080/s/custom
 ### Get Access Records
 GET http://localhost:8080/links/custom/access-records
 Authorization: Bearer {{lu_token}}
+
+# Guest
+### Get Guest Counts
+GET http://localhost:8080/guest/counts
+Guest-Id: {{guest_id}}
