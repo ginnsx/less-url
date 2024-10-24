@@ -1,23 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.xioshe.less.url.repository.mapper.LinkMapper">
-    <resultMap id="BaseResultMap" type="com.github.xioshe.less.url.entity.Link">
-        <!--@mbg.generated-->
-        <!--@Table lu_link-->
-        <id column="id" jdbcType="BIGINT" property="id" />
-        <result column="short_url" jdbcType="VARCHAR" property="shortUrl" />
-        <result column="original_url" jdbcType="VARCHAR" property="originalUrl" />
-        <result column="owner_id" jdbcType="VARCHAR" property="ownerId" />
-        <result column="status" jdbcType="TINYINT" property="status" />
-        <result column="is_custom" jdbcType="BOOLEAN" property="isCustom" />
-        <result column="expires_at" jdbcType="TIMESTAMP" property="expiresAt" />
-        <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
-        <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
-        <result column="version" jdbcType="INTEGER" property="version" />
-    </resultMap>
-    <sql id="Base_Column_List">
-        <!--@mbg.generated-->
-        id, short_url, original_url, owner_id, `status`, is_custom, expires_at, created_at, updated_at,
-        version
-    </sql>
+  <resultMap id="BaseResultMap" type="com.github.xioshe.less.url.entity.Link">
+    <!--@mbg.generated-->
+    <!--@Table lu_link-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="short_url" jdbcType="VARCHAR" property="shortUrl" />
+    <result column="original_url" jdbcType="VARCHAR" property="originalUrl" />
+    <result column="owner_id" jdbcType="VARCHAR" property="ownerId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="is_custom" jdbcType="BOOLEAN" property="isCustom" />
+    <result column="expires_at" jdbcType="TIMESTAMP" property="expiresAt" />
+    <result column="clicks" jdbcType="INTEGER" property="clicks" />
+    <result column="last_access_time" jdbcType="TIMESTAMP" property="lastAccessTime" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+  </resultMap>
+  <sql id="Base_Column_List">
+      <!--@mbg.generated-->
+      id,
+      short_url,
+      original_url,
+      owner_id,
+      `status`,
+      is_custom,
+      expires_at,
+      clicks,
+      last_access_time,
+      created_at,
+      updated_at,
+      version
+  </sql>
+    <update id="updateVisitCount">
+        update lu_link
+        set clicks=lu_link.clicks + #{clicks},
+            last_access_time=#{lastAccessTime}
+        where short_url = #{shortUrl}
+    </update>
 </mapper>

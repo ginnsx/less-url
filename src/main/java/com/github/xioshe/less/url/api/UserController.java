@@ -2,7 +2,7 @@ package com.github.xioshe.less.url.api;
 
 
 import com.github.xioshe.less.url.api.dto.GuestOpCommand;
-import com.github.xioshe.less.url.api.dto.MigrateResponse;
+import com.github.xioshe.less.url.api.dto.CountLinkResponse;
 import com.github.xioshe.less.url.api.dto.UserResponse;
 import com.github.xioshe.less.url.entity.User;
 import com.github.xioshe.less.url.repository.UserRepository;
@@ -61,8 +61,8 @@ public class UserController {
     @Operation(summary = "迁移 Guest 数据到用户账户")
     @ApiResponse(responseCode = "200", description = "迁移用户数据成功")
     @PostMapping("/migrate")
-    public MigrateResponse migrate(@AuthenticationPrincipal SecurityUser securityUser,
-                                   @RequestBody GuestOpCommand command) {
+    public CountLinkResponse migrate(@AuthenticationPrincipal SecurityUser securityUser,
+                                     @RequestBody GuestOpCommand command) {
         return userService.migrate(command.getGuestId(), securityUser);
     }
 

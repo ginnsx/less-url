@@ -1,5 +1,3 @@
-# Auth
-
 ### Check Email
 POST http://localhost:8080/auth/check-email
 Content-Type: application/json
@@ -60,8 +58,6 @@ GET http://localhost:8080/auth/guest-id
 
 > {% client.global.set("guest_id", response.body.guestId); %}
 
-# User
-
 ### Get Current User
 GET http://localhost:8080/users/me
 Authorization: Bearer {{lu_token}}
@@ -89,8 +85,6 @@ Content-Type: application/json
   "username": "updated_username",
   "email": "updated_email@example.com"
 }
-
-# Link
 
 ### Create Short URL by Guest
 POST http://localhost:8080/links
@@ -130,15 +124,15 @@ Authorization: Bearer {{lu_token}}
 DELETE http://localhost:8080/links/1
 Authorization: Bearer {{lu_token}}
 
+### Get Link Counts by User
+< {%
+    const guest_id = client.global.get("guest_id") || "1";
+    client.global.set("guest_id", guest_id)
+%}
+GET http://localhost:8080/links/counts
+Authorization: Bearer {{lu_token}}
+Guest-Id: {{guest_id}} # 2 选 1，优先级不如 Authorization 高
+
 ### Visit Short URL
 // @no-redirect
 GET http://localhost:8080/s/custom
-
-### Get Access Records
-GET http://localhost:8080/links/custom/access-records
-Authorization: Bearer {{lu_token}}
-
-# Guest
-### Get Guest Counts
-GET http://localhost:8080/guest/counts
-Guest-Id: {{guest_id}}

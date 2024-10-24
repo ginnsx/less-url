@@ -7,8 +7,6 @@ import lombok.Data;
 
 import java.util.Collection;
 
-import org.springframework.data.annotation.Transient;
-
 @Data
 public class BaseQuery<T> {
 

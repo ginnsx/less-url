@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -30,7 +29,4 @@ public class AccessRecordService {
         accessRecordRepository.save(accessRecord);
     }
 
-    public long countByShortUrls(List<String> shortUrls) {
-        return accessRecordRepository.lambdaQuery().in(AccessRecord::getShortUrl, shortUrls).count();
-    }
 }

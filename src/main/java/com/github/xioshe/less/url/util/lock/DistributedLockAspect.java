@@ -28,18 +28,18 @@ public class DistributedLockAspect {
     private final ExpressionParser parser = new SpelExpressionParser();
     private final DefaultParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
 
-    @Around("@annotation(distributedLock)")
-    public Object around(ProceedingJoinPoint joinPoint, DistributedLock distributedLock) throws Throwable {
-        String lockKey = getLockKey(joinPoint, distributedLock);
+    @Around("@annotation(annotation)")
+    public Object around(ProceedingJoinPoint joinPoint, DistributedLock annotation) throws Throwable {
+        String lockKey = getLockKey(joinPoint, annotation);
         RLock lock = redissonClient.getLock(lockKey);
 
         boolean locked = false;
         try {
-            locked = lock.tryLock(distributedLock.waitTime(), distributedLock.leaseTime(), distributedLock.unit());
+            locked = lock.tryLock(annotation.waitTime(), annotation.leaseTime(), annotation.timeunit());
             if (!locked) {
                 throw new DistributedLockException(
                         DistributedLockException.LockErrorType.LOCK_ACQUISITION_TIMEOUT,
-                        distributedLock.key(),
+                        annotation.key(),
                         "Failed to acquire lock within the specified wait time"
                 );
             }
@@ -48,7 +48,7 @@ public class DistributedLockAspect {
             Thread.currentThread().interrupt();
             throw new DistributedLockException(
                     DistributedLockException.LockErrorType.UNEXPECTED_ERROR,
-                    distributedLock.key(),
+                    annotation.key(),
                     "Lock acquisition was interrupted",
                     e
             );
@@ -59,10 +59,11 @@ public class DistributedLockAspect {
         }
     }
 
-    private String getLockKey(ProceedingJoinPoint joinPoint, DistributedLock distributedLock) {
-        String spel = distributedLock.spel();
+    private String getLockKey(ProceedingJoinPoint joinPoint, DistributedLock annotation) {
+        String prefix = annotation.prefix();
+        String spel = annotation.spel();
         if (spel.isEmpty()) {
-            return distributedLock.key();
+            return prefix + annotation.key();
         }
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
@@ -77,6 +78,6 @@ public class DistributedLockAspect {
 
         Expression expression = parser.parseExpression(spel);
         String spelValue = expression.getValue(context, String.class);
-        return distributedLock.key() + ":" + spelValue;
+        return prefix + annotation.key() + spelValue;
     }
 }

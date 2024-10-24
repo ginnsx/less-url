@@ -1,6 +1,6 @@
 package com.github.xioshe.less.url.service;
 
-import com.github.xioshe.less.url.api.dto.MigrateResponse;
+import com.github.xioshe.less.url.api.dto.CountLinkResponse;
 import com.github.xioshe.less.url.entity.User;
 import com.github.xioshe.less.url.repository.UserRepository;
 import com.github.xioshe.less.url.security.SecurityUser;
@@ -30,7 +30,7 @@ public class UserService {
         }
     }
 
-    public MigrateResponse migrate(String guestId, SecurityUser user) {
+    public CountLinkResponse migrate(String guestId, SecurityUser user) {
         if (user.isGuest()) {
             throw new AuthorizationServiceException("游客不允许迁移数据，请注册正式用户");
         }

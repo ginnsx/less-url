@@ -2,6 +2,7 @@ package com.github.xioshe.less.url.api;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.github.xioshe.less.url.api.dto.CountLinkResponse;
 import com.github.xioshe.less.url.api.dto.CreateLinkCommand;
 import com.github.xioshe.less.url.api.dto.LinkQuery;
 import com.github.xioshe.less.url.api.dto.Pagination;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,12 +68,17 @@ public class LinkController {
         linkService.delete(id, securityUserHelper.getTypedUserIdOrThrow());
     }
 
+    @Operation(summary = "根据认证用户，统计短链数量和点击记录数量")
+    @GetMapping("/counts")
+    public CountLinkResponse counts() {
+        return linkService.countByOwner(securityUserHelper.getTypedUserIdOrThrow());
+    }
 
-    @Operation(summary = "获取短链接访问记录", description = "获取短链接访问记录")
-    @ApiResponse(responseCode = "200", description = "短链接访问记录获取成功")
-    @GetMapping("/{shortUrl}/access-records")
-    public long accessRecords(@Parameter(description = "短链接") @PathVariable String shortUrl) {
-        return visitCountService.getVisitCount(shortUrl);
+    @Operation(summary = "统计短链接点击量")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/increase-count")
+    public void increaseVisitCount() {
+        linkService.updateVisitCount();
     }
 
 }

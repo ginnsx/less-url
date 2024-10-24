@@ -56,11 +56,14 @@ create table if not exists lu_link
     status       tinyint                default 0 comment '状态',
     is_custom    boolean       not null default false comment '是否自定义短链接',
     expires_at   datetime comment '过期时间',
+    clicks           INT NOT NULL DEFAULT 0 COMMENT '访问次数',
+    last_access_time DATETIME COMMENT '最后访问时间',
     created_at   datetime      not null default CURRENT_TIMESTAMP comment '创建时间',
     updated_at   datetime      not null default CURRENT_TIMESTAMP comment '更新时间',
     version      int                    default 0 comment '版本号',
     unique key link_short_url (short_url),
-    key link_user_id (owner_id)
+    key link_owner_id (owner_id),
+    key link_created_at (created_at)
 ) ENGINE = InnoDB;
 
 drop table if exists lu_access_record;
@@ -72,7 +75,8 @@ create table if not exists lu_access_record
     ip          varchar(64)  not null comment 'IP地址',
     referer     varchar(255) comment '来源页面',
     access_time datetime     not null default CURRENT_TIMESTAMP comment '创建时间',
-    key ar_short_url (short_url, access_time)
+    key idx_ar_short_url (short_url),
+    key idx_ar_at (access_time)
 ) ENGINE = InnoDB;
 
 drop table if exists lu_permission;
@@ -137,4 +141,15 @@ create table if not exists lu_email_template
     updated_at datetime    not null default CURRENT_TIMESTAMP comment '更新时间',
     version    int                  default 0 comment '版本号',
     unique key et_name (name)
-)
+) engine = InnoDB;
+
+drop table if exists lu_task;
+CREATE TABLE IF NOT EXISTS lu_task
+(
+    id               BIGINT PRIMARY KEY AUTO_INCREMENT,
+    task_name        varchar(50) not null comment '任务名称',
+    last_executed_at DATETIME comment '最近一次运行时间',
+    created_at       DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
+    updated_at       DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP comment '更新时间',
+    unique key tel_name (task_name)
+) ENGINE = InnoDB comment '任务执行记录表';

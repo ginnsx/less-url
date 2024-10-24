@@ -1,22 +1,32 @@
 package com.github.xioshe.less.url.service;
 
+import com.baomidou.mybatisplus.core.batch.MybatisBatch;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.github.xioshe.less.url.api.dto.CountLinkResponse;
 import com.github.xioshe.less.url.api.dto.CreateLinkCommand;
 import com.github.xioshe.less.url.api.dto.LinkQuery;
-import com.github.xioshe.less.url.api.dto.MigrateResponse;
 import com.github.xioshe.less.url.api.dto.Pagination;
 import com.github.xioshe.less.url.config.AppProperties;
 import com.github.xioshe.less.url.entity.Link;
+import com.github.xioshe.less.url.entity.Task;
 import com.github.xioshe.less.url.exceptions.CustomAliasDuplicatedException;
 import com.github.xioshe.less.url.exceptions.UrlNotFoundException;
+import com.github.xioshe.less.url.repository.AccessRecordRepository;
 import com.github.xioshe.less.url.repository.LinkRepository;
+import com.github.xioshe.less.url.repository.TaskRepository;
+import com.github.xioshe.less.url.repository.mapper.LinkMapper;
 import com.github.xioshe.less.url.shorter.UrlShorter;
+import com.github.xioshe.less.url.util.lock.DistributedLock;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StringUtils;
 
 import java.net.URLDecoder;
@@ -25,6 +35,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LinkService {
@@ -34,25 +45,21 @@ public class LinkService {
     private final CacheManager cacheManager;
     private final AppProperties appProperties;
     private final AccessRecordService accessRecordService;
-    private final VisitCountService visitCountService;
     private final Clock globalClock;
+    private final TaskRepository taskRepository;
+    private final AccessRecordRepository accessRecordRepository;
+    private final TransactionTemplate tx;
+    private final SqlSessionFactory sqlSessionFactory;
 
     public Link getById(Long id, String ownerId) {
         return linkRepository.getById(id, ownerId)
-                .map(link -> {
-                    link.setClicks(visitCountService.getVisitCount(link.getShortUrl()));
-                    link.addUrlPrefix(appProperties.getBaseUrl());
-                    return link;
-                })
+                .map(link -> link.addUrlPrefix(appProperties.getBaseUrl()))
                 .orElseThrow(UrlNotFoundException::new);
     }
 
     public IPage<Link> query(LinkQuery filters, Pagination page) {
         IPage<Link> pageResult = linkRepository.page(page.toPage(), filters.toQueryWrapper());
-        var shortUrls = pageResult.getRecords().stream().map(Link::getShortUrl).toList();
-        var counts = visitCountService.batchGetVisitCounts(shortUrls);
         pageResult.getRecords().forEach(link -> {
-            link.setClicks(counts.getOrDefault(link.getShortUrl(), 0L));
             link.addUrlPrefix(appProperties.getBaseUrl());
         });
         return pageResult;
@@ -136,32 +143,65 @@ public class LinkService {
         });
     }
 
-    public MigrateResponse migrate(String guestId, String userId) {
+    public CountLinkResponse migrate(String guestId, String userId) {
         String ownerId = "g_" + guestId;
         var links = linkRepository.selectByOwnerId(ownerId);
         links.forEach(link -> link.setOwnerId("u_" + userId));
         boolean result = linkRepository.updateBatchById(links, 200);
-        return new MigrateResponse(result ? links.size() : 0);
+        return new CountLinkResponse(result ? links.size() : 0);
     }
 
     @Async
     public void recordVisit(String url, HttpServletRequest request) {
         // 记录访问记录
         accessRecordService.record(url, request);
-        // 统计访问量
-        visitCountService.record(url);
     }
 
-    public MigrateResponse countByOwner(String ownerId) {
+    public CountLinkResponse countByOwner(String ownerId) {
+        if (!StringUtils.hasText(ownerId)) {
+            return new CountLinkResponse(0);
+        }
         var links = linkRepository.lambdaQuery()
-                .select(Link::getShortUrl).eq(Link::getOwnerId, ownerId).list();
+                .select(Link::getClicks).eq(Link::getOwnerId, ownerId).list();
         if (links.isEmpty()) {
-            return new MigrateResponse(0);
+            return new CountLinkResponse(0);
         }
 
-        var shortUrls = links.stream().map(Link::getShortUrl).toList();
-        var analytics = accessRecordService.countByShortUrls(shortUrls);
+        var analytics = links.stream().mapToInt(Link::getClicks).sum();
+        return new CountLinkResponse(links.size(), analytics);
+    }
 
-        return new MigrateResponse(shortUrls.size(), analytics);
+    @Scheduled(fixedDelay = 5 * 60 * 1000) // 5min
+    @DistributedLock(key = "update-link-clicks", waitTime = 5)
+    public void updateVisitCount() {
+        log.info("Updating link visit count");
+        var optionalTask = taskRepository.findByTaskName("update-link-clicks");
+        var lastExecutedAt = optionalTask.map(Task::getLastExecutedAt)
+                .orElse(LocalDateTime.of(1970, 1, 1, 0, 0));
+        var now = LocalDateTime.now(globalClock);
+
+        var records = accessRecordRepository.countByAccessTime(lastExecutedAt, now);
+        if (records.isEmpty()) {
+            log.debug("No link visit record found");
+            return;
+        }
+
+        tx.execute(status -> {
+            MybatisBatch<Link> mybatisBatch = new MybatisBatch<>(sqlSessionFactory, records);
+            MybatisBatch.Method<Link> method = new MybatisBatch.Method<>(LinkMapper.class);
+            var result = mybatisBatch.execute(method.get("updateVisitCount"));
+            log.debug("Batch update {} link visit count", result.size());
+
+            var task = optionalTask.orElseGet(() -> {
+                var t = new Task();
+                t.setTaskName("update-link-clicks");
+                return t;
+            });
+            task.setLastExecutedAt(now);
+            taskRepository.saveOrUpdate(task);
+            log.debug("Updated task");
+            return result;
+        });
+        log.info("Updated {} link visit count", records.size());
     }
 }

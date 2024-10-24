@@ -6,6 +6,7 @@ import com.github.xioshe.less.url.entity.Link;
 import com.github.xioshe.less.url.exceptions.CustomAliasDuplicatedException;
 import com.github.xioshe.less.url.exceptions.UrlNotFoundException;
 import com.github.xioshe.less.url.repository.LinkRepository;
+import com.github.xioshe.less.url.repository.TaskRepository;
 import com.github.xioshe.less.url.shorter.UrlShorter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ class LinkServiceTest {
     @Mock
     private AccessRecordService accessRecordService;
     @Mock
-    private VisitCountService visitCountService;
+    private TaskRepository taskRepository;
     @Spy
     private Clock globalClock = Clock.systemDefaultZone();
 

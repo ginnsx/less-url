@@ -75,7 +75,8 @@
 ```http
 POST http://localhost:8080/links
 Content-Type: application/json
-Guest-Id: {{your_guest_id}}
+Authorization: Bearer {{lu_token}}
+Guest-Id: {{guest_id}} # 优先级不如 Authorization 高
 
 {
 "originalUrl": "https://example.com/very-long-url",
@@ -84,23 +85,25 @@ Guest-Id: {{your_guest_id}}
 }
 ```
 
-游客模式使用 `Guest-Id` 头，正式用户使用 JWT 认证（`Authorization: Bearer {{your_token}}`）。
+游客模式使用 `Guest-Id` 头，正式用户使用 JWT 认证（`Authorization`）。
 
 ### 查询短链接
 
 ```http
 GET http://localhost:8080/links?page=1&size=20&sort_by=short_url,-updated_at
-Guest-Id: {{your_guest_id}}
+Content-Type: application/json
+Authorization: Bearer {{lu_token}}
+Guest-Id: {{guest_id}} # 优先级不如 Authorization 高
 ```
 
 支持丰富的查询条件，包括分页和排序。
 
-游客模式使用 `Guest-Id` 头，正式用户使用 JWT 认证（`Authorization: Bearer {{your_token}}`）。
+游客模式使用 `Guest-Id` 头，正式用户使用 JWT 认证（`Authorization`）。
 
 ### 访问短链接
 
 ```http
-GET http://localhost:8080/links/custom
+GET http://localhost:8080/s/custom
 ```
 
 如果使用浏览器之外的客户端，需要支持 302 重定向。

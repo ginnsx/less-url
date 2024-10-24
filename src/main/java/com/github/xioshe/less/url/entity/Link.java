@@ -6,10 +6,12 @@ import com.baomidou.mybatisplus.annotation.Version;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-public class Link {
+public class Link implements Serializable {
     private Long id;
 
     /**
@@ -46,6 +48,16 @@ public class Link {
     private LocalDateTime expiresAt;
 
     /**
+     * 访问次数
+     */
+    private Integer clicks = 0;
+
+    /**
+     * 最后访问时间
+     */
+    private LocalDateTime lastAccessTime;
+
+    /**
      * 创建时间
      */
     @Schema(description = "创建时间")
@@ -63,9 +75,8 @@ public class Link {
     @Version
     private Integer version;
 
-    @TableField(exist = false)
-    @Schema(description = "点击次数")
-    private long clicks = 0;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public Link addUrlPrefix(String urlPrefix) {
         if (shortUrl != null && !shortUrl.startsWith(urlPrefix)) {
