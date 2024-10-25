@@ -50,7 +50,7 @@ public class Link implements Serializable {
     /**
      * 访问次数
      */
-    private Integer clicks = 0;
+    private Integer visits = 0;
 
     /**
      * 最后访问时间

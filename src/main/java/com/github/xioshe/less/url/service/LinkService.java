@@ -59,9 +59,7 @@ public class LinkService {
 
     public IPage<Link> query(LinkQuery filters, Pagination page) {
         IPage<Link> pageResult = linkRepository.page(page.toPage(), filters.toQueryWrapper());
-        pageResult.getRecords().forEach(link -> {
-            link.addUrlPrefix(appProperties.getBaseUrl());
-        });
+        pageResult.getRecords().forEach(link -> link.addUrlPrefix(appProperties.getBaseUrl()));
         return pageResult;
     }
 
@@ -162,20 +160,20 @@ public class LinkService {
             return new CountLinkResponse(0);
         }
         var links = linkRepository.lambdaQuery()
-                .select(Link::getClicks).eq(Link::getOwnerId, ownerId).list();
+                .select(Link::getVisits).eq(Link::getOwnerId, ownerId).list();
         if (links.isEmpty()) {
             return new CountLinkResponse(0);
         }
 
-        var analytics = links.stream().mapToInt(Link::getClicks).sum();
+        var analytics = links.stream().mapToInt(Link::getVisits).sum();
         return new CountLinkResponse(links.size(), analytics);
     }
 
     @Scheduled(fixedDelay = 5 * 60 * 1000) // 5min
-    @DistributedLock(key = "update-link-clicks", waitTime = 5)
+    @DistributedLock(key = "update-link-visits", waitTime = 5)
     public void updateVisitCount() {
         log.info("Updating link visit count");
-        var optionalTask = taskRepository.findByTaskName("update-link-clicks");
+        var optionalTask = taskRepository.findByTaskName("update-link-visits");
         var lastExecutedAt = optionalTask.map(Task::getLastExecutedAt)
                 .orElse(LocalDateTime.of(1970, 1, 1, 0, 0));
         var now = LocalDateTime.now(globalClock);
@@ -194,7 +192,7 @@ public class LinkService {
 
             var task = optionalTask.orElseGet(() -> {
                 var t = new Task();
-                t.setTaskName("update-link-clicks");
+                t.setTaskName("update-link-visits");
                 return t;
             });
             task.setLastExecutedAt(now);

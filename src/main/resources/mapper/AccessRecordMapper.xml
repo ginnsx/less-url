@@ -17,7 +17,7 @@
   </sql>
 
   <select id="selectCountByShortUrls" resultType="Link">
-      select short_url, count(*) as clicks
+      select short_url, count(*) as visits
       from lu_access_record
       where short_url in
       <foreach collection="list" item="item" open="(" separator="," close=")">
@@ -27,7 +27,7 @@
   </select>
 
   <select id="countByAccessTime" resultType="com.github.xioshe.less.url.entity.Link">
-      select short_url, count(*) as clicks, max(access_time) as last_access_time
+      select short_url, count(*) as visits, max(access_time) as last_access_time
       from lu_access_record
       where access_time > #{start}
         and access_time &lt;= #{end}

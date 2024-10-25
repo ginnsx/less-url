@@ -11,7 +11,7 @@
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="is_custom" jdbcType="BOOLEAN" property="isCustom" />
     <result column="expires_at" jdbcType="TIMESTAMP" property="expiresAt" />
-    <result column="clicks" jdbcType="INTEGER" property="clicks" />
+    <result column="visits" jdbcType="INTEGER" property="visits" />
     <result column="last_access_time" jdbcType="TIMESTAMP" property="lastAccessTime" />
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
@@ -26,7 +26,7 @@
       `status`,
       is_custom,
       expires_at,
-      clicks,
+      visits,
       last_access_time,
       created_at,
       updated_at,
@@ -34,8 +34,8 @@
   </sql>
     <update id="updateVisitCount">
         update lu_link
-        set clicks=lu_link.clicks + #{clicks},
-            last_access_time=#{lastAccessTime}
+        set visits=lu_link.visits + #{visits},
+        last_access_time=#{lastAccessTime}
         where short_url = #{shortUrl}
     </update>
 </mapper>

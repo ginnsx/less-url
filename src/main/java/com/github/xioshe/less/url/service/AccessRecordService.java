@@ -6,6 +6,7 @@ import com.github.xioshe.less.url.repository.AccessRecordRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -22,10 +23,11 @@ public class AccessRecordService {
     public void record(String url, HttpServletRequest request) {
         AccessRecord accessRecord = new AccessRecord();
         accessRecord.setShortUrl(url);
-        accessRecord.setUserAgent(request.getHeader("User-Agent"));
+        accessRecord.setUserAgent(request.getHeader(HttpHeaders.USER_AGENT));
         accessRecord.setIp(request.getRemoteAddr());
-        accessRecord.setReferer(request.getHeader("referer"));
+        accessRecord.setReferer(request.getHeader(HttpHeaders.REFERER));
         accessRecord.setAccessTime(LocalDateTime.now(globalClock));
+        accessRecord.setLanguage(request.getHeader(HttpHeaders.ACCEPT_LANGUAGE));
         accessRecordRepository.save(accessRecord);
     }
 

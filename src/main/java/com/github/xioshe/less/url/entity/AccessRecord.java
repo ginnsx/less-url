@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class AccessRecord {
+    
     private Long id;
 
     /**
@@ -17,6 +18,11 @@ public class AccessRecord {
      * 浏览器信息
      */
     private String userAgent;
+
+    /**
+     * 语言
+     */
+    private String language;
 
     /**
      * IP地址
