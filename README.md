@@ -5,7 +5,7 @@
 ![Java](https://img.shields.io/badge/Java-17-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-green)
 ![License](https://img.shields.io/badge/License-MIT-blue)
-![OpenAPI](https://img.shields.io/badge/OpenAPI-green)
+![OpenAPI](https://img.shields.io/badge/OpenAPI%203-green)
 
 ## 功能特点
 
@@ -113,6 +113,15 @@ GET http://localhost:8080/s/custom
 ## 配置说明
 
 主要配置选项在 [application.yml](src/main/resources/application.yml) 文件中。
+
+### IP 归属地查询
+
+访问记录分析支持地理位置维度，地理信息从 IP 地址获取。默认的 IP 归属地查询使用 [MAXMIND GeoIP2](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data/)
+提供的数据库。数据库为本地文件，默认路径为 `src/main/resources/geo/GeoLite2-City.mmdb`。GeoIP2 会自动识别并加载数据库文件。
+
+**地理数据库文件有时效性，可能不一定准确，如有需要请下载最新文件。** 或者使用其他 IP 归属地查询服务。
+
+使用其他 IP 归属地查询时，实现 `IpGeoDetctor` 接口，然后在 `application.yml` 中将配置项 `lu.ip-geo.provider` 的值改为非 `geoip2` 即可。
 
 ## 贡献指南
 
