@@ -2,7 +2,7 @@ package com.github.xioshe.less.url.repository.analysis;
 
 import com.github.xioshe.less.url.entity.analysis.LocaleDim;
 import com.github.xioshe.less.url.repository.BaseRepository;
-import com.github.xioshe.less.url.repository.mapper.LocaleDimMapper;
+import com.github.xioshe.less.url.mapper.LocaleDimMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository

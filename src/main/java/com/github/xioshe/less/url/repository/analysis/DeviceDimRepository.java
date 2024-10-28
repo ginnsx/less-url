@@ -2,7 +2,7 @@ package com.github.xioshe.less.url.repository.analysis;
 
 import com.github.xioshe.less.url.entity.analysis.DeviceDim;
 import com.github.xioshe.less.url.repository.BaseRepository;
-import com.github.xioshe.less.url.repository.mapper.DeviceDimMapper;
+import com.github.xioshe.less.url.mapper.DeviceDimMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository

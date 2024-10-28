@@ -1,6 +1,6 @@
 package com.github.xioshe.less.url.security;
 
-import com.github.xioshe.less.url.service.GuestIdService;
+import com.github.xioshe.less.url.service.auth.GuestIdService;
 import com.github.xioshe.less.url.util.constants.CustomHeaders;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

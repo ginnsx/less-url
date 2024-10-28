@@ -2,7 +2,7 @@ package com.github.xioshe.less.url.repository.analysis;
 
 import com.github.xioshe.less.url.entity.analysis.GeoDim;
 import com.github.xioshe.less.url.repository.BaseRepository;
-import com.github.xioshe.less.url.repository.mapper.GeoDimMapper;
+import com.github.xioshe.less.url.mapper.GeoDimMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository

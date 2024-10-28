@@ -3,8 +3,8 @@ package com.github.xioshe.less.url.config;
 
 import com.github.xioshe.less.url.service.analysis.UserAgentParser;
 import com.github.xioshe.less.url.service.analysis.YauaaUserAgentParser;
-import com.github.xioshe.less.url.shorter.HashEncodingUrlShorter;
-import com.github.xioshe.less.url.shorter.UrlShorter;
+import com.github.xioshe.less.url.service.link.HashEncodingUrlShorter;
+import com.github.xioshe.less.url.service.link.UrlShorter;
 import com.github.xioshe.less.url.util.codec.Base58Codec;
 import com.github.xioshe.less.url.util.codec.Encoder;
 import com.github.xioshe.less.url.util.hash.HashFunctions;

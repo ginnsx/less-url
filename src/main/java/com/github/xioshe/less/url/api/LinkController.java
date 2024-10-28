@@ -9,7 +9,7 @@ import com.github.xioshe.less.url.api.dto.Pagination;
 import com.github.xioshe.less.url.config.GuestAllowed;
 import com.github.xioshe.less.url.entity.Link;
 import com.github.xioshe.less.url.security.SecurityUserHelper;
-import com.github.xioshe.less.url.service.LinkService;
+import com.github.xioshe.less.url.service.link.LinkService;
 import com.github.xioshe.less.url.task.VisitCountTask;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

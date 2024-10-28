@@ -1,7 +1,7 @@
 package com.github.xioshe.less.url.api;
 
-import com.github.xioshe.less.url.api.dto.RefreshTokenCommand;
-import com.github.xioshe.less.url.service.AuthenticationService;
+import com.github.xioshe.less.url.api.dto.auth.RefreshTokenCommand;
+import com.github.xioshe.less.url.service.auth.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

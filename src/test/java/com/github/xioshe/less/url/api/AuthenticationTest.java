@@ -1,6 +1,6 @@
 package com.github.xioshe.less.url.api;
 
-import com.github.xioshe.less.url.entity.User;
+import com.github.xioshe.less.url.entity.auth.User;
 import com.github.xioshe.less.url.security.JwtTokenManager;
 import com.github.xioshe.less.url.security.RotatingSecretKeyManager;
 import com.github.xioshe.less.url.security.SecurityUser;

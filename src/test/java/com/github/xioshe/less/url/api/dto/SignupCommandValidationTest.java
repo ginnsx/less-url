@@ -1,5 +1,6 @@
 package com.github.xioshe.less.url.api.dto;
 
+import com.github.xioshe.less.url.api.dto.auth.SignupCommand;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

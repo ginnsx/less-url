@@ -1,8 +1,8 @@
 package com.github.xioshe.less.url.security;
 
-import com.github.xioshe.less.url.entity.Permission;
-import com.github.xioshe.less.url.entity.Role;
-import com.github.xioshe.less.url.entity.User;
+import com.github.xioshe.less.url.entity.auth.Permission;
+import com.github.xioshe.less.url.entity.auth.Role;
+import com.github.xioshe.less.url.entity.auth.User;
 import com.github.xioshe.less.url.util.constants.RoleNames;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

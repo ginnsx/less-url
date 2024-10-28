@@ -1,8 +1,8 @@
 package com.github.xioshe.less.url.security;
 
-import com.github.xioshe.less.url.entity.User;
-import com.github.xioshe.less.url.repository.UserRepository;
-import com.github.xioshe.less.url.service.RoleService;
+import com.github.xioshe.less.url.entity.auth.User;
+import com.github.xioshe.less.url.repository.auth.UserRepository;
+import com.github.xioshe.less.url.service.auth.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;

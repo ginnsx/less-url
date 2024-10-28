@@ -1,7 +1,7 @@
 package com.github.xioshe.less.url.security;
 
 
-import com.github.xioshe.less.url.service.PermissionService;
+import com.github.xioshe.less.url.service.auth.PermissionService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.aop.support.AopUtils;

@@ -1,5 +1,6 @@
 package com.github.xioshe.less.url.shorter;
 
+import com.github.xioshe.less.url.service.link.HashEncodingUrlShorter;
 import com.github.xioshe.less.url.util.codec.Encoder;
 import com.github.xioshe.less.url.util.hash.HashFunction;
 import org.junit.jupiter.api.BeforeEach;

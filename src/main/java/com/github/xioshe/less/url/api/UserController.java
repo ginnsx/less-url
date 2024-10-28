@@ -1,13 +1,13 @@
 package com.github.xioshe.less.url.api;
 
 
-import com.github.xioshe.less.url.api.dto.GuestOpCommand;
+import com.github.xioshe.less.url.api.dto.auth.GuestOpCommand;
 import com.github.xioshe.less.url.api.dto.CountLinkResponse;
-import com.github.xioshe.less.url.api.dto.UserResponse;
-import com.github.xioshe.less.url.entity.User;
-import com.github.xioshe.less.url.repository.UserRepository;
+import com.github.xioshe.less.url.api.dto.auth.UserResponse;
+import com.github.xioshe.less.url.entity.auth.User;
+import com.github.xioshe.less.url.repository.auth.UserRepository;
 import com.github.xioshe.less.url.security.SecurityUser;
-import com.github.xioshe.less.url.service.UserService;
+import com.github.xioshe.less.url.service.auth.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

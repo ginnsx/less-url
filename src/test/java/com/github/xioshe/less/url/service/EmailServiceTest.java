@@ -2,6 +2,7 @@ package com.github.xioshe.less.url.service;
 
 import com.github.xioshe.less.url.entity.EmailTemplate;
 import com.github.xioshe.less.url.repository.EmailTemplateRepository;
+import com.github.xioshe.less.url.service.common.EmailService;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

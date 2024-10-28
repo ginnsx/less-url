@@ -3,7 +3,7 @@ package com.github.xioshe.less.url.task;
 import com.github.xioshe.less.url.entity.Task;
 import com.github.xioshe.less.url.repository.AccessRecordRepository;
 import com.github.xioshe.less.url.repository.TaskRepository;
-import com.github.xioshe.less.url.service.LinkService;
+import com.github.xioshe.less.url.service.link.LinkService;
 import com.github.xioshe.less.url.util.lock.DistributedLock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

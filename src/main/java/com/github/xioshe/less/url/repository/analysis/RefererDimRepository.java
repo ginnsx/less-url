@@ -2,7 +2,7 @@ package com.github.xioshe.less.url.repository.analysis;
 
 import com.github.xioshe.less.url.entity.analysis.RefererDim;
 import com.github.xioshe.less.url.repository.BaseRepository;
-import com.github.xioshe.less.url.repository.mapper.RefererDimMapper;
+import com.github.xioshe.less.url.mapper.RefererDimMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository

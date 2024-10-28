@@ -1,5 +1,6 @@
 package com.github.xioshe.less.url.service;
 
+import com.github.xioshe.less.url.service.auth.GuestIdService;
 import com.github.xioshe.less.url.util.constants.RedisKeys;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

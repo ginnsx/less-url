@@ -2,7 +2,7 @@ package com.github.xioshe.less.url.repository;
 
 import com.github.xioshe.less.url.entity.AccessRecord;
 import com.github.xioshe.less.url.entity.Link;
-import com.github.xioshe.less.url.repository.mapper.AccessRecordMapper;
+import com.github.xioshe.less.url.mapper.AccessRecordMapper;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;

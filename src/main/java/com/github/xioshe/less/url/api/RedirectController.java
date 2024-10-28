@@ -1,6 +1,6 @@
 package com.github.xioshe.less.url.api;
 
-import com.github.xioshe.less.url.service.LinkService;
+import com.github.xioshe.less.url.service.link.LinkService;
 import com.github.xioshe.less.url.util.constants.CustomHeaders;
 import io.micrometer.observation.annotation.Observed;
 import io.swagger.v3.oas.annotations.Operation;

@@ -2,7 +2,7 @@ package com.github.xioshe.less.url.api;
 
 import com.github.xioshe.less.url.security.JwtTokenManager;
 import com.github.xioshe.less.url.security.SecurityUser;
-import com.github.xioshe.less.url.service.GuestIdService;
+import com.github.xioshe.less.url.service.auth.GuestIdService;
 import com.github.xioshe.less.url.util.constants.CustomHeaders;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

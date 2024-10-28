@@ -1,13 +1,20 @@
 package com.github.xioshe.less.url.service;
 
-import com.github.xioshe.less.url.api.dto.AuthCommand;
-import com.github.xioshe.less.url.api.dto.LoginCommand;
-import com.github.xioshe.less.url.api.dto.SignupCommand;
-import com.github.xioshe.less.url.entity.User;
-import com.github.xioshe.less.url.repository.UserRepository;
+import com.github.xioshe.less.url.api.dto.auth.AuthCommand;
+import com.github.xioshe.less.url.api.dto.auth.LoginCommand;
+import com.github.xioshe.less.url.api.dto.auth.SignupCommand;
+import com.github.xioshe.less.url.entity.auth.User;
+import com.github.xioshe.less.url.repository.auth.UserRepository;
 import com.github.xioshe.less.url.security.JwtTokenManager;
 import com.github.xioshe.less.url.security.SecurityUser;
 import com.github.xioshe.less.url.security.SecurityUserHelper;
+import com.github.xioshe.less.url.service.auth.AuthenticationService;
+import com.github.xioshe.less.url.service.auth.GuestIdService;
+import com.github.xioshe.less.url.service.auth.RefreshTokenService;
+import com.github.xioshe.less.url.service.auth.UserService;
+import com.github.xioshe.less.url.service.auth.VerificationService;
+import com.github.xioshe.less.url.service.auth.VerificationType;
+import com.github.xioshe.less.url.service.common.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

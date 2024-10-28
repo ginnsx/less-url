@@ -4,7 +4,7 @@ import com.github.xioshe.less.url.api.dto.statistics.BasicStatsDTO;
 import com.github.xioshe.less.url.api.dto.statistics.LocationStatsDTO;
 import com.github.xioshe.less.url.api.dto.statistics.MetricCountStatsDTO;
 import com.github.xioshe.less.url.api.dto.statistics.TimeSeriesStatsDTO;
-import com.github.xioshe.less.url.repository.mapper.VisitStatsMapper;
+import com.github.xioshe.less.url.mapper.VisitStatsMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
