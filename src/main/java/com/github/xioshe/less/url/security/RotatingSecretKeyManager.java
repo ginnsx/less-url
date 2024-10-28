@@ -6,7 +6,6 @@ import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -46,8 +45,6 @@ public class RotatingSecretKeyManager implements InitializingBean {
         }
     }
 
-    // todo
-    @Scheduled(cron = "${security.jwt.key.rotation.cron:0 0 0 * * ?}")
     public void rotateKeys() {
         log.info("Rotating JWT signing keys");
         keys.offerFirst(generateSecurityKey());
@@ -55,7 +52,6 @@ public class RotatingSecretKeyManager implements InitializingBean {
             keys.pollLast();
         }
         log.info("JWT signing keys rotated. Current number of active keys: {}", keys.size());
-//        jwtMetrics.incrementKeyRotationCount();
     }
 
     private SecretKey generateSecurityKey() {

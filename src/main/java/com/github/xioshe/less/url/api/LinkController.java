@@ -10,7 +10,7 @@ import com.github.xioshe.less.url.config.GuestAllowed;
 import com.github.xioshe.less.url.entity.Link;
 import com.github.xioshe.less.url.security.SecurityUserHelper;
 import com.github.xioshe.less.url.service.LinkService;
-import com.github.xioshe.less.url.service.VisitCountService;
+import com.github.xioshe.less.url.task.VisitCountTask;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -38,7 +38,7 @@ public class LinkController {
 
     private final LinkService linkService;
     private final SecurityUserHelper securityUserHelper;
-    private final VisitCountService visitCountService;
+    private final VisitCountTask visitCountTask;
 
     @Operation(summary = "查询短链接", description = "获取短链接")
     @GetMapping
@@ -78,7 +78,7 @@ public class LinkController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/increase-count")
     public void increaseVisitCount() {
-        linkService.updateVisitCount();
+        visitCountTask.updateVisitCount();
     }
 
 }

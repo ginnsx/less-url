@@ -3,6 +3,7 @@ package com.github.xioshe.less.url.task;
 import com.github.xioshe.less.url.entity.AccessRecord;
 import com.github.xioshe.less.url.repository.AccessRecordRepository;
 import com.github.xioshe.less.url.service.analysis.VisitStatsService;
+import com.github.xioshe.less.url.util.lock.DistributedLock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,6 +22,7 @@ public class LinkVisitAnalysisTask {
     private final AccessRecordRepository accessRecordRepository;
 
     @Scheduled(cron = "0 5 * * * *") // 每小时执行一次
+    @DistributedLock(key = "analyze-link-visits", waitTime = 5)
     public void recordStats() {
         log.info("Starting link visit analysis task");
         try {

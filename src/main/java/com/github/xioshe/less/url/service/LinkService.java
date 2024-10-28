@@ -8,7 +8,6 @@ import com.github.xioshe.less.url.api.dto.LinkQuery;
 import com.github.xioshe.less.url.api.dto.Pagination;
 import com.github.xioshe.less.url.config.AppProperties;
 import com.github.xioshe.less.url.entity.Link;
-import com.github.xioshe.less.url.entity.Task;
 import com.github.xioshe.less.url.exceptions.CustomAliasDuplicatedException;
 import com.github.xioshe.less.url.exceptions.UrlNotFoundException;
 import com.github.xioshe.less.url.repository.AccessRecordRepository;
@@ -16,15 +15,14 @@ import com.github.xioshe.less.url.repository.LinkRepository;
 import com.github.xioshe.less.url.repository.TaskRepository;
 import com.github.xioshe.less.url.repository.mapper.LinkMapper;
 import com.github.xioshe.less.url.shorter.UrlShorter;
-import com.github.xioshe.less.url.util.lock.DistributedLock;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StringUtils;
@@ -33,6 +31,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -169,38 +168,11 @@ public class LinkService {
         return new CountLinkResponse(links.size(), analytics);
     }
 
-    // todo
-    @Scheduled(fixedDelay = 5 * 60 * 1000) // 5min
-    @DistributedLock(key = "update-link-visits", waitTime = 5)
-    public void updateVisitCount() {
-        log.info("Updating link visit count");
-        var optionalTask = taskRepository.findByTaskName("update-link-visits");
-        var lastExecutedAt = optionalTask.map(Task::getLastExecutedAt)
-                .orElse(LocalDateTime.of(1970, 1, 1, 0, 0));
-        var now = LocalDateTime.now(globalClock);
-
-        var records = accessRecordRepository.countByAccessTime(lastExecutedAt, now);
-        if (records.isEmpty()) {
-            log.debug("No link visit record found");
-            return;
-        }
-
-        tx.execute(status -> {
-            MybatisBatch<Link> mybatisBatch = new MybatisBatch<>(sqlSessionFactory, records);
-            MybatisBatch.Method<Link> method = new MybatisBatch.Method<>(LinkMapper.class);
-            var result = mybatisBatch.execute(method.get("updateVisitCount"));
-            log.debug("Batch update {} link visit count", result.size());
-
-            var task = optionalTask.orElseGet(() -> {
-                var t = new Task();
-                t.setTaskName("update-link-visits");
-                return t;
-            });
-            task.setLastExecutedAt(now);
-            taskRepository.saveOrUpdate(task);
-            log.debug("Updated task");
-            return result;
-        });
-        log.info("Updated {} link visit count", records.size());
+    public List<BatchResult> batchUpdateVisitCount(List<Link> links) {
+        MybatisBatch<Link> mybatisBatch = new MybatisBatch<>(sqlSessionFactory, links);
+        MybatisBatch.Method<Link> method = new MybatisBatch.Method<>(LinkMapper.class);
+        var result = mybatisBatch.execute(method.get("updateVisitCount"));
+        log.debug("Batch update {} link visit count", result.size());
+        return result;
     }
 }
