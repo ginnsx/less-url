@@ -169,6 +169,7 @@ public class LinkService {
         return new CountLinkResponse(links.size(), analytics);
     }
 
+    // todo
     @Scheduled(fixedDelay = 5 * 60 * 1000) // 5min
     @DistributedLock(key = "update-link-visits", waitTime = 5)
     public void updateVisitCount() {

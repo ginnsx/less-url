@@ -17,4 +17,8 @@ public interface AccessRecordMapper extends BaseMapper<AccessRecord> {
 
     List<Link> countByAccessTime(@Param("start") LocalDateTime start,
                                  @Param("end") LocalDateTime end);
+
+    List<AccessRecord> selectAccessRecordsBetween(@Param("ownerId") String ownerId,
+                                                  @Param("startTime") LocalDateTime startTime,
+                                                  @Param("endTime") LocalDateTime endTime);
 }

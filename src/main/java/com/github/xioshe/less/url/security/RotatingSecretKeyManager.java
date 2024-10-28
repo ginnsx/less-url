@@ -46,6 +46,7 @@ public class RotatingSecretKeyManager implements InitializingBean {
         }
     }
 
+    // todo
     @Scheduled(cron = "${security.jwt.key.rotation.cron:0 0 0 * * ?}")
     public void rotateKeys() {
         log.info("Rotating JWT signing keys");

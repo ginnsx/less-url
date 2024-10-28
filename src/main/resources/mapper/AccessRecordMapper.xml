@@ -33,4 +33,15 @@
         and access_time &lt;= #{end}
       group by short_url
   </select>
+
+    <select id="selectAccessRecordsBetween" resultType="AccessRecord">
+        select ar.*
+        from lu_access_record ar
+                 join lu_link ll on ar.short_url = ll.short_url
+        where ar.access_time > #{startTime}
+          and ar.access_time &lt;= #{endTime}
+        <if test="ownerId != null and ownerId != ''">
+            and ll.owner_id = #{ownerId}
+        </if>
+    </select>
 </mapper>

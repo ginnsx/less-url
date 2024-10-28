@@ -73,7 +73,7 @@ create table if not exists lu_access_record
     short_url   varchar(8)   not null comment '短链接',
     user_agent  varchar(255) not null comment '浏览器信息',
     ip          varchar(64)  not null comment 'IP地址',
-    language    varchar(20) comment '语言',
+    language varchar(80) comment '语言',
     referer     varchar(255) comment '来源页面',
     access_time datetime     not null default CURRENT_TIMESTAMP comment '创建时间',
     key idx_ar_short_url (short_url),
@@ -154,3 +154,75 @@ CREATE TABLE IF NOT EXISTS lu_task
     updated_at       DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP comment '更新时间',
     unique key tel_name (task_name)
 ) ENGINE = InnoDB comment '任务执行记录表';
+
+-- 事实表：访问记录
+DROP TABLE IF EXISTS lu_visit_stats;
+CREATE TABLE IF NOT EXISTS lu_visit_stats
+(
+    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+    short_url   VARCHAR(8) NOT NULL COMMENT '短链接',
+    visit_time  TIMESTAMP  NOT NULL COMMENT '访问时间',
+    geo_id      BIGINT     NOT NULL COMMENT '地理位置ID',
+    device_id   BIGINT     NOT NULL COMMENT '设备ID',
+    platform_id BIGINT     NOT NULL COMMENT '平台ID',
+    locale_id   BIGINT     NOT NULL COMMENT '语言ID',
+    referer_id  BIGINT     NOT NULL COMMENT '来源ID',
+    clicks      INT        NOT NULL DEFAULT 1 COMMENT '点击次数',
+    visitors    INT        NOT NULL DEFAULT 1 COMMENT '访客数',
+    created_at  DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at  DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    UNIQUE KEY uk_visit (short_url, visit_time, geo_id, device_id, platform_id, locale_id, referer_id)
+) ENGINE = InnoDB COMMENT '访问记录事实表';
+
+-- 维度表：地理位置
+DROP TABLE IF EXISTS lu_dim_geo;
+CREATE TABLE IF NOT EXISTS lu_dim_geo
+(
+    id        BIGINT PRIMARY KEY AUTO_INCREMENT,
+    country   VARCHAR(50) NOT NULL COMMENT '国家',
+    region    VARCHAR(50) COMMENT '区域',
+    city      VARCHAR(50) COMMENT '城市',
+    continent VARCHAR(50) COMMENT '洲',
+    UNIQUE KEY uk_country_region_city (country, region, city)
+) ENGINE = InnoDB COMMENT '地理位置维度表';
+
+-- 维度表：设备
+DROP TABLE IF EXISTS lu_dim_device;
+CREATE TABLE IF NOT EXISTS lu_dim_device
+(
+    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+    device      VARCHAR(100) NOT NULL COMMENT '设备',
+    brand       VARCHAR(50)  NOT NULL COMMENT '品牌',
+    device_type VARCHAR(20)  NOT NULL COMMENT '设备类型',
+    UNIQUE KEY uk_os_browser_device_language (device, device_type)
+) ENGINE = InnoDB COMMENT '设备维度表';
+
+-- 维度表：平台
+DROP TABLE IF EXISTS lu_dim_platform;
+CREATE TABLE IF NOT EXISTS lu_dim_platform
+(
+    id      BIGINT PRIMARY KEY AUTO_INCREMENT,
+    os      VARCHAR(50) NOT NULL COMMENT '操作系统',
+    browser VARCHAR(50) NOT NULL COMMENT '浏览器',
+    UNIQUE KEY uk_os_browser (os, browser)
+) ENGINE = InnoDB COMMENT '平台维度表';
+
+-- 维度表：语言时区
+DROP TABLE IF EXISTS lu_dim_locale;
+CREATE TABLE IF NOT EXISTS lu_dim_locale
+(
+    id       BIGINT PRIMARY KEY AUTO_INCREMENT,
+    timezone VARCHAR(80) NOT NULL COMMENT '时区',
+    language VARCHAR(80) NOT NULL COMMENT '语言',
+    UNIQUE KEY uk_os_browser (timezone, language)
+) ENGINE = InnoDB COMMENT '语言时区维度表';
+
+-- 维度表：来源
+DROP TABLE IF EXISTS lu_dim_referer;
+CREATE TABLE IF NOT EXISTS lu_dim_referer
+(
+    id           BIGINT PRIMARY KEY AUTO_INCREMENT,
+    referer_type varchar(50)  NOT NULL COMMENT '来源类型',
+    referer      VARCHAR(255) NOT NULL COMMENT '来源',
+    UNIQUE KEY uk_referer (referer_type, referer)
+) ENGINE = InnoDB COMMENT '来源维度表';

@@ -1,12 +1,17 @@
 package com.github.xioshe.less.url.config;
 
 
+import com.github.xioshe.less.url.service.analysis.UserAgentParser;
+import com.github.xioshe.less.url.service.analysis.YauaaUserAgentParser;
 import com.github.xioshe.less.url.shorter.HashEncodingUrlShorter;
 import com.github.xioshe.less.url.shorter.UrlShorter;
 import com.github.xioshe.less.url.util.codec.Base58Codec;
 import com.github.xioshe.less.url.util.codec.Encoder;
 import com.github.xioshe.less.url.util.hash.HashFunctions;
+import nl.basjes.parse.useragent.UserAgent;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,20 +54,21 @@ public class ApplicationConfig {
         return UserAgentAnalyzer.newBuilder()
                 .hideMatcherLoadStats() // 减少创建实例时的日志
                 .immediateInitialization() // 立即初始化，减少使用时的延迟，但需消耗更多内存和更多创建时的时间
+                .withField(UserAgent.AGENT_NAME)
+                .withField(UserAgent.AGENT_VERSION)
+                .withField(UserAgent.OPERATING_SYSTEM_NAME)
+                .withField(UserAgent.OPERATING_SYSTEM_VERSION)
+                .withField(UserAgent.DEVICE_NAME)
+                .withField(UserAgent.DEVICE_BRAND)
+                .withField(UserAgent.DEVICE_CLASS)
+                .withField(UserAgent.AGENT_CLASS)
                 .build();
     }
 
-    public static void main(String[] args) {
-        var ua = "Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36";
-        var uaa = new ApplicationConfig().userAgentAnalyzer();
-        var result = uaa.parse(ua);
-
-        for (String fieldName: result.getAvailableFieldNamesSorted()) {
-            System.out.println(fieldName + " = " + result.getValue(fieldName));
-        }
-        System.out.println();
-        for (String fieldName: result.getCleanedAvailableFieldNamesSorted()) {
-            System.out.println(fieldName + " = " + result.getValue(fieldName));
-        }
+    @Bean
+    @ConditionalOnBean(UserAgentAnalyzer.class)
+    @ConditionalOnMissingBean
+    public UserAgentParser userAgentParser(UserAgentAnalyzer userAgentAnalyzer) {
+        return new YauaaUserAgentParser(userAgentAnalyzer);
     }
 }

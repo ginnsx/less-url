@@ -28,6 +28,7 @@ public class AccessRecordService {
         accessRecord.setReferer(request.getHeader(HttpHeaders.REFERER));
         accessRecord.setAccessTime(LocalDateTime.now(globalClock));
         accessRecord.setLanguage(request.getHeader(HttpHeaders.ACCEPT_LANGUAGE));
+        
         accessRecordRepository.save(accessRecord);
     }
 

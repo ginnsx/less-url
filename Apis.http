@@ -42,6 +42,17 @@ Content-Type: application/json
 
 > {% client.global.set("lu_token", response.body.access_token); %}
 
+### Admin Login
+POST http://localhost:8080/auth/token
+Content-Type: application/json
+
+{
+  "email": "admin@lu.com",
+  "password": "password"
+}
+
+> {% client.global.set("lu_token_admin", response.body.access_token); %}
+
 ### Signup
 POST http://localhost:8080/auth/register
 Content-Type: application/json
@@ -136,3 +147,71 @@ Guest-Id: {{guest_id}} # 2 选 1，优先级不如 Authorization 高
 ### Visit Short URL
 // @no-redirect
 GET http://localhost:8080/s/custom
+
+### 初始化统计数据  ADMIN Only
+POST http://localhost:8080/statistics/analysis
+Content-Type: application/json
+Authorization: Bearer {{lu_token_admin}}
+
+{
+}
+
+### 基本统计
+GET http://localhost:8080/statistics/basic?startTime=1577836800000&endTime=1730047301089
+Authorization: Bearer {{lu_token}}
+
+### 时间线统计--天
+GET http://localhost:8080/statistics/timeseries?startTime=1577836800000&endTime=1730047301089&type=day
+Authorization: Bearer {{lu_token}}
+
+### 小时
+GET http://localhost:8080/statistics/timeseries?startTime=1577836800000&endTime=1730047301089&type=hour
+Authorization: Bearer {{lu_token}}
+
+### 国家统计
+GET http://localhost:8080/statistics/locations?startTime=1577836800000&endTime=1730047301089&type=country
+Authorization: Bearer {{lu_token}}
+
+### 地区统计
+GET http://localhost:8080/statistics/locations?startTime=1577836800000&endTime=1730047301089&type=region
+Authorization: Bearer {{lu_token}}
+
+### 城市统计
+GET http://localhost:8080/statistics/locations?startTime=1577836800000&endTime=1730047301089&type= city
+Authorization: Bearer {{lu_token}}
+
+### 来源统计
+GET http://localhost:8080/statistics/metrics?type=referer&startTime=1577836800000&endTime=1730047301089
+Authorization: Bearer {{lu_token}}
+
+### 来源类型统计
+GET http://localhost:8080/statistics/metrics?type=referer_type&startTime=1577836800000&endTime=1730047301089
+Authorization: Bearer {{lu_token}}
+
+### 语言统计
+GET http://localhost:8080/statistics/metrics?type=language&startTime=1577836800000&endTime=1730047301089
+Authorization: Bearer {{lu_token}}
+
+### 时区统计
+GET http://localhost:8080/statistics/metrics?type=timezone&startTime=1577836800000&endTime=1730047301089
+Authorization: Bearer {{lu_token}}
+
+### 设备统计
+GET http://localhost:8080/statistics/metrics?type=device&startTime=1577836800000&endTime=1730047301089
+Authorization: Bearer {{lu_token}}
+
+### 设备品牌
+GET http://localhost:8080/statistics/metrics?type=brand&startTime=1577836800000&endTime=1730047301089
+Authorization: Bearer {{lu_token}}
+
+### 设备类型统计
+GET http://localhost:8080/statistics/metrics?type=device_type&startTime=1577836800000&endTime=1730047301089
+Authorization: Bearer {{lu_token}}
+
+### 操作系统统计
+GET http://localhost:8080/statistics/metrics?type=os&startTime=1577836800000&endTime=1730047301089
+Authorization: Bearer {{lu_token}}
+
+### 浏览器统计
+GET http://localhost:8080/statistics/metrics?type=browser&startTime=1577836800000&endTime=1730047301089
+Authorization: Bearer {{lu_token}}

@@ -14,4 +14,14 @@ public class AccessRecordRepository extends BaseRepository<AccessRecordMapper, A
     public List<Link> countByAccessTime(LocalDateTime start, LocalDateTime end) {
         return baseMapper.countByAccessTime(start, end);
     }
+
+    public List<AccessRecord> getAccessRecordsBetween(LocalDateTime startTime, LocalDateTime endTime) {
+        return lambdaQuery()
+                .between(AccessRecord::getAccessTime, startTime, endTime)
+                .list();
+    }
+
+    public List<AccessRecord> getAccessRecordsBetween(String ownerId, LocalDateTime startTime, LocalDateTime endTime) {
+        return baseMapper.selectAccessRecordsBetween(ownerId, startTime, endTime);
+    }
 }

@@ -59,6 +59,9 @@ lu:
   link:
     #      max-length: 6
     default-time-to-live-seconds: 86400 # 24h
+  ip-geo:
+    provider: geoip2
+    database-path: classpath:geo/GeoLite2-City.mmdb
 security:
   jwt:
     access-expiration-seconds: 43200 # 12h
