@@ -22,7 +22,7 @@ public class VisitStatsRepository extends BaseRepository<VisitStatsMapper, Visit
                 .one();
 
         if (existingStats != null) {
-            existingStats.setClicks(existingStats.getClicks() + stats.getClicks());
+            existingStats.setVisits(existingStats.getVisits() + stats.getVisits());
             existingStats.setVisitors(existingStats.getVisitors() + stats.getVisitors());
             this.updateById(existingStats);
         } else {

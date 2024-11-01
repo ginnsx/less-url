@@ -73,13 +73,13 @@ public class AnalysisService {
                         .orElse(Locale.getDefault());
 
                 // 返回语言代码（例如 "en", "zh", "es" 等）
-                return locale.getLanguage();
+                return locale.getDisplayLanguage();
             }
         } catch (Exception e) {
             log.warn("Error parsing Accept-Language header: {}", acceptLanguage, e);
         }
 
         // 如果没有 Accept-Language 头，返回默认语言
-        return Locale.getDefault().getLanguage();
+        return Locale.getDefault().getDisplayLanguage();
     }
 }

@@ -7,5 +7,5 @@ public class LocationStatsDTO {
     private String country;
     private String region;
     private String city;
-    private long count;
+    private long value;
 }

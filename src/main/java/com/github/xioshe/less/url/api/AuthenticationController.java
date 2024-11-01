@@ -62,12 +62,12 @@ public class AuthenticationController {
         authenticationService.sendEmailVerification(command);
     }
 
-    @Operation(summary = "注册新用户", description = "创建一个新的用户并返回创建的用户信息")
+    @Operation(summary = "注册新用户", description = "创建新用户")
     @ApiResponse(responseCode = "200", description = "注册成功",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)))
     @PostMapping("/register")
-    public User signup(@RequestBody @Validated SignupCommand command) {
-        return authenticationService.signup(command);
+    public void signup(@RequestBody @Validated SignupCommand command) {
+        authenticationService.signup(command);
     }
 
     @Operation(summary = "用户登录", description = "账户密码登录或者验证码登录")

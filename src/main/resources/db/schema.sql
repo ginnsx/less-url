@@ -167,7 +167,7 @@ CREATE TABLE IF NOT EXISTS lu_visit_stats
     platform_id BIGINT     NOT NULL COMMENT '平台ID',
     locale_id   BIGINT     NOT NULL COMMENT '语言ID',
     referer_id  BIGINT     NOT NULL COMMENT '来源ID',
-    clicks      INT        NOT NULL DEFAULT 1 COMMENT '点击次数',
+    visits      INT        NOT NULL DEFAULT 1 COMMENT '访问次数',
     visitors    INT        NOT NULL DEFAULT 1 COMMENT '访客数',
     created_at  DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at  DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

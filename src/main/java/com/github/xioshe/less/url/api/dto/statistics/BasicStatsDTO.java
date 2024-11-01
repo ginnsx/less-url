@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class BasicStatsDTO {
-    private long clicks;
+    private long visits;
     private long visitors;
     private long referers;
 }

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.github.xioshe.less.url.mapper.VisitStatsMapper">
     <select id="getBasicStats" resultType="com.github.xioshe.less.url.api.dto.statistics.BasicStatsDTO">
-        SELECT SUM(vs.clicks)            AS clicks,
+        SELECT SUM(vs.visits)            AS visits,
                SUM(vs.visitors)          AS visitors,
                COUNT(DISTINCT r.referer) AS referers
         FROM lu_visit_stats vs
@@ -21,7 +21,7 @@
         <if test="interval == 'day'">
             DATE(vs.visit_time) AS `time`,
         </if>
-        SUM(vs.clicks)   AS clicks,
+        SUM(vs.visits)   AS visits,
         SUM(vs.visitors) AS visitors
         FROM lu_visit_stats vs
         WHERE vs.visit_time BETWEEN #{startTime} AND #{endTime}
@@ -34,7 +34,7 @@
 
     <select id="getCountryStats" resultType="com.github.xioshe.less.url.api.dto.statistics.LocationStatsDTO">
         SELECT g.country,
-               SUM(vs.clicks)   AS `count`
+               SUM(vs.visits)   AS `value`
         FROM lu_visit_stats vs
                  JOIN lu_dim_geo g ON vs.geo_id = g.id
         WHERE vs.visit_time BETWEEN #{startTime} AND #{endTime}
@@ -42,13 +42,13 @@
             AND vs.short_url = #{shortUrl}
         </if>
         GROUP BY g.country
-        ORDER BY `count` DESC
+        ORDER BY `value` DESC
     </select>
 
     <select id="getRegionStats" resultType="com.github.xioshe.less.url.api.dto.statistics.LocationStatsDTO">
         SELECT g.country,
                g.region,
-               SUM(vs.clicks) AS `count`
+               SUM(vs.visits) AS `value`
         FROM lu_visit_stats vs
                  JOIN lu_dim_geo g ON vs.geo_id = g.id
         WHERE vs.visit_time BETWEEN #{startTime} AND #{endTime}
@@ -56,14 +56,14 @@
             AND vs.short_url = #{shortUrl}
         </if>
         GROUP BY g.country, g.region
-        ORDER BY `count` DESC
+        ORDER BY `value` DESC
     </select>
 
     <select id="getCityStats" resultType="com.github.xioshe.less.url.api.dto.statistics.LocationStatsDTO">
         SELECT g.country,
         g.region,
         g.city,
-        SUM(vs.clicks) AS `count`
+        SUM(vs.visits) AS `value`
         FROM lu_visit_stats vs
         JOIN lu_dim_geo g ON vs.geo_id = g.id
         WHERE vs.visit_time BETWEEN #{startTime} AND #{endTime}
@@ -71,12 +71,12 @@
             AND vs.short_url = #{shortUrl}
         </if>
         GROUP BY g.country, g.region, g.city
-        ORDER BY `count` DESC
+        ORDER BY `value` DESC
     </select>
 
     <select id="getRefererStats" resultType="com.github.xioshe.less.url.api.dto.statistics.MetricCountStatsDTO">
         SELECT r.${type}        AS name,
-               SUM(vs.clicks)   AS `count`
+               SUM(vs.visits)   AS `value`
         FROM lu_visit_stats vs
                  JOIN lu_dim_referer r ON vs.referer_id = r.id
         WHERE vs.visit_time BETWEEN #{startTime} AND #{endTime}
@@ -84,12 +84,12 @@
             AND vs.short_url = #{shortUrl}
         </if>
         GROUP BY r.${type}
-        ORDER BY `count` DESC
+        ORDER BY `value` DESC
     </select>
 
     <select id="getLocaleStats" resultType="com.github.xioshe.less.url.api.dto.statistics.MetricCountStatsDTO">
         SELECT l.${type}        AS `name`,
-               SUM(vs.clicks)   AS `count`
+               SUM(vs.visits)   AS `value`
         FROM lu_visit_stats vs
                  JOIN lu_dim_locale l ON vs.locale_id = l.id
         WHERE vs.visit_time BETWEEN #{startTime} AND #{endTime}
@@ -97,12 +97,12 @@
             AND vs.short_url = #{shortUrl}
         </if>
         GROUP BY l.${type}
-        ORDER BY `count` DESC
+        ORDER BY `value` DESC
     </select>
 
     <select id="getDeviceStats" resultType="com.github.xioshe.less.url.api.dto.statistics.MetricCountStatsDTO">
         SELECT d.${type}        AS `name`,
-               SUM(vs.clicks)   AS `count`
+               SUM(vs.visits)   AS `value`
         FROM lu_visit_stats vs
                  JOIN lu_dim_device d ON vs.device_id = d.id
         WHERE vs.visit_time BETWEEN #{startTime} AND #{endTime}
@@ -110,12 +110,12 @@
             AND vs.short_url = #{shortUrl}
         </if>
         GROUP BY d.${type}
-        ORDER BY `count` DESC
+        ORDER BY `value` DESC
     </select>
 
     <select id="getPlatformStats" resultType="com.github.xioshe.less.url.api.dto.statistics.MetricCountStatsDTO">
         SELECT p.${type}      AS `name`,
-               SUM(vs.clicks) AS `count`
+               SUM(vs.visits) AS `value`
         FROM lu_visit_stats vs
                  JOIN lu_dim_platform p ON vs.platform_id = p.id
         WHERE vs.visit_time BETWEEN #{startTime} AND #{endTime}
@@ -123,6 +123,6 @@
             AND vs.short_url = #{shortUrl}
         </if>
         GROUP BY p.${type}
-        ORDER BY `count` DESC
+        ORDER BY `value` DESC
     </select>
 </mapper>

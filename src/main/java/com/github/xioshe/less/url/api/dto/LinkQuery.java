@@ -42,19 +42,19 @@ public class LinkQuery extends BaseQuery<Link> {
     private String longUrl_likeRight;
 
     @Schema(description = "精确匹配点击次数")
-    private Integer clicks_eq;
+    private Integer visits_eq;
 
     @Schema(description = "点击次数大于")
-    private Integer clicks_gt;
+    private Integer visits_gt;
 
     @Schema(description = "点击次数小于")
-    private Integer clicks_lt;
+    private Integer visits_lt;
 
     @Schema(description = "点击次数大于等于")
-    private Integer clicks_ge;
+    private Integer visits_ge;
 
     @Schema(description = "点击次数小于等于")
-    private Integer clicks_le;
+    private Integer visits_le;
 
     @Schema(description = "精确匹配过期时间")
     private Date expiresAt_eq;

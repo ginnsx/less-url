@@ -16,7 +16,7 @@ public class VisitStats {
     private Long platformId;
     private Long localeId;
     private Long refererId;
-    private Integer clicks;
+    private Integer visits;
     private Integer visitors;
 
     @TableField(fill = FieldFill.INSERT)

@@ -2,6 +2,8 @@ package com.github.xioshe.less.url.service.analysis;
 
 import com.github.xioshe.less.url.service.analysis.vo.IPLocationVO;
 import com.google.common.net.InetAddresses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -10,16 +12,20 @@ import java.net.UnknownHostException;
 
 public interface IpGeoDetector {
 
+    Logger log = LoggerFactory.getLogger(IpGeoDetector.class);
+
     default IPLocationVO detect(String ip) {
         try {
             var inetAddress = InetAddress.getByName(ip);
             if (!isPublicAddress(inetAddress)) {
+                log.debug("local address: {}", ip);
                 return IPLocationVO.builder()
                         .ip(ip)
                         .country("Local Network")
                         .build();
             }
         } catch (UnknownHostException e) {
+            log.warn("unknown host: {}", ip);
             return IPLocationVO.builder().ip(ip).build();
         }
         return detectPublicAddress(ip);

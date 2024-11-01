@@ -20,6 +20,7 @@ public class RefererParser {
 
         if (referer == null || referer.isEmpty()) {
             info.setRefererType(RefererType.DIRECT);
+            info.setReferer(RefererType.DIRECT);
             return info;
         }
 
@@ -39,12 +40,13 @@ public class RefererParser {
                     .filter(host::contains)
                     .map(s -> s + ".com")
                     .findFirst()
-                    .orElse("");
+                    .orElse(host);
             info.setReferer(refererValue);
             info.setUrl(referer);
 
         } catch (Exception e) {
             info.setRefererType(RefererType.INVALID);
+            info.setReferer(referer);
         }
 
         return info;

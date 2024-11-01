@@ -6,6 +6,6 @@ import lombok.Data;
 public class MetricCountStatsDTO {
 
     private String name;
-    private long count;
+    private long value;
 
 }

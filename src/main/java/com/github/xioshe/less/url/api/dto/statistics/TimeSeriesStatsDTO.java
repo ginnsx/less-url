@@ -7,6 +7,6 @@ import java.time.LocalDateTime;
 @Data
 public class TimeSeriesStatsDTO {
     private LocalDateTime time;
-    private long clicks;
+    private long visits;
     private long visitors;
 }

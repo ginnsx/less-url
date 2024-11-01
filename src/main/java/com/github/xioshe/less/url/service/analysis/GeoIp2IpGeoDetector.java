@@ -35,16 +35,12 @@ public class GeoIp2IpGeoDetector implements IpGeoDetector {
             return IPLocationVO.builder().ip(ip).build();
         }
 
-        var continent = response.getContinent().getNames().get(ZH_CN);
-        var country = response.getCountry().getNames().get(ZH_CN);
+        var continent = response.getContinent().getName();
+        var country = response.getCountry().getName();
         var timezone = response.getLocation().getTimeZone();
         // 国内城市显示中文名，国外城市显示英文名
-        var region = country.equals(CHINA)
-                ? response.getMostSpecificSubdivision().getNames().get(ZH_CN)
-                : response.getMostSpecificSubdivision().getName();
-        var city = country.equals(CHINA)
-                ? response.getCity().getNames().get(ZH_CN)
-                : response.getCity().getName();
+        var region = response.getMostSpecificSubdivision().getName();
+        var city = response.getCity().getName();
 
         return IPLocationVO.builder()
                 .ip(ip)

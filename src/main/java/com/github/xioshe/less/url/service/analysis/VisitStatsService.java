@@ -81,7 +81,7 @@ public class VisitStatsService {
         stats.setPlatformId(platformDimRepository.getOrCreatePlatformId(info.getOs(), info.getBrowser()));
         stats.setLocaleId(localeDimRepository.getOrCreateLocaleId(info.getTimezone(), info.getLanguage()));
         stats.setRefererId(refererDimRepository.getOrCreateRefererId(info.getRefererType(), info.getReferer()));
-        stats.setClicks(1);
+        stats.setVisits(1);
         stats.setVisitors(isUniqueVisitor ? 1 : 0);
         log.debug("Converted AccessVO to VisitStats: {}", stats);
         return stats;
