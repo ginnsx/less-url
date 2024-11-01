@@ -11,13 +11,10 @@ spring:
     import: optional:file:.env[.properties] # 加载 .env 文件
   application:
     name: less-url
-  sql:
-    init:
-      schema-locations: classpath:db/schema.sql
-      data-locations: classpath:db/data.sql
-      encoding: utf-8
   datasource:
-    url: jdbc:h2:mem:less-url;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+    url: "jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/less_url?useUnicode=true&characterEncoding=utf-8"
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:123456}
   jackson:
     time-zone: GMT+8
     default-property-inclusion: non_null
@@ -74,7 +71,7 @@ security:
 # 打印 SQL 详情，不要在生产环境使用
 decorator:
   datasource:
-    enabled: true
+    enabled: false
 
 # springdoc-openapi项目配置
 springdoc:
@@ -84,12 +81,12 @@ springdoc:
     display-request-duration: true
     path: doc.html
     use-root-path: true
-    enabled: true # 在生产环境要禁用
+    enabled: false # 在生产环境要禁用
   group-configs:
     - group: 'default'
       paths-to-match: '/**'
   api-docs:
-    enabled: true # 在生产环境要禁用
+    enabled: false # 在生产环境要禁用
 
 # 可观测性配置
 management:

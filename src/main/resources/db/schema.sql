@@ -194,7 +194,7 @@ CREATE TABLE IF NOT EXISTS lu_dim_device
     device      VARCHAR(100) NOT NULL COMMENT '设备',
     brand       VARCHAR(50)  NOT NULL COMMENT '品牌',
     device_type VARCHAR(20)  NOT NULL COMMENT '设备类型',
-    UNIQUE KEY uk_os_browser_device_language (device, device_type)
+    UNIQUE KEY uk_device (device, device_type)
 ) ENGINE = InnoDB COMMENT '设备维度表';
 
 -- 维度表：平台
@@ -214,7 +214,7 @@ CREATE TABLE IF NOT EXISTS lu_dim_locale
     id       BIGINT PRIMARY KEY AUTO_INCREMENT,
     timezone VARCHAR(80) NOT NULL COMMENT '时区',
     language VARCHAR(80) NOT NULL COMMENT '语言',
-    UNIQUE KEY uk_os_browser (timezone, language)
+    UNIQUE KEY uk_tz_lang (timezone, language)
 ) ENGINE = InnoDB COMMENT '语言时区维度表';
 
 -- 维度表：来源

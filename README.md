@@ -130,23 +130,3 @@ GET http://localhost:8080/s/custom
 ## 许可证
 
 本项目采用 MIT 许可证。详情请见 [LICENSE](LICENSE) 文件。
-
-## 联系方式
-
-- 作者：Xio She
-- 邮箱：[xioshe@outlook.com](mailto:xioshe@outlook.com)
-
-## 致谢
-
-感谢所有贡献者以及以下开源项目：
-
-- Spring Boot
-- Spring Security
-- MyBatis-Plus
-- Redis
-- Redisson
-- Prometheus
-
-## 项目状态
-
-本项目目前处于活跃开发中。
