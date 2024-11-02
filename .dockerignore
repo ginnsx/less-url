@@ -1,5 +1,10 @@
 .git
 .gitignore
+Apis.http
+less_url.jmx
+CONTRIBUTING.md
+LICENSE
+environments/
 Dockerfile
 .dockerignore
 target
