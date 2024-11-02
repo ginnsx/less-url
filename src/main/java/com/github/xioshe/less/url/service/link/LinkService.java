@@ -10,10 +10,8 @@ import com.github.xioshe.less.url.config.AppProperties;
 import com.github.xioshe.less.url.entity.Link;
 import com.github.xioshe.less.url.exceptions.CustomAliasDuplicatedException;
 import com.github.xioshe.less.url.exceptions.UrlNotFoundException;
-import com.github.xioshe.less.url.repository.AccessRecordRepository;
-import com.github.xioshe.less.url.repository.LinkRepository;
-import com.github.xioshe.less.url.repository.TaskRepository;
 import com.github.xioshe.less.url.mapper.LinkMapper;
+import com.github.xioshe.less.url.repository.LinkRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +21,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StringUtils;
 
 import java.net.URLDecoder;
@@ -44,9 +41,6 @@ public class LinkService {
     private final AppProperties appProperties;
     private final AccessRecordService accessRecordService;
     private final Clock globalClock;
-    private final TaskRepository taskRepository;
-    private final AccessRecordRepository accessRecordRepository;
-    private final TransactionTemplate tx;
     private final SqlSessionFactory sqlSessionFactory;
 
     public Link getById(Long id, String ownerId) {
