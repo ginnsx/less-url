@@ -62,8 +62,8 @@
    SHORT_URL_PREFIX=
    # JWT 配置
    JWT_SECRET=
-   # GeoIP2 数据库路径，仅使用 GeoIP2 地址解析方案时需要
-   GEO_IP2_DB_PATH=
+   # IP数据库路径，这个属性可以不设置（undefined），不能为空（null）
+   #GEO_IP2_DB_PATH=
    ```
 
 5. 编译项目：
