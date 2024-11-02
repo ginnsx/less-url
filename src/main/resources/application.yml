@@ -53,14 +53,14 @@ mybatis-plus:
   mapper-locations: classpath:mapper/**.xml
   type-aliases-package: com.github.xioshe.less.url.entity
 lu:
-  short-url-prefix: ${SHORT_URL_PREFIX:http://localhost:8080/s/}
+  short-url-prefix: ${SHORT_URL_PREFIX:"http://localhost:8080/s/"}
   link:
     #      max-length: 6
     default-time-to-live-seconds: 86400 # 24h
     user-agent-parser: uap
   ip-geo:
     provider: geoip2
-    database-path: classpath:geo/GeoLite2-City.mmdb
+    database-path: ${GEO_IP2_DB_PATH:"classpath:geo/GeoLite2-City.mmdb"}
 security:
   jwt:
     access-expiration-seconds: 43200 # 12h

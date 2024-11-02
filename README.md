@@ -28,7 +28,8 @@
 
 1. 确保您的系统已安装 Java 17 和 Maven。
 
-2. 提供 Redis 和 MySQL 服务。可以使用 Docker Compose 快速启动。项目 enviroments 目录下提供了 [docker-compose.yml](environments/docker-compose.yml) 文件。
+2. 提供 Redis 和 MySQL 服务。可以使用 Docker Compose 快速启动。项目 enviroments
+   目录下提供了 [docker-compose.yml](environments/docker-compose.yml) 文件。
 
    ```bash
    docker compose up -d
@@ -41,27 +42,29 @@
    cd less-url
    ```
 
-   4. 在项目根目录创建 `.env` 文件，并填写以下配置：
+4. 在项目根目录创建 `.env` 文件，并填写以下配置：
 
-       ```dotenv
-       # 数据库配置
-       JDBC_URL=
-       MYSQL_USERNAME=
-       MYSQL_PASSWORD=
-       # Redis 配置
-       REDIS_URL=
-       REDIS_USERNAME=
-       REDIS_PASSWORD=
-       # 邮件配置
-       MAIL_HOST=
-       MAIL_PORT=
-       MAIL_USERNAME=
-       MAIL_PASSWORD=
-       # 短链接前缀
-       SHORT_URL_PREFIX=
-       # JWT 配置
-       JWT_SECRET=
-       ```
+   ```dotenv
+   # 数据库配置
+   JDBC_URL=
+   MYSQL_USERNAME=
+   MYSQL_PASSWORD=
+   # Redis 配置
+   REDIS_URL=
+   REDIS_USERNAME=
+   REDIS_PASSWORD=
+   # 邮件配置
+   MAIL_HOST=
+   MAIL_PORT=
+   MAIL_USERNAME=
+   MAIL_PASSWORD=
+   # 短链接前缀
+   SHORT_URL_PREFIX=
+   # JWT 配置
+   JWT_SECRET=
+   # GeoIP2 数据库路径，仅使用 GeoIP2 地址解析方案时需要
+   GEO_IP2_DB_PATH=
+   ```
 
 5. 编译项目：
 
@@ -123,22 +126,24 @@ GET http://localhost:8080/s/custom
 
 ### IP 归属地查询
 
-访问记录分析支持地理位置维度，地理信息从 IP 地址获取。默认的 IP 归属地查询使用 [MAXMIND GeoIP2](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data/)
+访问记录分析支持地理位置维度，地理信息从 IP 地址获取。默认的 IP
+归属地查询使用 [MAXMIND GeoIP2](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data/)
 提供的数据库。数据库为本地文件，默认路径为 `src/main/resources/geo/GeoLite2-City.mmdb`。GeoIP2 会自动识别并加载数据库文件。
 
 **地理数据库文件有时效性，可能不一定准确，如有需要请下载最新文件。** 或者使用其他 IP 归属地查询服务。
 
-使用其他 IP 归属地查询时，实现 `IpGeoDetctor` 接口，然后在 `application.yml` 中将配置项 `lu.ip-geo.provider` 的值改为非 `geoip2` 即可。
+使用其他 IP 归属地查询时，实现 `IpGeoDetctor` 接口，然后在 `application.yml` 中将配置项 `lu.ip-geo.provider` 的值改为非
+`geoip2` 即可。
 
 ### User Agent 解析工具
 
 通过配置 `lu.user-agent-parser` 设置 UA 解析器，支持两种解析器：
 
 - uap，默认值，使用 [UA Parser](https://github.com/ua-parser/uap-java) 解析，轻量，能解析的数据较少，比如不支持设备品牌信息。
-- yauaa，使用 [Yauaa](https://github.com/nielsbasjes/yauaa)，能解析更多数据，但使用了本地缓存，会消耗更多 JVM 内存，大约多  200MB。
+- yauaa，使用 [Yauaa](https://github.com/nielsbasjes/yauaa)，能解析更多数据，但使用了本地缓存，会消耗更多 JVM 内存，大约多
+  200MB。
 
 当然，也可以用自己的解析器，只要实现 `UserAgentParser` 接口即可。
-
 
 ## 贡献指南
 
