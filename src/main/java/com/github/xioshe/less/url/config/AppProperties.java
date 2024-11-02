@@ -30,6 +30,10 @@ public class AppProperties {
          * 短链接默认有效期，单位秒
          */
         private int defaultTimeToLiveSeconds = 86400; // P1D
+        /**
+         * User-Agent 解析器类型：uap 或 yauaa
+         */
+        private String userAgentParser = "uap";
     }
 
     @Getter

@@ -1,6 +1,7 @@
 package com.github.xioshe.less.url.config;
 
 
+import com.github.xioshe.less.url.service.analysis.UapUserAgentParser;
 import com.github.xioshe.less.url.service.analysis.UserAgentParser;
 import com.github.xioshe.less.url.service.analysis.YauaaUserAgentParser;
 import com.github.xioshe.less.url.service.link.HashEncodingUrlShorter;
@@ -12,12 +13,15 @@ import nl.basjes.parse.useragent.UserAgent;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import ua_parser.Parser;
 
+import java.io.IOException;
 import java.time.Clock;
 
 
@@ -46,10 +50,33 @@ public class ApplicationConfig {
         return Clock.systemDefaultZone();
     }
 
+    @Bean
+    @ConditionalOnBean(UserAgentAnalyzer.class)
+    @ConditionalOnMissingBean
+    public UserAgentParser userAgentParser(UserAgentAnalyzer userAgentAnalyzer) {
+        return new YauaaUserAgentParser(userAgentAnalyzer);
+    }
+
+    /**
+     * UAP Parser
+     */
+    @Bean
+    @ConditionalOnProperty(name = "lu.link.user-agent-parser", havingValue = "uap", matchIfMissing = true)
+    public Parser uaParser() throws IOException {
+        return new Parser();
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "lu.link.user-agent-parser", havingValue = "uap", matchIfMissing = true)
+    public UserAgentParser uapUserAgentParser(Parser parser) {
+        return new UapUserAgentParser(parser);
+    }
+
     /**
      * 分析 User-Agent，用于短链访问记录分析
      */
     @Bean
+    @ConditionalOnProperty(name = "lu.link.user-agent-parser", havingValue = "yauaa")
     public UserAgentAnalyzer userAgentAnalyzer() {
         return UserAgentAnalyzer.newBuilder()
                 .hideMatcherLoadStats() // 减少创建实例时的日志
@@ -66,9 +93,8 @@ public class ApplicationConfig {
     }
 
     @Bean
-    @ConditionalOnBean(UserAgentAnalyzer.class)
-    @ConditionalOnMissingBean
-    public UserAgentParser userAgentParser(UserAgentAnalyzer userAgentAnalyzer) {
+    @ConditionalOnProperty(name = "lu.link.user-agent-parser", havingValue = "yauaa")
+    public UserAgentParser yauaaUserAgentParser(UserAgentAnalyzer userAgentAnalyzer) {
         return new YauaaUserAgentParser(userAgentAnalyzer);
     }
 }

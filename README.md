@@ -130,6 +130,16 @@ GET http://localhost:8080/s/custom
 
 使用其他 IP 归属地查询时，实现 `IpGeoDetctor` 接口，然后在 `application.yml` 中将配置项 `lu.ip-geo.provider` 的值改为非 `geoip2` 即可。
 
+### User Agent 解析工具
+
+通过配置 `lu.user-agent-parser` 设置 UA 解析器，支持两种解析器：
+
+- uap，默认值，使用 [UA Parser](https://github.com/ua-parser/uap-java) 解析，轻量，能解析的数据较少，比如不支持设备品牌信息。
+- yauaa，使用 [Yauaa](https://github.com/nielsbasjes/yauaa)，能解析更多数据，但使用了本地缓存，会消耗更多 JVM 内存，大约多  200MB。
+
+当然，也可以用自己的解析器，只要实现 `UserAgentParser` 接口即可。
+
+
 ## 贡献指南
 
 我们欢迎任何形式的贡献！请查看 [CONTRIBUTING.md](CONTRIBUTING.md) 文件了解更多详情。
