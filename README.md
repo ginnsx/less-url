@@ -44,16 +44,23 @@
 4. 在项目根目录创建 `.env` 文件，并填写以下配置：
 
     ```dotenv
-    REDIS_HOST=
-    REDIS_PORT=
-    MAIL_HOST=
-    MAIL_USERNAME=
-    MAIL_PASSWORD=
-    JWT_SECRET=
-    MYSQL_HOST=
-    MYSQL_PORT=
-    MYSQL_USERNAME=
-    MYSQL_PASSWORD=
+# 数据库配置
+JDBC_URL=
+MYSQL_USERNAME=
+MYSQL_PASSWORD=
+# Redis 配置
+REDIS_URL=
+REDIS_USERNAME=
+REDIS_PASSWORD=
+# 邮件配置
+MAIL_HOST=
+MAIL_PORT=
+MAIL_USERNAME=
+MAIL_PASSWORD=
+# 短链接前缀
+SHORT_URL_PREFIX=
+# 加密密钥配置
+JWT_SECRET=
     ```
 
 5. 编译项目：

@@ -5,6 +5,8 @@ server:
   compression:
     mime-types: application/json,application/xml,text/html,text/xml,text/plain
     enabled: true
+  servlet:
+    context-path: /api
 
 spring:
   config:
@@ -12,7 +14,7 @@ spring:
   application:
     name: less-url
   datasource:
-    url: "jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/less_url?useUnicode=true&characterEncoding=utf-8"
+    url: ${JDBC_URL:"jdbc:mysql://localhost:3306/less_url?useUnicode=true&characterEncoding=utf-8"}
     username: ${MYSQL_USERNAME:root}
     password: ${MYSQL_PASSWORD:123456}
   jackson:
@@ -22,8 +24,9 @@ spring:
       write-dates-as-timestamps: true
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      url: ${REDIS_URL:redis://localhost:6379}
+      password: ${REDIS_PASSWORD:default}
+      username: ${REDIS_USERNAME:}
   cache:
     type: redis
     cache-names: emails, links, users
@@ -52,7 +55,7 @@ mybatis-plus:
   mapper-locations: classpath:mapper/**.xml
   type-aliases-package: com.github.xioshe.less.url.entity
 lu:
-  base-url: ${BASE_URL:http://localhost:8080/s/}
+  short-url-prefix: ${SHORT_URL_PREFIX:http://localhost:8080/s/}
   link:
     #      max-length: 6
     default-time-to-live-seconds: 86400 # 24h

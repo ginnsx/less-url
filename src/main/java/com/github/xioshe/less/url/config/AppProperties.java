@@ -11,7 +11,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 @ConfigurationProperties("lu")
 public class AppProperties {
 
-    private String baseUrl;
+    private String shortUrlPrefix;
 
     @NestedConfigurationProperty
     private final LinkConfig link = new LinkConfig();

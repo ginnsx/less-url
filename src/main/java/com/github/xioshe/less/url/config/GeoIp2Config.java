@@ -8,9 +8,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.ResourceUtils;
+import org.springframework.core.io.ResourceLoader;
 
-import java.io.File;
 import java.io.IOException;
 
 @Configuration
@@ -19,12 +18,15 @@ import java.io.IOException;
 public class GeoIp2Config {
 
     private final AppProperties appProperties;
+    private final ResourceLoader resourceLoader;
 
     @Bean(destroyMethod = "close")
     public DatabaseReader databaseReader() throws IOException {
         String path = appProperties.getIpGeo().getDatabasePath();
-        File dbFile = ResourceUtils.getFile(path);
-        return new DatabaseReader.Builder(dbFile).build();
+        var resource = resourceLoader.getResource(path);
+        try (var in = resource.getInputStream()){
+            return new DatabaseReader.Builder(in).build();
+        }
     }
 
     @Bean
