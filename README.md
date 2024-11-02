@@ -41,27 +41,27 @@
    cd less-url
    ```
 
-4. 在项目根目录创建 `.env` 文件，并填写以下配置：
+   4. 在项目根目录创建 `.env` 文件，并填写以下配置：
 
-    ```dotenv
-# 数据库配置
-JDBC_URL=
-MYSQL_USERNAME=
-MYSQL_PASSWORD=
-# Redis 配置
-REDIS_URL=
-REDIS_USERNAME=
-REDIS_PASSWORD=
-# 邮件配置
-MAIL_HOST=
-MAIL_PORT=
-MAIL_USERNAME=
-MAIL_PASSWORD=
-# 短链接前缀
-SHORT_URL_PREFIX=
-# 加密密钥配置
-JWT_SECRET=
-    ```
+       ```dotenv
+       # 数据库配置
+       JDBC_URL=
+       MYSQL_USERNAME=
+       MYSQL_PASSWORD=
+       # Redis 配置
+       REDIS_URL=
+       REDIS_USERNAME=
+       REDIS_PASSWORD=
+       # 邮件配置
+       MAIL_HOST=
+       MAIL_PORT=
+       MAIL_USERNAME=
+       MAIL_PASSWORD=
+       # 短链接前缀
+       SHORT_URL_PREFIX=
+       # JWT 配置
+       JWT_SECRET=
+       ```
 
 5. 编译项目：
 
@@ -142,7 +142,7 @@ GET http://localhost:8080/s/custom
 
 ## 贡献指南
 
-我们欢迎任何形式的贡献！请查看 [CONTRIBUTING.md](CONTRIBUTING.md) 文件了解更多详情。
+欢迎任何形式的贡献！请查看 [CONTRIBUTING.md](CONTRIBUTING.md) 文件了解更多详情。
 
 ## 许可证
 
