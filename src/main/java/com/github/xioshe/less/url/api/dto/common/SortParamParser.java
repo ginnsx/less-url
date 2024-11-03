@@ -1,4 +1,4 @@
-package com.github.xioshe.less.url.api.dto;
+package com.github.xioshe.less.url.api.dto.common;
 
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.github.xioshe.less.url.api.dto.Sort.SORT_SEPARATOR;
+import static com.github.xioshe.less.url.api.dto.common.Sort.SORT_SEPARATOR;
 
 public class SortParamParser {
 

@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xioshe.less.url.api.dto.CountLinkResponse;
 import com.github.xioshe.less.url.api.dto.CreateLinkCommand;
 import com.github.xioshe.less.url.api.dto.LinkQuery;
-import com.github.xioshe.less.url.api.dto.Pagination;
+import com.github.xioshe.less.url.api.dto.common.Pagination;
 import com.github.xioshe.less.url.config.AppProperties;
 import com.github.xioshe.less.url.entity.Link;
 import com.github.xioshe.less.url.exceptions.CustomAliasDuplicatedException;

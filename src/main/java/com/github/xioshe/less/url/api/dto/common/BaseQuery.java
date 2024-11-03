@@ -1,4 +1,4 @@
-package com.github.xioshe.less.url.api.dto;
+package com.github.xioshe.less.url.api.dto.common;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.xioshe.less.url.util.mybatis.QueryWrapperBuilder;

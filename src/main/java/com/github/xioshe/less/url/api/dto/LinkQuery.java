@@ -1,6 +1,7 @@
 package com.github.xioshe.less.url.api.dto;
 
 
+import com.github.xioshe.less.url.api.dto.common.BaseQuery;
 import com.github.xioshe.less.url.entity.Link;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
