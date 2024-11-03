@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 15s # 全局抓取频率，默认是15秒
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: "spring"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["{less url application host}:8080"]
