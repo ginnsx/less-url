@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class ExceptionHandlers {
+public class WrappedExceptionHandlers {
 
     @ExceptionHandler(AutoWrappedException.class)
     public Result handleAutoWrappedException(AutoWrappedException e) {

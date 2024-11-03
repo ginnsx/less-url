@@ -1,5 +1,6 @@
 package com.github.xioshe.less.url.api;
 
+import com.github.xioshe.api.response.wrapped.WrappedResponse;
 import com.github.xioshe.less.url.api.dto.statistics.AnalysisCommand;
 import com.github.xioshe.less.url.api.dto.statistics.BasicStatsDTO;
 import com.github.xioshe.less.url.api.dto.statistics.LocationStatsDTO;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+@WrappedResponse
 @Tag(name = "访问统计")
 @RestController
 @RequestMapping("/statistics")

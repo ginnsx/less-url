@@ -1,5 +1,6 @@
 package com.github.xioshe.less.url.exceptions;
 
+import com.github.xioshe.api.response.model.Result;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.PrematureJwtException;
@@ -47,24 +48,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail);
     }
 
-    @ExceptionHandler(UrlNotFoundException.class)
-    public ResponseEntity<ProblemDetail> handleUrlNotFoundException(UrlNotFoundException exception, HttpServletRequest request) {
-        log.debug("occur UrlNotFoundException: ", exception);
-        log.warn("UrlNotFoundException: {} because of {}", request.getRequestURI(), exception.getMessage());
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
-        problemDetail.setProperty("description", "The short url is not found");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
-    }
-
-    @ExceptionHandler(DistributedLockException.class)
-    public ResponseEntity<ProblemDetail> handleDistributedLockException(DistributedLockException exception, HttpServletRequest request) {
-        log.debug("occur DistributedLockException: ", exception);
-        log.warn("DistributedLockException: {} because of {}", request.getRequestURI(), exception.getMessage());
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
-        problemDetail.setProperty("description", "Concurrent operation exception");
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail);
-    }
-
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ProblemDetail> handleBadCredentialsException(BadCredentialsException exception) {
         log.error("occur BadCredentialsException: ", exception);
@@ -105,11 +88,33 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDetail);
     }
 
+    @ExceptionHandler(UrlNotFoundException.class)
+    public Result handleUrlNotFoundException(UrlNotFoundException exception, HttpServletRequest request) {
+        log.debug("occur UrlNotFoundException: ", exception);
+        log.warn("UrlNotFoundException: {} because of {}", request.getRequestURI(), exception.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problemDetail.setProperty("description", "The short url is not found");
+        return Result.failure(5404, "The short url is not found", problemDetail);
+    }
+
+    @ExceptionHandler(DistributedLockException.class)
+    public Result handleDistributedLockException(DistributedLockException exception, HttpServletRequest request) {
+        log.debug("occur DistributedLockException: ", exception);
+        log.warn("DistributedLockException: {} because of {}", request.getRequestURI(), exception.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+        problemDetail.setProperty("description", "Concurrent operation exception");
+        return Result.failure(5405, "Concurrent operation exception", problemDetail);
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ProblemDetail> handleGenericException(Exception exception) {
+    public Result handleGenericException(Exception exception) {
         log.error("occur unexpected exception: ", exception);
         ProblemDetail errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
         errorDetail.setProperty("description", "Unknown internal server error.");
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetail);
+        var msg = exception.getMessage();
+        if (msg == null) {
+            msg = "未知异常";
+        }
+        return Result.failure(5000, msg, errorDetail);
     }
 }

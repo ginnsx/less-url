@@ -1,15 +1,13 @@
 package com.github.xioshe.api.response;
 
 
-import com.github.xioshe.api.response.wrapped.ExceptionHandlers;
+import com.github.xioshe.api.response.wrapped.WrappedExceptionHandlers;
 import com.github.xioshe.api.response.wrapped.WrappedResponseAdvice;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
-@EnableConfigurationProperties
+@AutoConfiguration
 public class ApiResponseAutoConfiguration {
 
     @Bean
@@ -20,8 +18,8 @@ public class ApiResponseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ExceptionHandlers exceptionHandlers() {
-        return new ExceptionHandlers();
+    public WrappedExceptionHandlers wrappedExceptionHandlers() {
+        return new WrappedExceptionHandlers();
     }
 
 }

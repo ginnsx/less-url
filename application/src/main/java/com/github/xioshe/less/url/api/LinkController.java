@@ -2,6 +2,7 @@ package com.github.xioshe.less.url.api;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.github.xioshe.api.response.wrapped.WrappedResponse;
 import com.github.xioshe.less.url.api.dto.CountLinkResponse;
 import com.github.xioshe.less.url.api.dto.CreateLinkCommand;
 import com.github.xioshe.less.url.api.dto.LinkQuery;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
+@WrappedResponse
 @Tag(name = "短链接", description = "需要提供 JWT Token 或者 Guest-Id")
 @SecurityRequirements // Swagger 不需要添加认证信息
 @GuestAllowed // 允许游客访问
