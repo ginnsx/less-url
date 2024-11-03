@@ -139,8 +139,8 @@ GET http://localhost:8080/s/custom
 
 通过配置 `lu.user-agent-parser` 设置 UA 解析器，支持两种解析器：
 
-- uap，默认值，使用 [UA Parser](https://github.com/ua-parser/uap-java) 解析，轻量，能解析的数据较少，比如不支持设备品牌信息。
-- yauaa，使用 [Yauaa](https://github.com/nielsbasjes/yauaa)，能解析更多数据，但使用了本地缓存，会消耗更多 JVM 内存，大约多
+- uap，使用 [UA Parser](https://github.com/ua-parser/uap-java) 解析，轻量，能解析的数据较少，比如不支持设备品牌信息。
+- yauaa，默认选项，使用 [Yauaa](https://github.com/nielsbasjes/yauaa)，能解析更多数据，但使用了本地缓存，会消耗更多 JVM 内存，大约多
   200MB。
 
 当然，也可以用自己的解析器，只要实现 `UserAgentParser` 接口即可。
