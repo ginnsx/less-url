@@ -1,5 +1,4 @@
-package com.github.xioshe.less.url.config;
-
+package com.github.xioshe.less.url.security.annotations;
 
 import com.github.xioshe.less.url.util.constants.CustomHeaders;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +11,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-@Parameter(name = CustomHeaders.GUEST_ID, in = ParameterIn.HEADER, description = "游客 id")
-public @interface GuestAllowed {
+@Parameter(name = CustomHeaders.GUEST_ID, in = ParameterIn.HEADER, description = "游客 id", required = true)
+public @interface GuestNeeded {
 }

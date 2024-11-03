@@ -1,4 +1,4 @@
-package com.github.xioshe.less.url.security;
+package com.github.xioshe.less.url.security.annotations;
 
 
 import org.springframework.security.access.prepost.PreAuthorize;

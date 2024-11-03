@@ -1,6 +1,6 @@
 package com.github.xioshe.less.url.api;
 
-import com.github.xioshe.less.url.security.RequirePermission;
+import com.github.xioshe.less.url.security.annotations.RequirePermission;
 import com.github.xioshe.less.url.security.SecurityUser;
 import com.github.xioshe.less.url.security.SecurityUserHelper;
 import org.springframework.beans.factory.annotation.Autowired;
