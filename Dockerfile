@@ -18,5 +18,4 @@ RUN ./mvnw -DoutputFile=target/mvn-dependency-list.log -B -DskipTests clean depe
 # Run the app by dynamically finding the JAR file in the target directory
 CMD ["sh", "-c", "java -jar \
     -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} \
-    -Xlog:gc*=info:stdout:time,uptime,level,tags \
-    target/*.jar"]
+    application/target/*.jar"]

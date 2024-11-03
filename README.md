@@ -38,7 +38,7 @@
 3. 克隆仓库：
 
    ```bash
-   git clone https://github.com/yourusername/less-url.git
+   git clone https://github.com/xioshe/less-url.git
    cd less-url
    ```
 
@@ -122,7 +122,7 @@ GET http://localhost:8080/s/custom
 
 ## 配置说明
 
-主要配置选项在 [application.yml](src/main/resources/application.yml) 文件中。
+主要配置选项在 [application.yml](application/src/main/resources/application.yml) 文件中。
 
 ### IP 归属地查询
 

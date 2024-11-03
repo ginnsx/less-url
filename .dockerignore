@@ -1,7 +1,7 @@
 .git
 .gitignore
 Apis.http
-less_url.jmx
+jmeter/
 CONTRIBUTING.md
 LICENSE
 environments/
