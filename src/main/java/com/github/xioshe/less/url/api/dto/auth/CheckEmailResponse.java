@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CheckEmailResponse {
 
-    private boolean exist;
+    private boolean exists;
 }
