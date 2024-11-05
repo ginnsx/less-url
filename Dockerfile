@@ -12,11 +12,12 @@ RUN ./mvnw -DoutputFile=target/mvn-dependency-list.log -B -DskipTests clean depe
 # Install the necessary packages
 RUN apk update && apk add binutils
 
-RUN jdeps --ignore-missing-deps -q  \
-    --recursive  \
-    --multi-release 17  \
-    --print-module-deps  \
-    --class-path 'BOOT-INF/lib/*'  \
+RUN jdeps \
+    --print-module-deps \
+    --ignore-missing-deps \
+    --recursive \
+    --multi-release 17 \
+    --add-modules ALL-SYSTEM \
     /build/application/target/*.jar > modules.txt
 
 # Build the JRE
