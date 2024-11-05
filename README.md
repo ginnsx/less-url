@@ -145,10 +145,6 @@ GET http://localhost:8080/s/custom
 
 当然，也可以用自己的解析器，只要实现 `UserAgentParser` 接口即可。
 
-## 贡献指南
-
-欢迎任何形式的贡献！请查看 [CONTRIBUTING.md](CONTRIBUTING.md) 文件了解更多详情。
-
 ## 许可证
 
 本项目采用 MIT 许可证。详情请见 [LICENSE](LICENSE) 文件。

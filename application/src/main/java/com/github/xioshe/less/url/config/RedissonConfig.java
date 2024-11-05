@@ -20,9 +20,12 @@ public class RedissonConfig {
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redisson() {
         Config config = new Config();
-        config.useSingleServer().setAddress(redisUrl);
-        config.useSingleServer().setUsername(redisUsername);
-        config.useSingleServer().setPassword(redisPassword);
+        config.useSingleServer()
+                .setAddress(redisUrl)
+                .setUsername(redisUsername)
+                .setPassword(redisPassword)
+                .setConnectionPoolSize(10)
+                .setConnectionMinimumIdleSize(5);
         return Redisson.create(config);
     }
 }

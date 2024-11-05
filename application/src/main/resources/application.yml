@@ -57,7 +57,7 @@ lu:
   link:
     #      max-length: 6
     default-time-to-live-seconds: 86400 # 24h
-    user-agent-parser: yauaa
+    user-agent-parser: uap
   ip-geo:
     provider: geoip2
     database-path: ${GEO_IP2_DB_PATH:classpath:geo/GeoLite2-City.mmdb}
