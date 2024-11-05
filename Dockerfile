@@ -12,18 +12,10 @@ RUN ./mvnw -DoutputFile=target/mvn-dependency-list.log -B -DskipTests clean depe
 # Install the necessary packages
 RUN apk update && apk add binutils
 
-RUN jdeps \
-    --print-module-deps \
-    --ignore-missing-deps \
-    --recursive \
-    --multi-release 17 \
-    --add-modules ALL-SYSTEM \
-    /build/application/target/*.jar > modules.txt
-
 # Build the JRE
 RUN ${JAVA_HOME}/bin/jlink \
   --verbose \
-  --add-modules $(cat modules.txt) \
+  --add-modules ALL-MODULE-PATH \
   --no-header-files \
   --no-man-pages \
   --compress=2 \
