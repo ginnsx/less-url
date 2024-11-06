@@ -83,27 +83,27 @@ springdoc:
     display-request-duration: true
     path: doc.html
     use-root-path: true
-    enabled: true # 在生产环境要禁用
+    enabled: false # 在生产环境要禁用
   group-configs:
     - group: 'default'
       paths-to-match: '/**'
   api-docs:
-    enabled: true # 在生产环境要禁用
+    enabled: false # 在生产环境要禁用
 
 # 可观测性配置
 management:
   endpoint:
     health:
       show-details: always
-      enabled: true
+      enabled: false
     info:
-      enabled: true
+      enabled: false
     loggers:
-      enabled: true
+      enabled: false
     metrics:
-      enabled: true
+      enabled: false
     prometheus:
-      enabled: true
+      enabled: false
   endpoints:
     web:
       exposure:
