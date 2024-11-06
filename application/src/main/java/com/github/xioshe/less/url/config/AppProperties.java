@@ -13,6 +13,10 @@ public class AppProperties {
 
     private String shortUrlDomain;
 
+    public String getShortUrlPrefix() {
+        return shortUrlDomain.endsWith("/") ? shortUrlDomain : shortUrlDomain + "/";
+    }
+
     @NestedConfigurationProperty
     private final LinkConfig link = new LinkConfig();
 
