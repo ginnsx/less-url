@@ -11,6 +11,8 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 @ConfigurationProperties("lu")
 public class AppProperties {
 
+    private boolean mockEmail = false;
+
     private String shortUrlDomain;
 
     public String getShortUrlPrefix() {

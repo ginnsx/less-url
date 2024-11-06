@@ -61,6 +61,7 @@ lu:
   ip-geo:
     provider: geoip2
     database-path: ${GEO_IP2_DB_PATH:classpath:geo/GeoLite2-City.mmdb}
+  mock-email: false
 security:
   jwt:
     access-expiration-seconds: 43200 # 12h

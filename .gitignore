@@ -35,3 +35,4 @@ build/
 **/*.log
 **/*.private.env.json
 .env
+application-local.*
