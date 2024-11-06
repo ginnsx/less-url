@@ -11,10 +11,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "登出")
-@RestController
+@Api // api
 @RequiredArgsConstructor
 public class LogoutController {
 
@@ -23,7 +22,7 @@ public class LogoutController {
 
     @Operation(summary = "登出", description = "登出")
     @ApiResponse(responseCode = "200", description = "登出成功")
-    @PostMapping("/logout")
+    @PostMapping("v1/logout")
     public void logout(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
                        @Parameter(hidden = true) @RequestBody RefreshTokenCommand command) {
         // "Bearer ".length() == 7

@@ -1,5 +1,5 @@
 ### Check Email
-POST {{base_url}}/auth/check-email
+POST {{api_url}}/auth/check-email
 Content-Type: application/json
 
 {
@@ -7,7 +7,7 @@ Content-Type: application/json
 }
 
 ### Send Register Verification
-POST {{base_url}}/auth/register-verification
+POST {{api_url}}/auth/register-verification
 Content-Type: application/json
 
 {
@@ -15,7 +15,7 @@ Content-Type: application/json
 }
 
 ### Verify Email Before Register
-POST {{base_url}}/auth/register-verification/verify
+POST {{api_url}}/auth/register-verification/verify
 Content-Type: application/json
 
 {
@@ -24,7 +24,7 @@ Content-Type: application/json
 }
 
 ### Send Email Verification
-POST {{base_url}}/auth/email-verification
+POST {{api_url}}/auth/email-verification
 Content-Type: application/json
 
 {
@@ -33,7 +33,7 @@ Content-Type: application/json
 }
 
 ### Login
-POST {{base_url}}/auth/token
+POST {{api_url}}/auth/token
 Content-Type: application/json
 
 {
@@ -44,7 +44,7 @@ Content-Type: application/json
 > {% client.global.set("lu_token", response.body.access_token); %}
 
 ### Admin Login
-POST {{base_url}}/auth/token
+POST {{api_url}}/auth/token
 Content-Type: application/json
 
 {
@@ -55,7 +55,7 @@ Content-Type: application/json
 > {% client.global.set("lu_token_admin", response.body.access_token); %}
 
 ### Signup
-POST {{base_url}}/auth/register
+POST {{api_url}}/auth/register
 Content-Type: application/json
 
 {
@@ -66,20 +66,20 @@ Content-Type: application/json
 }
 
 ### Get Guest Id
-GET {{base_url}}/auth/guest-id
+GET {{api_url}}/auth/guest-id
 
 > {% client.global.set("guest_id", response.body.guestId); %}
 
 ### Get Current User
-GET {{base_url}}/users/me
+GET {{api_url}}/users/me
 Authorization: Bearer {{lu_token}}
 
 ### Get User
-GET {{base_url}}/users/1
+GET {{api_url}}/users/1
 Authorization: Bearer {{lu_token}}
 
 ### Migrate Data
-POST {{base_url}}/users/migrate
+POST {{api_url}}/users/migrate
 Authorization: Bearer {{lu_token}}
 Content-Type: application/json
 
@@ -88,7 +88,7 @@ Content-Type: application/json
 }
 
 ### Update User
-PUT {{base_url}}/users
+PUT {{api_url}}/users
 Authorization: Bearer {{lu_token}}
 Content-Type: application/json
 
@@ -99,7 +99,7 @@ Content-Type: application/json
 }
 
 ### Create Short URL by Guest
-POST {{base_url}}/links
+POST {{api_url}}/links
 Content-Type: application/json
 Guest-Id: {{guest_id}}
 
@@ -110,11 +110,11 @@ Guest-Id: {{guest_id}}
 }
 
 ### Get Short URL by Guest
-GET {{base_url}}/links/1
+GET {{api_url}}/links/1
 Guest-Id: {{guest_id}}
 
 ### Create Short URL
-POST {{base_url}}/links
+POST {{api_url}}/links
 Content-Type: application/json
 Authorization: Bearer {{lu_token}}
 
@@ -125,15 +125,15 @@ Authorization: Bearer {{lu_token}}
 }
 
 ### Query Short URL
-GET {{base_url}}/links?page=1&size=20&sort_by=short_url%2C-updated_at&q=custom
+GET {{api_url}}/links?page=1&size=20&sort_by=short_url%2C-updated_at&q=custom
 Authorization: Bearer {{lu_token}}
 
 ### Get Short URL
-GET {{base_url}}/links/1
+GET {{api_url}}/links/1
 Authorization: Bearer {{lu_token}}
 
 ### Delete Short URL
-DELETE {{base_url}}/links/1
+DELETE {{api_url}}/links/1
 Authorization: Bearer {{lu_token}}
 
 ### Get Link Counts by User
@@ -141,16 +141,16 @@ Authorization: Bearer {{lu_token}}
     const guest_id = client.global.get("guest_id") || "1";
     client.global.set("guest_id", guest_id)
 %}
-GET {{base_url}}/links/counts
+GET {{api_url}}/links/counts
 Authorization: Bearer {{lu_token}}
 Guest-Id: {{guest_id}} # 2 选 1，优先级不如 Authorization 高
 
 ### Visit Short URL
 // @no-redirect
-GET {{base_url}}/s/custom
+GET {{base_url}}/custom
 
 ### 初始化统计数据  ADMIN Only
-POST {{base_url}}/statistics/analysis
+POST {{api_url}}/statistics/analysis
 Content-Type: application/json
 Authorization: Bearer {{lu_token_admin}}
 
@@ -158,61 +158,61 @@ Authorization: Bearer {{lu_token_admin}}
 }
 
 ### 基本统计
-GET {{base_url}}/statistics/basic?startTime=1577836800000&endTime=1730047301089
+GET {{api_url}}/statistics/basic?startTime=1577836800000&endTime=1730047301089
 Authorization: Bearer {{lu_token}}
 
 ### 时间线统计--天
-GET {{base_url}}/statistics/timeseries?startTime=1577836800000&endTime=1730047301089&type=day
+GET {{api_url}}/statistics/timeseries?startTime=1577836800000&endTime=1730047301089&type=day
 Authorization: Bearer {{lu_token}}
 
 ### 小时
-GET {{base_url}}/statistics/timeseries?startTime=1577836800000&endTime=1730047301089&type=hour
+GET {{api_url}}/statistics/timeseries?startTime=1577836800000&endTime=1730047301089&type=hour
 Authorization: Bearer {{lu_token}}
 
 ### 国家统计
-GET {{base_url}}/statistics/locations?startTime=1577836800000&endTime=1730047301089&type=country
+GET {{api_url}}/statistics/locations?startTime=1577836800000&endTime=1730047301089&type=country
 Authorization: Bearer {{lu_token}}
 
 ### 地区统计
-GET {{base_url}}/statistics/locations?startTime=1577836800000&endTime=1730047301089&type=region
+GET {{api_url}}/statistics/locations?startTime=1577836800000&endTime=1730047301089&type=region
 Authorization: Bearer {{lu_token}}
 
 ### 城市统计
-GET {{base_url}}/statistics/locations?startTime=1577836800000&endTime=1730047301089&type=city
+GET {{api_url}}/statistics/locations?startTime=1577836800000&endTime=1730047301089&type=city
 Authorization: Bearer {{lu_token}}
 
 ### 来源统计
-GET {{base_url}}/statistics/metrics?type=referer&startTime=1577836800000&endTime=1730047301089
+GET {{api_url}}/statistics/metrics?type=referer&startTime=1577836800000&endTime=1730047301089
 Authorization: Bearer {{lu_token}}
 
 ### 来源类型统计
-GET {{base_url}}/statistics/metrics?type=referer_type&startTime=1577836800000&endTime=1730047301089
+GET {{api_url}}/statistics/metrics?type=referer_type&startTime=1577836800000&endTime=1730047301089
 Authorization: Bearer {{lu_token}}
 
 ### 语言统计
-GET {{base_url}}/statistics/metrics?type=language&startTime=1577836800000&endTime=1730047301089
+GET {{api_url}}/statistics/metrics?type=language&startTime=1577836800000&endTime=1730047301089
 Authorization: Bearer {{lu_token}}
 
 ### 时区统计
-GET {{base_url}}/statistics/metrics?type=timezone&startTime=1577836800000&endTime=1730047301089
+GET {{api_url}}/statistics/metrics?type=timezone&startTime=1577836800000&endTime=1730047301089
 Authorization: Bearer {{lu_token}}
 
 ### 设备统计
-GET {{base_url}}/statistics/metrics?type=device&startTime=1577836800000&endTime=1730047301089
+GET {{api_url}}/statistics/metrics?type=device&startTime=1577836800000&endTime=1730047301089
 Authorization: Bearer {{lu_token}}
 
 ### 设备品牌
-GET {{base_url}}/statistics/metrics?type=brand&startTime=1577836800000&endTime=1730047301089
+GET {{api_url}}/statistics/metrics?type=brand&startTime=1577836800000&endTime=1730047301089
 Authorization: Bearer {{lu_token}}
 
 ### 设备类型统计
-GET {{base_url}}/statistics/metrics?type=device_type&startTime=1577836800000&endTime=1730047301089
+GET {{api_url}}/statistics/metrics?type=device_type&startTime=1577836800000&endTime=1730047301089
 Authorization: Bearer {{lu_token}}
 
 ### 操作系统统计
-GET {{base_url}}/statistics/metrics?type=os&startTime=1577836800000&endTime=1730047301089
+GET {{api_url}}/statistics/metrics?type=os&startTime=1577836800000&endTime=1730047301089
 Authorization: Bearer {{lu_token}}
 
 ### 浏览器统计
-GET {{base_url}}/statistics/metrics?type=browser&startTime=1577836800000&endTime=1730047301089
+GET {{api_url}}/statistics/metrics?type=browser&startTime=1577836800000&endTime=1730047301089
 Authorization: Bearer {{lu_token}}

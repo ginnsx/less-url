@@ -7,9 +7,9 @@ import com.github.xioshe.less.url.api.dto.CountLinkResponse;
 import com.github.xioshe.less.url.api.dto.CreateLinkCommand;
 import com.github.xioshe.less.url.api.dto.LinkQuery;
 import com.github.xioshe.less.url.api.dto.common.Pagination;
-import com.github.xioshe.less.url.security.annotations.GuestAllowed;
 import com.github.xioshe.less.url.entity.Link;
 import com.github.xioshe.less.url.security.SecurityUserHelper;
+import com.github.xioshe.less.url.security.annotations.GuestAllowed;
 import com.github.xioshe.less.url.service.link.LinkService;
 import com.github.xioshe.less.url.task.VisitCountTask;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 
 @WrappedResponse
@@ -34,8 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
 @SecurityRequirements // Swagger 不需要添加认证信息
 @GuestAllowed // 允许游客访问
 @RequiredArgsConstructor
-@RestController
-@RequestMapping("/links")
+@Api
+@RequestMapping("/v1/links") // api/v1/links
 public class LinkController {
 
     private final LinkService linkService;

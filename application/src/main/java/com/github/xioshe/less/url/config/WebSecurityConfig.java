@@ -95,8 +95,8 @@ public class WebSecurityConfig {
                 .sessionManagement(manager ->
                         manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/**", "/s/**").permitAll()
-                                .requestMatchers("/doc.html", "/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        auth.requestMatchers("/auth/**", "/s/**", "/**").permitAll()
+                                .requestMatchers("/doc.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .requestMatchers("/actuator/**").permitAll()
                                 .requestMatchers("/links/**").hasAnyRole(RoleNames.ALL_AUTHENTICATED_ROLES)
                                 .anyRequest().authenticated())

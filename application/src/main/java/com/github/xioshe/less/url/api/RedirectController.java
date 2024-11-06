@@ -3,6 +3,7 @@ package com.github.xioshe.less.url.api;
 import com.github.xioshe.less.url.service.link.LinkService;
 import com.github.xioshe.less.url.util.constants.CustomHeaders;
 import io.micrometer.observation.annotation.Observed;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 
 @Tag(name = "短链访问入口")
+@Hidden
 @Slf4j
 @RestController
 @RequestMapping("/s")
@@ -32,6 +34,7 @@ public class RedirectController {
 
     private final LinkService linkService;
 
+    @Deprecated
     @Operation(summary = "短链重定向", description = "访问短链接，返回重定向响应")
     @ApiResponse(responseCode = "302", description = "重定向到原始链接")
     @ApiResponse(responseCode = "404", description = "短链接不存在")

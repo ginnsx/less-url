@@ -45,19 +45,19 @@ public class LinkService {
 
     public Link getById(Long id, String ownerId) {
         return linkRepository.getById(id, ownerId)
-                .map(link -> link.addUrlPrefix(appProperties.getShortUrlPrefix()))
+                .map(link -> link.addUrlPrefix(appProperties.getShortUrlDomain()))
                 .orElseThrow(UrlNotFoundException::new);
     }
 
     public IPage<Link> query(LinkQuery filters, Pagination page) {
         IPage<Link> pageResult = linkRepository.page(page.toPage(), filters.toQueryWrapper());
-        pageResult.getRecords().forEach(link -> link.addUrlPrefix(appProperties.getShortUrlPrefix()));
+        pageResult.getRecords().forEach(link -> link.addUrlPrefix(appProperties.getShortUrlDomain()));
         return pageResult;
     }
 
     public Link create(CreateLinkCommand command, String ownerId) {
         Link link = createLink(command, ownerId);
-        link.addUrlPrefix(appProperties.getShortUrlPrefix());
+        link.addUrlPrefix(appProperties.getShortUrlDomain());
         return link;
     }
 

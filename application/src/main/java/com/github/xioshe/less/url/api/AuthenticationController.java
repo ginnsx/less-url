@@ -25,13 +25,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 
 @Tag(name = "认证")
 @SecurityRequirements // Swagger 不需要添加认证信息
-@RestController
-@RequestMapping("/auth")
+@Api
+@RequestMapping("/v1/auth") // api/v1/auth
 @RequiredArgsConstructor
 public class AuthenticationController {
 

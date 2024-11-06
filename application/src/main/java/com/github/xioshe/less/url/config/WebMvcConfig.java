@@ -1,8 +1,15 @@
 package com.github.xioshe.less.url.config;
 
+import com.github.xioshe.less.url.api.Api;
+import com.github.xioshe.less.url.api.interceptor.LinkRedirectInterceptor;
+import com.github.xioshe.less.url.service.link.LinkService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.Instant;
@@ -13,7 +20,39 @@ import java.time.ZoneId;
 import java.util.Date;
 
 @Configuration
+@RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
+
+    private final LinkService linkService;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(linkRedirectInterceptor())
+                .order(0) // 设置最高优先级
+                .addPathPatterns("/**") // 拦截所有请求
+                .excludePathPatterns(
+                        "/",
+                        "/api/**",
+                        "/static/**",
+                        "/assets/**",
+                        "/favicon.ico",
+                        "/actuator/**",
+                        "/doc.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/error"  // 排除错误页面
+                );
+    }
+
+    @Bean
+    public LinkRedirectInterceptor linkRedirectInterceptor() {
+        return new LinkRedirectInterceptor(linkService);
+    }
+
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+        configurer.addPathPrefix("/api", c -> c.isAnnotationPresent(Api.class));
+    }
 
     /**
      * 处理请求参数中的 long 类型时间戳，转换为 Date 和 LocalDateTime  等类型

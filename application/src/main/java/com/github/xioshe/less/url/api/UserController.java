@@ -2,8 +2,8 @@ package com.github.xioshe.less.url.api;
 
 
 import com.github.xioshe.api.response.wrapped.WrappedResponse;
-import com.github.xioshe.less.url.api.dto.auth.GuestOpCommand;
 import com.github.xioshe.less.url.api.dto.CountLinkResponse;
+import com.github.xioshe.less.url.api.dto.auth.GuestOpCommand;
 import com.github.xioshe.less.url.api.dto.auth.UserResponse;
 import com.github.xioshe.less.url.entity.auth.User;
 import com.github.xioshe.less.url.repository.auth.UserRepository;
@@ -23,13 +23,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 
 @WrappedResponse
 @Tag(name = "用户")
-@RestController
-@RequestMapping("/users")
+@Api
+@RequestMapping("/v1/users") // api/v1/users
 @RequiredArgsConstructor
 public class UserController {
 

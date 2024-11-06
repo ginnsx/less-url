@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -27,8 +26,8 @@ import java.util.List;
 
 @WrappedResponse
 @Tag(name = "访问统计")
-@RestController
-@RequestMapping("/statistics")
+@Api
+@RequestMapping("/v1/statistics") // api/v1/statistics
 @RequiredArgsConstructor
 public class StatisticsController {
 
