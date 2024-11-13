@@ -1,6 +1,7 @@
 package com.github.xioshe.less.url.exceptions;
 
 import com.github.xioshe.api.response.model.Result;
+import com.github.xioshe.less.url.rate_limiting.exception.RateLimitException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.PrematureJwtException;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.security.SignatureException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
@@ -104,6 +107,26 @@ public class GlobalExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
         problemDetail.setProperty("description", "Concurrent operation exception");
         return Result.failure(5405, "Concurrent operation exception", problemDetail);
+    }
+
+    @ExceptionHandler(RateLimitException.class)
+    public ResponseEntity<Map<String, Object>> handleRateLimitException(RateLimitException exception,
+                                                                        HttpServletRequest request) {
+        log.debug("occur RateLimitException: ", exception);
+        log.warn("RateLimitException in path {}: {}", request.getRequestURI(), exception.getMessage());
+        var errorMessage = buildErrorMessage(exception);
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(errorMessage);
+    }
+
+    private Map<String, Object> buildErrorMessage(RateLimitException exception) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("code", 429);
+        errorResponse.put("message", "请求太频繁，请稍后重试");
+        errorResponse.put("timestamp", System.currentTimeMillis());
+        errorResponse.put("detail", exception.getMessage());
+
+        return errorResponse;
     }
 
     @ExceptionHandler(Exception.class)

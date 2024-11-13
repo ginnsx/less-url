@@ -17,6 +17,7 @@
 - 用户认证：支持用户注册、登录和 JWT 令牌刷新
 - 游客模式：支持未登录用户创建短链接
 - 权限控制：基于角色的访问控制系统
+- 接口限流：支持多种条件的接口限流
 - 接口文档：提供 OpenAPI 文档，支持在线测试
 - 监控和统计：支持 Prometheus 和 Grafana 监控和统计
 
@@ -144,6 +145,21 @@ GET http://localhost:8080/custom
   200MB。
 
 当然，也可以用自己的解析器，只要实现 `UserAgentParser` 接口即可。
+
+### 接口限流
+
+通过配置 `lu.rate-limit` 设置全局接口限流规则。全局限流只支持 IP 地址。
+
+```properties
+lu.rate-limit.enabled=true
+lu.rate-limit.default-key-prefix=lu:rate_limit:
+lu.rate-limit.default-rate=1.0
+lu.rate-limit.time-unit=SECONDS
+lu.rate-limit.default-capacity=1
+lu.rate-limit.min-fill-time=60 # 秒，最小的过期时间，用于计算限流键的过期时间
+```
+
+通过注解 `@RateLimit` 针对单个接口进行限流。
 
 ## 许可证
 
