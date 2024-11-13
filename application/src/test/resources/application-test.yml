@@ -9,3 +9,12 @@ spring:
     url: jdbc:h2:mem:less-url;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
     username: sa
     password:
+  data:
+    redis:
+      url: redis://192.168.31.19:6379
+      username: default
+      password:
+lu:
+  rate-limit:
+    enabled: false
+  mock-email: true

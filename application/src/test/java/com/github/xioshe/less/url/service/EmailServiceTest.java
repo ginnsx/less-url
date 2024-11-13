@@ -1,5 +1,6 @@
 package com.github.xioshe.less.url.service;
 
+import com.github.xioshe.less.url.config.AppProperties;
 import com.github.xioshe.less.url.entity.EmailTemplate;
 import com.github.xioshe.less.url.repository.EmailTemplateRepository;
 import com.github.xioshe.less.url.service.common.EmailService;
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -33,7 +33,7 @@ class EmailServiceTest {
     private EmailTemplateRepository templateRepository;
 
     @Mock
-    private Environment env;
+    private AppProperties app;
 
     @InjectMocks
     private EmailService emailService;
@@ -55,7 +55,7 @@ class EmailServiceTest {
         template.setSubject("Test Subject");
         template.setContent("Hello, {{name}}!");
 
-        when(env.getActiveProfiles()).thenReturn(new String[]{"prod"});
+        when(app.isMockEmail()).thenReturn(false);
 
         when(templateRepository.findByName(templateName)).thenReturn(template);
 
@@ -73,7 +73,7 @@ class EmailServiceTest {
         String templateName = "testTemplate";
         Map<String, Object> variables = new HashMap<>();
 
-        when(env.getActiveProfiles()).thenReturn(new String[]{"test"});
+        when(app.isMockEmail()).thenReturn(true);
 
         when(templateRepository.findByName(templateName)).thenReturn(new EmailTemplate());
 

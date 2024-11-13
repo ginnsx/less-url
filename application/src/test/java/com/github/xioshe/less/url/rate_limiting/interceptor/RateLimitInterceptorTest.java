@@ -5,13 +5,13 @@ import com.github.xioshe.less.url.rate_limiting.config.RateLimitProperties;
 import com.github.xioshe.less.url.rate_limiting.core.RateLimiter;
 import com.github.xioshe.less.url.rate_limiting.exception.RateLimitException;
 import com.github.xioshe.less.url.security.SecurityUserHelper;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.Method;
@@ -38,15 +38,16 @@ class RateLimitInterceptorTest {
     private SecurityUserHelper securityUserHelper;
 
     @Mock
-    private HttpServletRequest request;
-
-    @Mock
     private HttpServletResponse response;
 
     private RateLimitInterceptor interceptor;
 
+    private MockHttpServletRequest request;
+
     @BeforeEach
     void setUp() {
+        request = new MockHttpServletRequest();
+        request.setRequestURI("/foo"); // 限流拦截器位于 redirect 拦截器之前
         interceptor = new RateLimitInterceptor(rateLimiter, properties, securityUserHelper);
     }
 
@@ -57,8 +58,8 @@ class RateLimitInterceptorTest {
         String testIp = "192.168.1.1";
 
         // Mock 行为
+        request.addHeader("X-Forwarded-For", testIp);
         when(properties.isEnabled()).thenReturn(true);
-        when(request.getHeader("X-Forwarded-For")).thenReturn(testIp);
         when(rateLimiter.isAllowed(anyString(), anyDouble(), anyInt(), anyLong())).thenReturn(true);
 
         // 执行测试

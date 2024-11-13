@@ -1,8 +1,8 @@
 package com.github.xioshe.less.url.api;
 
-import com.github.xioshe.less.url.security.annotations.RequirePermission;
 import com.github.xioshe.less.url.security.SecurityUser;
 import com.github.xioshe.less.url.security.SecurityUserHelper;
+import com.github.xioshe.less.url.security.annotations.RequirePermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Api
 @RequestMapping("/test")
 class TestController {
 

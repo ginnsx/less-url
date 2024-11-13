@@ -95,10 +95,13 @@ public class WebSecurityConfig {
                 .sessionManagement(manager ->
                         manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/**", "/s/**", "/**").permitAll()
+                        auth.requestMatchers("/api/v1/auth/**", "/s/**").permitAll()
                                 .requestMatchers("/doc.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .requestMatchers("/actuator/**").permitAll()
-                                .requestMatchers("/links/**").hasAnyRole(RoleNames.ALL_AUTHENTICATED_ROLES)
+                                .requestMatchers("favicon.ico").permitAll()
+                                .requestMatchers("/api/v1/links/**").hasAnyRole(RoleNames.ALL_AUTHENTICATED_ROLES)
+                                .requestMatchers("/api/**").authenticated()
+                                .requestMatchers("/**").permitAll() // LinkRedirectInterceptor 处理重定向
                                 .anyRequest().authenticated())
                 .exceptionHandling(exceptionHanding ->
                         exceptionHanding.authenticationEntryPoint(entryPoint)

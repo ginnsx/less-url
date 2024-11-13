@@ -49,11 +49,11 @@ class ExpiredJwtTest {
         user.setPassword("password");
         var token = jwtTokenManager.generateAccessToken(SecurityUser.from(user));
 
-        mockMvc.perform(get("/test/user")
+        mockMvc.perform(get("/api/test/user")
                         .header("Authorization", "Bearer " + token))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.description").value("The JWT token has expired"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.data.description").value("The JWT token has expired"));
     }
 
     @Test
@@ -68,11 +68,11 @@ class ExpiredJwtTest {
                 .signWith(keyManager.getCurrentKey(), Jwts.SIG.HS256)
                 .compact();
 
-        mockMvc.perform(get("/test/user")
+        mockMvc.perform(get("/api/test/user")
                         .header("Authorization", "Bearer " + token))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.description").value("The JWT token has not become valid yet"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code" ).value(401))
+                .andExpect(jsonPath("$.data.description").value("The JWT token has not become valid yet"));
     }
 }
 
@@ -100,7 +100,7 @@ class AuthenticationTest {
     @Test
     @WithUserDetails("test@lu.com")
     void access_successfully() throws Exception {
-        mockMvc.perform(get("/test/user"))
+        mockMvc.perform(get("/api/test/user"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("hello, user"));
     }
@@ -108,26 +108,26 @@ class AuthenticationTest {
     @Test
     @WithUserDetails("admin@lu.com")
     void admin_access_successfully() throws Exception {
-        mockMvc.perform(get("/test/admin"))
+        mockMvc.perform(get("/api/test/admin"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("hello, admin"));
     }
 
     @Test
     void invalid_jwt() throws Exception {
-        mockMvc.perform(get("/test/user")
+        mockMvc.perform(get("/api/test/user")
                         .header("Authorization", "Bearer invalid"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.description").value("The JWT signature is invalid"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code" ).value(401))
+                .andExpect(jsonPath("$.data.description").value("The JWT signature is invalid"));
     }
 
     @Test
     void empty_jwt() throws Exception {
-        mockMvc.perform(get("/test/user"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.description")
+        mockMvc.perform(get("/api/test/user"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code" ).value(401))
+                .andExpect(jsonPath("$.data.description")
                         .value("Full authentication is required to access this resource"));
     }
 
@@ -141,11 +141,11 @@ class AuthenticationTest {
 
         jwtTokenManager.blacklistAccessToken(token);
 
-        mockMvc.perform(get("/test/user")
+        mockMvc.perform(get("/api/test/user")
                         .header("Authorization", "Bearer " + token))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.detail")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code" ).value(401))
+                .andExpect(jsonPath("$.data.detail")
                         .value("Token is blacklisted"));
     }
 
@@ -157,11 +157,11 @@ class AuthenticationTest {
         user.setPassword("password");
         var token = jwtTokenManager.generateAccessToken(SecurityUser.from(user));
 
-        mockMvc.perform(get("/test/admin")
+        mockMvc.perform(get("/api/test/admin")
                         .header("Authorization", "Bearer " + token))
-                .andExpect(status().isForbidden())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.description")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code" ).value(403))
+                .andExpect(jsonPath("$.data.description")
                         .value("You are not authorized to access this resource"));
     }
 
@@ -173,34 +173,34 @@ class AuthenticationTest {
                 .build();
         var token = jwtTokenManager.generateAccessToken(user);
 
-        mockMvc.perform(get("/test/edit").header("Authorization", "Bearer " + token))
-                .andExpect(status().isForbidden())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.description")
+        mockMvc.perform(get("/api/test/edit").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code" ).value(403))
+                .andExpect(jsonPath("$.data.description")
                         .value("You are not authorized to access this resource"));
     }
 
     @Test
     void Login_bad_credentials() throws Exception {
-        mockMvc.perform(post("/auth/token")
+        mockMvc.perform(post("/api/v1/auth/token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"email":"test@lu.com","password":"bad pwd"}"""))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.description")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code" ).value(401))
+                .andExpect(jsonPath("$.data.description")
                         .value("The username or password is incorrect"))
-                .andExpect(jsonPath("$.detail").value("Bad credentials"));
+                .andExpect(jsonPath("$.data.detail").value("Bad credentials"));
     }
 
     @Test
     public void Login_successfully() throws Exception {
-        mockMvc.perform(post("/auth/token")
+        mockMvc.perform(post("/api/v1/auth/token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"email":"test@lu.com","password":"password"}"""))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.access_token").exists());
+                .andExpect(jsonPath("$.code" ).value(1))
+                .andExpect(jsonPath("$.data.access_token").exists());
     }
 }

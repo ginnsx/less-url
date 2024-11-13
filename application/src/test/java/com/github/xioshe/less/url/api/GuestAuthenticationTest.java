@@ -32,7 +32,7 @@ class GuestAuthenticationTest {
     @Test
     void guest_http_header() throws Exception {
         var guestId =guestIdService.generateGuestId();
-        mockMvc.perform(get("/test/guest")
+        mockMvc.perform(get("/api/test/guest")
                         .header(CustomHeaders.GUEST_ID, guestId)
                 )
                 .andExpect(status().isOk())
@@ -48,7 +48,7 @@ class GuestAuthenticationTest {
         var token = jwtTokenManager.generateAccessToken(user);
         var guestId =guestIdService.generateGuestId();
 
-        mockMvc.perform(get("/test/principal")
+        mockMvc.perform(get("/api/test/principal")
                         .header(CustomHeaders.GUEST_ID, guestId)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
@@ -59,7 +59,7 @@ class GuestAuthenticationTest {
     void helper() throws Exception {
         var guestId =guestIdService.generateGuestId();
 
-        mockMvc.perform(get("/test/helper")
+        mockMvc.perform(get("/api/test/helper")
                         .header(CustomHeaders.GUEST_ID, guestId))
                 .andExpect(status().isOk())
                 .andExpect(content().string("g_" + guestId));
@@ -70,7 +70,7 @@ class GuestAuthenticationTest {
                 .build();
         var token = jwtTokenManager.generateAccessToken(user);
 
-        mockMvc.perform(get("/test/helper")
+        mockMvc.perform(get("/api/test/helper")
                         .header(CustomHeaders.GUEST_ID, guestId)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())

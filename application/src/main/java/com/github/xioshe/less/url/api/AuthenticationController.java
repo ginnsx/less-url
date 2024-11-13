@@ -1,5 +1,6 @@
 package com.github.xioshe.less.url.api;
 
+import com.github.xioshe.api.response.wrapped.WrappedResponse;
 import com.github.xioshe.less.url.api.dto.auth.AuthCommand;
 import com.github.xioshe.less.url.api.dto.auth.AuthResponse;
 import com.github.xioshe.less.url.api.dto.auth.CheckEmailCommand;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
+@WrappedResponse
 @Tag(name = "认证")
 @SecurityRequirements // Swagger 不需要添加认证信息
 @Api

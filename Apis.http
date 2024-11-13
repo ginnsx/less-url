@@ -41,7 +41,7 @@ Content-Type: application/json
   "password": "password"
 }
 
-> {% client.global.set("lu_token", response.body.access_token); %}
+> {% client.global.set("lu_token", response.body.data.access_token); %}
 
 ### Admin Login
 POST {{api_url}}/auth/token
@@ -52,7 +52,7 @@ Content-Type: application/json
   "password": "password"
 }
 
-> {% client.global.set("lu_token_admin", response.body.access_token); %}
+> {% client.global.set("lu_token_admin", response.body.data.access_token); %}
 
 ### Signup
 POST {{api_url}}/auth/register
@@ -68,7 +68,7 @@ Content-Type: application/json
 ### Get Guest Id
 GET {{api_url}}/auth/guest-id
 
-> {% client.global.set("guest_id", response.body.guestId); %}
+> {% client.global.set("guest_id", response.body.data.guestId); %}
 
 ### Get Current User
 GET {{api_url}}/users/me
