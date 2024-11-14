@@ -64,6 +64,9 @@ lu:
   mock-email: false
   rate-limit:
     enabled: true
+    default-rate: 60
+    time-unit: minutes
+    default-capacity: 10
 security:
   jwt:
     access-expiration-seconds: 43200 # 12h

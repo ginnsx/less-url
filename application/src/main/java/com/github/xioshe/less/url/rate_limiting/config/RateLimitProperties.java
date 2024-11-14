@@ -24,7 +24,7 @@ public class RateLimitProperties {
     private double defaultRate = 1.0;
 
     /**
-     * 令牌桶记录的刷新间隔
+     * 令牌桶生成速度的时间单位
      */
     private TimeUnit timeUnit = TimeUnit.SECONDS;
 
