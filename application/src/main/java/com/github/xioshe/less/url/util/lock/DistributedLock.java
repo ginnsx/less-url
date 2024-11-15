@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public @interface DistributedLock {
 
     /**
-     * 锁的 key，支持 SpEL 表达式，默认为空，表示使用方法名
+     * 锁的 key，支持 SpEL 表达式
      */
     String key();
 
