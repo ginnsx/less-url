@@ -68,8 +68,8 @@ public class JacksonConfig {
         public LocalDateTime deserialize(JsonParser parser, DeserializationContext deserializationContext) throws IOException {
             try {
                 long timestamp = Long.parseLong(parser.getValueAsString());
-                return timestamp < 0 ? null :
-                        Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime();
+                // ts 负值也有意义，表示 1970 年之前的时间
+                return Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime();
             } catch (NumberFormatException e) {
                 return null;
             }
@@ -104,8 +104,7 @@ public class JacksonConfig {
         public LocalDate deserialize(JsonParser parser, DeserializationContext deserializationContext) throws IOException {
             try {
                 long timestamp = Long.parseLong(parser.getValueAsString());
-                return timestamp < 0 ? null :
-                        Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate();
+                return Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate();
             } catch (NumberFormatException e) {
                 return null;
             }
@@ -142,8 +141,7 @@ public class JacksonConfig {
         public LocalTime deserialize(JsonParser parser, DeserializationContext deserializationContext) throws IOException {
             try {
                 long timestamp = Long.parseLong(parser.getValueAsString());
-                return timestamp < 0 ? null :
-                        Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalTime();
+                return Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalTime();
             } catch (NumberFormatException e) {
                 return null;
             }
