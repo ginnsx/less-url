@@ -1,4 +1,4 @@
-package com.github.xioshe.less.url.exceptions;
+package com.github.xioshe.less.url.exception;
 
 import lombok.Getter;
 

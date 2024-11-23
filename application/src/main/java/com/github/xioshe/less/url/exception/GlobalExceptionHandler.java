@@ -1,4 +1,4 @@
-package com.github.xioshe.less.url.exceptions;
+package com.github.xioshe.less.url.exception;
 
 import com.github.xioshe.api.response.model.Result;
 import com.github.xioshe.less.url.rate_limiting.exception.RateLimitException;

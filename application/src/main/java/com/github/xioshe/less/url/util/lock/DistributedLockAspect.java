@@ -1,6 +1,6 @@
 package com.github.xioshe.less.url.util.lock;
 
-import com.github.xioshe.less.url.exceptions.DistributedLockException;
+import com.github.xioshe.less.url.exception.DistributedLockException;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
